@@ -8,66 +8,16 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 ## ✨ 它能帮你做什么？
 
-```mermaid
-flowchart TD
-    subgraph P1[阶段1: /prd]
-        A[新窗口] --> B[需求讨论]
-        B --> C[创建/更新 docs/PRD.md（Draft）]
-        C --> CC[/prd-check（手动循环校验）/]
-        CC -->|PASS| CD[用户手动改 状态: Final（之后不再修改）]
-    end
+你只需要用自己的话描述想法，Textum 会帮你：
 
-    subgraph P2[阶段2: /scaffold]
-        D[新窗口] --> E[读取 docs/PRD.md]
-        E --> F[生成 docs/GLOBAL-CONTEXT.md（全局约定/索引）]
-        F --> FC[/scaffold-check/]
-    end
+- 📝 把模糊的想法变成清晰的需求文档（PRD）
+- 🧩 自动拆分成一个个可执行的小任务（Story）
+- 🔗 理清任务之间的依赖关系，告诉你先做什么、后做什么
+- 💻 一步步把每个任务变成真正能跑的代码
 
-    subgraph P3A[阶段3a: /split-plan]
-        G[新窗口] --> H[读取 PRD 索引章 + GLOBAL-CONTEXT]
-        H --> HP[生成 docs/split-plan.md（Story列表+API分配+依赖）]
-    end
+整个过程有多个校验点，确保不会跑偏。
 
-    subgraph P3[阶段3: /split]
-        SP[新窗口] --> SH[读取 split-plan + PRD + GLOBAL-CONTEXT]
-        SH --> I[生成 docs/story-N-slug.md（含模块 M-xx、API-###、PRD 行号引用）]
-    end
-
-    subgraph P4[阶段4: /split-check]
-        SC[新窗口] --> SD[读取 PRD + GLOBAL-CONTEXT + story-*]
-        SD --> SE[输出校验结果（FAIL/DECISION/PASS）]
-    end
-
-    subgraph P5[阶段5: /backfill]
-        BF[新窗口] --> BG[读取 story-* 回填索引]
-        BG --> BH[更新 docs/GLOBAL-CONTEXT.md（规则涉及Story/依赖图）]
-    end
-
-    subgraph P6[阶段6: /story N]
-        J[新窗口] --> JC[/story-check N/]
-        JC --> K[读取 GLOBAL-CONTEXT + story-N]
-        K --> KP[仅读取 story 引用的 PRD:Lx-Ly（按API/TBL定位）]
-        KP --> L{执行开发}
-        L --> M[完成 Story N]
-        M --> N{还有Story?}
-        N -->|是| J
-        N -->|否| O[项目完成]
-    end
-
-    CD --> D
-    FC --> G
-    HP --> SP
-    I --> SC
-    SE --> BF
-    BH --> J
-
-    style P1 fill:#e1f5fe
-    style P2 fill:#fff3e0
-    style P3 fill:#f3e5f5
-    style P4 fill:#f3e5f5
-    style P5 fill:#f3e5f5
-    style P6 fill:#e8f5e9
-```
+[详细的流程说明](./Workflow.md) 
 
 ## 📦 安装
 
@@ -139,8 +89,8 @@ AI：好的！这个记账应用是给谁用的呢？...
 | 规模 | 功能数 | 实际情况 | 举个例子 |
 |------|--------|----------|----------|
 | 🌱 小型 | 10-15 | ✅ 可靠完成 | 记账本、待办清单、个人笔记 |
-| 🌿 中型 | 15-25 | ⚠️ 需人工校验 | 简单博客、问卷系统 |
-| 🌳 较大 | 25-35 | 🧪 理论上限，风险高 | 多角色后台、预约平台 |
+| 🌿 中型 | 15-25 | ✅ 可靠完成 | 简单博客、问卷系统 |
+| 🌳 较大 | 25-35 | ⚠️ 需人工校验，中等风险 | 多角色后台、预约平台 |
 
 > 更大的项目？老实说，建议拆成几个独立子项目 🙏
 
