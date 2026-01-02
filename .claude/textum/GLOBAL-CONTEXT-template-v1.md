@@ -33,8 +33,8 @@ project/
 
 | ID | 规则 | 涉及Story |
 |----|------|-----------|
-| BR-### | [规则描述] | [Story X, Y] |
-| BR-### | [规则描述] | [Story Z] |
+| BR-### | [规则描述] | TBD |
+| BR-### | [规则描述] | TBD |
 
 ## 5. 权限矩阵（必填）
 
@@ -94,12 +94,4 @@ project/
 
 ## 9. Story依赖图（必填；拆分后回填）
 
-```
-Story 1
-    ↓
-Story 2 ──→ Story 3
-    ↓
-Story 4
-    ├──→ Story 5
-    └──→ Story 6
-```
+TBD

@@ -11,18 +11,26 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 ```mermaid
 flowchart TD
     subgraph P1[阶段1: /prd]
-        A[新窗口: Plan模式] --> B[需求讨论]
-        B --> C[生成 docs/PRD.md（冻结，不再修改）]
+        A[新窗口] --> B[需求讨论]
+        B --> C[创建/更新 docs/PRD.md（Draft）]
+        C --> CC[/prd-check（手动循环校验）/]
+        CC -->|PASS| CD[用户手动改 状态: Final（之后不再修改）]
     end
 
     subgraph P2[阶段2: /scaffold]
         D[新窗口] --> E[读取 docs/PRD.md]
         E --> F[生成 docs/GLOBAL-CONTEXT.md（全局约定/索引）]
+        F --> FC[/scaffold-check/]
+    end
+
+    subgraph P3A[阶段3a: /split-plan]
+        G[新窗口] --> H[读取 PRD 索引章 + GLOBAL-CONTEXT]
+        H --> HP[生成 docs/split-plan.md（Story列表+API分配+依赖）]
     end
 
     subgraph P3[阶段3: /split]
-        G[新窗口] --> H[读取 PRD + GLOBAL-CONTEXT]
-        H --> I[生成 docs/story-N-xxx.md（含模块 M-xx、PRD 行号引用）]
+        SP[新窗口] --> SH[读取 split-plan + PRD + GLOBAL-CONTEXT]
+        SH --> I[生成 docs/story-N-slug.md（含模块 M-xx、API-###、PRD 行号引用）]
     end
 
     subgraph P4[阶段4: /split-check]
@@ -36,8 +44,9 @@ flowchart TD
     end
 
     subgraph P6[阶段6: /story N]
-        J[新窗口] --> K[读取 GLOBAL-CONTEXT + story-N]
-        K --> KP[仅读取 story 引用的 PRD:Lx-Ly]
+        J[新窗口] --> JC[/story-check N/]
+        JC --> K[读取 GLOBAL-CONTEXT + story-N]
+        K --> KP[仅读取 story 引用的 PRD:Lx-Ly（按API/TBL定位）]
         KP --> L{执行开发}
         L --> M[完成 Story N]
         M --> N{还有Story?}
@@ -45,8 +54,9 @@ flowchart TD
         N -->|否| O[项目完成]
     end
 
-    C --> D
-    F --> G
+    CD --> D
+    FC --> G
+    HP --> SP
     I --> SC
     SE --> BF
     BH --> J
@@ -63,26 +73,30 @@ flowchart TD
 
 把 `.claude` 文件夹放到你的项目里就行了，就这么简单。
 
-## 🎯 六个命令，六个步骤
+## 🎯 主流程命令（推荐）
 
 | 步骤 | 命令 | 做什么 |
 |------|------|--------|
-| 1️⃣ | `/prd` | 先输入 `/plan` 进入计划模式，再和 AI 聊你想做什么 |
-| 2️⃣ | `/scaffold` | 从 PRD 提取全局约定/索引（GLOBAL-CONTEXT） |
-| 3️⃣ | `/split` | 把大任务拆成小任务，每个都能独立完成 |
-| 4️⃣ | `/split-check` | 严格校验拆分结果（覆盖/依赖/行号） |
-| 5️⃣ | `/backfill` | 回填 GLOBAL-CONTEXT 的“规则涉及 Story / 依赖图”索引 |
-| 6️⃣ | `/story 1` | 开始做第一个任务！然后 `/story 2`、`/story 3`... |
+| 1️⃣ | `/prd` | 创建并迭代完善 `docs/PRD.md`（Draft） |
+| 2️⃣ | `/prd-check` | 机械性校验 PRD（占位符/ID/缺章）；通过后手动改 `状态: Final` |
+| 3️⃣ | `/scaffold` | 从 PRD 提取全局约定/索引（GLOBAL-CONTEXT） |
+| 4️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
+| 5️⃣ | `/split-plan` | 先做低噪音拆分规划（Story列表 + API分配 + 依赖） |
+| 6️⃣ | `/split` | 按规划生成 Story 文件并回填 `PRD:Lx-Ly` |
+| 7️⃣ | `/split-check` | 严格校验拆分结果（API覆盖/依赖/行号与ID一致） |
+| 8️⃣ | `/backfill` | 回填 GLOBAL-CONTEXT 的“规则涉及 Story / 依赖图”索引 |
+| 9️⃣ | `/story-check 1` | 单 Story 门禁校验（避免实现阶段才发现缺口） |
+| 🔟 | `/story 1` | 开始做第一个任务！然后 `/story 2`、`/story 3`... |
 
-> 💡 小提示：每个步骤建议开一个新窗口，这样 AI 能更专注；PRD 定稿后就别再改了（后续会引用行号）
+> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步；PRD 先跑 `/prd-check` 通过再手动改 `状态: Final`（之后不再修改）；后续 Story 通过 `API-###/TBL-### + PRD:Lx-Ly` 精确引用，避免通读 PRD
 
 ## 🧭 执行注意事项（强烈推荐看一遍）
 
 - 一次只跑一个 `/story N`：按顺序跑 `/story 1`、`/story 2`、`/story 3`...
 - 如果同一个编号出现多个 `docs/story-N-*.md`：先回到 `/split` 修正，然后重跑 `/split-check` 与 `/backfill`
 - Story 声明了“前置 Story”：先完成并合入前置，再做后续（避免并行冲突）
-- 实现阶段不发明新规则/新枚举/新接口：发现缺口就停下来问你是否要解冻 PRD 并回到 `/prd`
-- 为了省 token：`/story` 只读取 Story 引用的 `PRD:Lx-Ly` 行范围，不要把整份 PRD 粘给 AI
+- 实现阶段不发明新规则/新枚举/新接口：发现缺口就停下来问你是否要回到 `/prd` 修正规格（可能影响行号引用，需要重跑后续步骤）
+- 为了省 token：`/story` 只读取 Story 引用的 `PRD:Lx-Ly` 行范围；接口用 `API-###`、表用 `TBL-###` 先定位再小范围阅读
 
 ## 📁 文件会放在哪？
 
@@ -92,7 +106,8 @@ flowchart TD
 ├── docs/             # 📄 生成的文档都在这
 │   ├── PRD.md           # 需求文档（定稿后不要改）
 │   ├── GLOBAL-CONTEXT.md # 全局约定/索引（/backfill 回填索引）
-│   └── story-1-xxx.md   # 任务清单
+│   ├── split-plan.md     # 拆分规划（/split-plan 生成）
+│   └── story-1-slug.md   # 任务清单
 └── src/              # 💻 代码会写在这
 ```
 
@@ -108,11 +123,15 @@ AI：好的！这个记账应用是给谁用的呢？...
 
 **后面的步骤**
 ```
-你：/scaffold    → AI 自动分析，生成全局上下文
-你：/split       → AI 拆分成 5 个小任务
-你：/split-check → 严格校验拆分结果
-你：/backfill    → 回填依赖图和规则索引
-你：/story 1     → 开始第一个任务！
+你：/prd-check       → 机械校验并补齐，直到 PASS；手动改 `状态: Final`
+你：/scaffold         → 生成全局上下文
+你：/scaffold-check   → 校验全局上下文
+你：/split-plan       → 生成拆分规划（Story列表 + API分配）
+你：/split            → 生成 Story 文件并回填行号
+你：/split-check      → 严格校验拆分结果
+你：/backfill         → 回填依赖图和规则索引
+你：/story-check 1    → 单 Story 门禁校验
+你：/story 1          → 开始第一个任务！
 ```
 
 ## 📏 适合多大的项目？
