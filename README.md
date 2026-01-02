@@ -1,4 +1,6 @@
-# 🕸️ Textum
+<h1 align="center">
+🕸️ Textum
+</h1>
 
 把你的想法，编织成可运行的代码。
 
