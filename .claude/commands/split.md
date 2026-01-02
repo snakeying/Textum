@@ -28,6 +28,15 @@
 - PRD:L121-L122: 某业务规则描述
 ```
 
+## 稳定ID引用（推荐）
+
+为降低行号变化带来的风险，PRD 中的表/接口应有稳定ID：
+
+- 表: `TBL-###`
+- 接口: `API-###`
+
+在 Story 的“数据变更/接口”中尽量同时引用稳定ID + `PRD:Lx-Ly`（示例见 Story 模板）。
+
 ## 拆分原则
 
 1. **单一职责**: 每个 Story 聚焦一个模块/一个可交付能力
@@ -57,7 +66,7 @@
 1. 按 `.claude/textum/story-template-v6.md` 格式生成
 2. 文件命名: `story-[编号]-[简称].md`
 3. 编号即执行顺序：若某 Story 声明 `前置Story: Story X`，则必须满足 `X < 当前编号`（确保用户可按 `/story 1..N` 顺序执行）
-4. 每个 Story 的 PRD 引用必须包含精确行号（数据/接口/规则）
+4. 每个 Story 的 PRD 引用必须包含精确行号（数据/接口/规则）；数据表/接口尽量附带 `TBL-###` / `API-###` 稳定ID
 5. 每个 Story 必须写清：功能点、依赖（前置 Story + 已有资源）、验收标准、测试要求
 6. 模板中的每个章节都必须出现；无内容写 `N/A`，不要省略章节
 7. 生成 Story 依赖关系图（可先在拆分结果摘要里给出）
@@ -72,4 +81,4 @@
 
 ## 开始
 
-请确认 `docs/PRD.md` 和 `docs/GLOBAL-CONTEXT.md` 已存在；PRD 已冻结，禁止修改 `docs/PRD.md`。
+请确认 `docs/PRD.md`（顶部 `状态: Final`）和 `docs/GLOBAL-CONTEXT.md` 已存在；禁止修改 `docs/PRD.md`。

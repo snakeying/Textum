@@ -6,6 +6,7 @@
 
 ## 必须遵守
 
+- `docs/PRD.md` 顶部 `状态: Final`（否则停止并让用户确认是否回到 `/prd` 定稿）
 - PRD 已冻结，禁止修改 `docs/PRD.md`
 - `docs/GLOBAL-CONTEXT.md` 已存在
 - 只做本 Story；仅读取该 Story 引用的 `PRD:Lx-Ly` 行范围（不要通读整份 PRD）
