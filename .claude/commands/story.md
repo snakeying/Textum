@@ -2,7 +2,7 @@
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
-读取 `docs/GLOBAL-CONTEXT.md` 与 `docs/story-$ARGUMENTS-*.md`，完成该 Story 的开发任务。
+读取 `docs/story-$ARGUMENTS-*.md`，以其中引用为索引，按需定位 `docs/GLOBAL-CONTEXT.md` 与 `docs/PRD.md` 的最小必要片段，完成该 Story 的开发任务。
 
 ## 必须遵守
 
@@ -10,6 +10,20 @@
 - PRD 已冻结，禁止修改 `docs/PRD.md`
 - `docs/GLOBAL-CONTEXT.md` 已存在
 - 只做本 Story；仅读取该 Story 引用的 `PRD:Lx-Ly` 行范围（不要通读整份 PRD）
+
+## 低噪音读取（必须遵守）
+
+为避免上下文被“PRD + GC + 代码库”淹没，严格按以下顺序执行：
+
+1. **先读 Story 但只抽取索引**（不要在此阶段理解业务细节，也不要输出索引表）：
+   - `模块（必填）`、`前置Story`、验收标准、测试要求
+   - 引用集合：`GC#BR-###`、`API-###`、`TBL-###`、`PRD:Lx-Ly`（去重；重叠可合并）
+2. **再读 GC 只定位索引命中的内容**（不要通读全文）：
+   - 第 4 节：被引用的 `BR-###` 行
+   - 仅与本 Story 相关的全局约定（例如：权限矩阵、API规范、全局字段约定、枚举值）
+3. **最后读 PRD 只读取索引命中的片段**：
+   - 优先用 `API-###` / `TBL-###` 定位对应块（用于快速定位/核对），实际阅读仍限制在 Story 提供的 `PRD:Lx-Ly` 范围；若缺少稳定ID则仅按 `PRD:Lx-Ly` 读取
+   - 不要通读 PRD；不要把大段 PRD 复制进最终输出
 
 ## 执行准则
 
