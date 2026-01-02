@@ -110,3 +110,4 @@ project/
 - `/split-plan` 先做“分配与依赖”，`/split` 再回填 `PRD:Lx-Ly` 行号，减少通读 PRD 的噪音
 - `/split-check` 严格校验：`API-###` 覆盖、规则引用、依赖无环、行号/ID一致；未通过不得进入 `/backfill` 与 `/story N`
 - `/story-check N` 先做单 Story 门禁，再进入 `/story N` 实现；实现阶段按索引最小读取，避免通读 PRD
+- 若 Story 声明 `前置Story`/`已有资源`：先在 `src/` 下用 `rg` 定向检索已有实现，只读取关键签名，避免重复实现
