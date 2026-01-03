@@ -42,7 +42,7 @@
 ### 0) split-plan 文件与格式（必须稳定可读）
 
 - `docs/split-plan.md` 必须存在
-- `docs/split-plan.md` 必须符合 `.claude/textum/split-plan-template-v1.md` 的固定格式：
+- `docs/split-plan.md` 必须符合 `.claude/textum/split-plan-template.md` 的固定格式：
   - 必须包含章节标题：`## 1. Story 列表（必须）` 与 `## 2. API 分配表（必须）`
   - Story 表表头必须为：`| Story | slug | 模块 | 目标（一句话） | 前置Story |`
   - API 表表头必须为：`| API | Story | 说明 |`

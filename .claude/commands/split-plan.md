@@ -6,7 +6,7 @@
 
 - `docs/PRD.md`（只读；不修改）
 - `docs/GLOBAL-CONTEXT.md`
-- 模板: `.claude/textum/split-plan-template-v1.md`
+- 模板: `.claude/textum/split-plan-template.md`
 
 ## 低噪音读取（必须遵守）
 
@@ -16,7 +16,7 @@
 
 ## 输出（写入文件）
 
-生成 `docs/split-plan.md`，并**严格按** `.claude/textum/split-plan-template-v1.md` 输出（必须包含所有章节与表格；无内容写 `N/A`）。
+生成 `docs/split-plan.md`，并**严格按** `.claude/textum/split-plan-template.md` 输出（必须包含所有章节与表格；无内容写 `N/A`）。
 
 固定格式要求（必须遵守）：
 - 第 1 节 Story 表必须使用模板中的表头：`| Story | slug | 模块 | 目标（一句话） | 前置Story |`

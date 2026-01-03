@@ -1,13 +1,13 @@
 # 阶段3: Story 拆分
 
-读取 `docs/split-plan.md`并结合 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，按 `.claude/textum/story-template-v7.md` 格式生成 `docs/story-N-xxx.md`。
+读取 `docs/split-plan.md`并结合 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，按 `.claude/textum/story-template.md` 格式生成 `docs/story-N-xxx.md`。
 
 ## 输入文件
 
 - 拆分规划: `docs/split-plan.md`
 - PRD: `docs/PRD.md`
 - 全局上下文: `docs/GLOBAL-CONTEXT.md`
-- 模板: `.claude/textum/story-template-v7.md`
+- 模板: `.claude/textum/story-template.md`
 
 ## 任务
 
@@ -49,7 +49,7 @@ Story 中引用 PRD 必须用稳定 ID，并显式写成 `PRD#<ID>`：
 
 ## 输出要求
 
-1. 按 `.claude/textum/story-template-v7.md` 格式生成
+1. 按 `.claude/textum/story-template.md` 格式生成
 2. 文件命名: `docs/story-[编号]-[slug].md`
 3. 编号即执行顺序：若某 Story 声明 `前置Story: Story X`，则必须满足 `X < 当前编号`（确保用户可按 `/story 1..N` 顺序执行）
 4. 每个 Story 的 PRD 引用必须包含 `PRD#<ID>`（接口/数据表/规则）

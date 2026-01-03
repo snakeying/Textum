@@ -95,14 +95,14 @@ flowchart TD
 | 6a. Story 校验 | `/story-check N` | PRD + GLOBAL-CONTEXT + story-N | 校验报告（不修改文件） |
 | 6. Story 执行 | `/story N` | GLOBAL-CONTEXT + story-N + `PRD#<ID>` | 代码实现 |
 
-## 模板版本（v2）
+## 模板文件（当前）
 
 | 阶段 | 模板 |
 |------|------|
-| `/prd` | `.claude/textum/PRD-framework-v2.md` |
-| `/scaffold` | `.claude/textum/GLOBAL-CONTEXT-template-v2.md` |
-| `/split-plan` | `.claude/textum/split-plan-template-v1.md` |
-| `/split` | `.claude/textum/story-template-v7.md` |
+| `/prd` | `.claude/textum/PRD-framework.md` |
+| `/scaffold` | `.claude/textum/GLOBAL-CONTEXT-template.md` |
+| `/split-plan` | `.claude/textum/split-plan-template.md` |
+| `/split` | `.claude/textum/story-template.md` |
 
 ## 目录结构
 

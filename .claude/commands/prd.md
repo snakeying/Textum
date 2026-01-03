@@ -1,6 +1,6 @@
 # 阶段1b: PRD 生成/修正
 
-本命令只做一件事：把用户提供的 `PRD_INPUT_PACK` 落盘为 `docs/PRD.md`（按 `.claude/textum/PRD-framework-v2.md`）。
+本命令只做一件事：把用户提供的 `PRD_INPUT_PACK` 落盘为 `docs/PRD.md`（按 `.claude/textum/PRD-framework.md`）。
 
 > 约束：本命令**不做需求对话**。若信息不足以生成“可检查的 PRD”，只输出 `PRD_CLARIFY_PACK` 并停止（**不修改任何文件**）。
 
@@ -18,13 +18,13 @@
 
 ## 原子性规则（必须遵守）
 
-- 在写文件之前，先在脑中做一次“生成前自检”：你是否能把 `.claude/textum/PRD-framework-v2.md` 的所有必填章/表**完整填满**，且不会残留任何占位符（如 `[...]`、`[field]`、`[METHOD]`、`[table]`）
+- 在写文件之前，先在脑中做一次“生成前自检”：你是否能把 `.claude/textum/PRD-framework.md` 的所有必填章/表**完整填满**，且不会残留任何占位符（如 `[...]`、`[field]`、`[METHOD]`、`[table]`）
 - 只要存在任何需要用户确认的信息（哪怕很小），一律视为 **blocker**：输出 `PRD_CLARIFY_PACK` 并停止（不写文件）
 - 严禁把“未知/未确认”的内容写进 PRD（不要用想当然的字段/规则/接口糊弄占位符）
 
 ## 写作规则（必须遵守）
 
-- 严格按 `.claude/textum/PRD-framework-v2.md` 的结构输出所有章节
+- 严格按 `.claude/textum/PRD-framework.md` 的结构输出所有章节
 - 低噪音：短句/表格优先；禁止长段散文复述；一行一条
 - 稳定ID：
   - 模块：`M-01` 起递增且唯一
