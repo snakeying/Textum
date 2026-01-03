@@ -6,6 +6,7 @@
 
 - `docs/PRD.md`（只读；不修改）
 - `docs/GLOBAL-CONTEXT.md`
+- 模板: `.claude/textum/split-plan-template-v1.md`
 
 ## 低噪音读取（必须遵守）
 
@@ -15,22 +16,13 @@
 
 ## 输出（写入文件）
 
-生成 `docs/split-plan.md`，按以下结构输出（必须包含所有小节；无内容写 `N/A`）：
+生成 `docs/split-plan.md`，并**严格按** `.claude/textum/split-plan-template-v1.md` 输出（必须包含所有章节与表格；无内容写 `N/A`）。
 
-1. **Story 列表（必须）**
-   - 每个 Story：编号（执行顺序）、文件简称（slug）、模块 `M-xx`、一句话目标、前置 Story
-2. **API 分配表（必须）**
-   - `API-### -> Story N`（每个 `API-###` 必须且仅能分配给 1 个 Story）
-3. **表分配表（可选）**
-   - `TBL-### -> Story N`（可多对一/一对多；只要能支撑实现顺序即可）
-4. **规则分配（可选）**
-   - `BR-### -> Story N`（用于提示哪些 Story 需要引用 `GC#BR-###`）
-5. **依赖图（必须）**
-   - 文本或 Mermaid 均可，但必须清晰可读且无环
-6. **自检结果（必须）**
-   - `P0` 模块覆盖：每个 `P0` 模块至少 1 个 Story
-   - `API-###` 覆盖：PRD `9.2` 中每个 `API-###` 已分配且仅分配一次
-   - 依赖合法：无环，且满足 `前置Story < 当前编号`
+固定格式要求（必须遵守）：
+- 第 1 节 Story 表必须使用模板中的表头：`| Story | slug | 模块 | 目标（一句话） | 前置Story |`
+- 第 2 节 API 表必须使用模板中的表头：`| API | Story | 说明 |`
+- Story 编号必须写成 `Story N`（N 为数字且从 1 递增，不跳号）
+- `slug` 必须唯一（用于后续生成 `docs/story-N-slug.md`）
 
 ## 完成后（仅提示下一步动作）
 

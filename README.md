@@ -27,26 +27,26 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 | 步骤 | 命令 | 做什么 |
 |------|------|--------|
-| 1️⃣ | `/prd` | 创建并迭代完善 `docs/PRD.md`（Draft） |
-| 2️⃣ | `/prd-check` | 机械性校验 PRD（占位符/ID/缺章）；通过后手动改 `状态: Final` |
-| 3️⃣ | `/scaffold` | 从 PRD 提取全局约定/索引（GLOBAL-CONTEXT） |
-| 4️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
-| 5️⃣ | `/split-plan` | 先做低噪音拆分规划（Story列表 + API分配 + 依赖） |
-| 6️⃣ | `/split` | 按规划生成 Story 文件并回填 `PRD:Lx-Ly` |
-| 7️⃣ | `/split-check` | 严格校验拆分结果（API覆盖/依赖/行号与ID一致） |
-| 8️⃣ | `/backfill` | 回填 GLOBAL-CONTEXT 的“规则涉及 Story / 依赖图”索引 |
-| 9️⃣ | `/story-check 1` | 单 Story 门禁校验（避免实现阶段才发现缺口） |
-| 🔟 | `/story 1` | 开始做第一个任务！然后 `/story 2`、`/story 3`... |
+| 1️⃣ | `/prd-plan` | 需求澄清，输出 `PRD_INPUT_PACK`（复制交接包） |
+| 2️⃣ | `/prd` | 用 `PRD_INPUT_PACK` 生成/修正 `docs/PRD.md`（信息不足则输出 `PRD_CLARIFY_PACK`） |
+| 3️⃣ | `/prd-check` | 机械性校验 PRD（结构/占位符/ID一致性）；`PASS` 后 PRD 只读 |
+| 4️⃣ | `/scaffold` | 从 PRD 提取全局约定/索引（GLOBAL-CONTEXT） |
+| 5️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
+| 6️⃣ | `/split-plan` | 先做低噪音拆分规划（Story 列表 + API 分配 + 依赖） |
+| 7️⃣ | `/split` | 按规划生成 Story 文件并补齐 `PRD#<ID>` 引用 |
+| 8️⃣ | `/split-check` | 严格校验拆分结果（与 split-plan 一致、API 覆盖/唯一归属、依赖无环、引用可定位） |
+| 9️⃣ | `/backfill` | 回填 GLOBAL-CONTEXT 的“规则涉及 Story / 依赖图”索引 |
+| 🔟 | `/story-check 1` → `PASS` 后 `/story 1` | 开始做第一个任务，然后按顺序继续 `/story 2`、`/story 3`... |
 
-> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步；PRD 先跑 `/prd-check` 通过再手动改 `状态: Final`（之后不再修改）；后续 Story 通过 `API-###/TBL-### + PRD:Lx-Ly` 精确引用，避免通读 PRD
+> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步；`/prd-check` `PASS` 后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续 Story 通过稳定 ID 锚点 `PRD#<ID>` 精确引用，避免通读 PRD 与行号漂移
 
 ## 🧭 执行注意事项（强烈推荐看一遍）
 
 - 一次只跑一个 `/story N`：按顺序跑 `/story 1`、`/story 2`、`/story 3`...
 - 如果同一个编号出现多个 `docs/story-N-*.md`：先回到 `/split` 修正，然后重跑 `/split-check` 与 `/backfill`
 - Story 声明了“前置 Story”：先完成并合入前置，再做后续（避免并行冲突）
-- 实现阶段不发明新规则/新枚举/新接口：发现缺口就停下来问你是否要回到 `/prd` 修正规格（可能影响行号引用，需要重跑后续步骤）
-- 为了省 token：`/story` 只读取 Story 引用的 `PRD:Lx-Ly` 行范围；接口用 `API-###`、表用 `TBL-###` 先定位再小范围阅读
+- 实现阶段不发明新规则/新枚举/新接口：发现缺口就停下来确认是否要回到 `/prd` 修正规格（若 PRD 需要改动，需重跑后续步骤）
+- 为了省 token：`/story` 只读取 Story 明确引用的 `PRD#<ID>` 块；接口/表用 `API-###`/`TBL-###` 稳定定位，避免行号漂移
 
 ## 📁 文件会放在哪？
 
@@ -65,19 +65,21 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 **第一步：聊需求**
 ```
-你：/prd
+你：/prd-plan
 AI：你好！告诉我你想做一个什么样的应用？
 你：我想做一个记账的小程序
 AI：好的！这个记账应用是给谁用的呢？...
+AI：...（多轮澄清后输出 PRD_INPUT_PACK）
 ```
 
 **后面的步骤**
 ```
-你：/prd-check       → 机械校验并补齐，直到 PASS；手动改 `状态: Final`
+你：/prd              → 粘贴 PRD_INPUT_PACK，生成/修正 docs/PRD.md（或返回 PRD_CLARIFY_PACK）
+你：/prd-check         → 机械校验并补齐，直到 PASS；从此 PRD 只读
 你：/scaffold         → 生成全局上下文
 你：/scaffold-check   → 校验全局上下文
 你：/split-plan       → 生成拆分规划（Story列表 + API分配）
-你：/split            → 生成 Story 文件并回填行号
+你：/split            → 生成 Story 文件并补齐 PRD#<ID> 引用
 你：/split-check      → 严格校验拆分结果
 你：/backfill         → 回填依赖图和规则索引
 你：/story-check 1    → 单 Story 门禁校验

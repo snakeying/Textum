@@ -46,7 +46,8 @@
 
 ### 4) 噪音控制（不得把 PRD 片段塞进 GC）
 
-- `docs/GLOBAL-CONTEXT.md` 中不得出现任何 PRD 引用（出现即 `FAIL`），包括任何 `PRD#...`
+- `docs/GLOBAL-CONTEXT.md` 中不得出现任何 **PRD 锚点引用**（出现即 `FAIL`），包括任何 `PRD#...`
+- 允许出现 `docs/PRD.md` 作为“来源文件名/描述”（例如“由 PRD 抽取生成”）；但禁止引用 PRD 的具体位置/片段（如 `PRD#API-001`、PRD 章节号定位、或复制 PRD 原文大段）
 
 ## PASS（通过后动作）
 

@@ -1,4 +1,4 @@
-# 阶段1b: PRD 校验
+# 阶段1c: PRD 校验
 
 读取 `docs/PRD.md`，输出 `FAIL/DECISION/PASS` 清单用于回到 `/prd` 补齐；**不修改任何文件**。
 
