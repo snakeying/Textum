@@ -1,10 +1,10 @@
-# 阶段3a: Story 拆分规划（v1）
+# 阶段3a: Story 拆分规划
 
 读取 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，先产出 **低噪音** 的拆分规划 `docs/split-plan.md`
 
 ## 读取
 
-- `docs/PRD.md`（顶部 `状态: Final`；不修改）
+- `docs/PRD.md`（只读；不修改）
 - `docs/GLOBAL-CONTEXT.md`
 
 ## 低噪音读取（必须遵守）

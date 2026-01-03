@@ -1,6 +1,6 @@
-# 阶段3: Story 拆分（v1）
+# 阶段3: Story 拆分
 
-读取 `docs/split-plan.md`（拆分规划）并结合 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，按 `.claude/textum/story-template-v6.md` 格式生成 `docs/story-N-xxx.md`。
+读取 `docs/split-plan.md`并结合 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，按 `.claude/textum/story-template-v6.md` 格式生成 `docs/story-N-xxx.md`。
 
 ## 输入文件
 
@@ -21,6 +21,7 @@
 ## 行号引用规则（必须遵守）
 
 **必须使用精确行号格式**: `PRD:L[起]-L[止]`
+> 单行也必须写成 `PRD:L164-L164`（不要写 `PRD:L164`）。
 
 1. 读取 PRD 时，记录每个引用段落的实际行号
 2. 数据表定义 → 记录该表从字段行到最后一个字段行的行范围
@@ -73,7 +74,7 @@
 5. 每个 Story 必须写清：功能点、依赖（前置 Story + 已有资源；尽量写可检索的代码标识符）、验收标准、测试要求
 6. 模板中的每个章节都必须出现；无内容写 `N/A`，不要省略章节
 7. 生成 Story 依赖关系图（可先在拆分结果摘要里给出）
-8. 不要修改 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`；只生成/更新 `docs/story-*.md`
+8. `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md` 只读（不修改）；只生成/更新 `docs/story-*.md`
 
 ## 一致性检查（必须做）
 
@@ -90,4 +91,4 @@
 
 ## 开始
 
-请确认已运行 `/split-plan` 并生成 `docs/split-plan.md`；同时 `docs/PRD.md`（顶部 `状态: Final`）与 `docs/GLOBAL-CONTEXT.md` 已存在。
+请确认已运行 `/split-plan` 并生成 `docs/split-plan.md`；同时 `docs/PRD.md`（只读；不修改）与 `docs/GLOBAL-CONTEXT.md` 已存在。

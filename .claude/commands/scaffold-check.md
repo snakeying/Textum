@@ -1,4 +1,4 @@
-# 阶段2b: GLOBAL-CONTEXT 校验（v1）
+# 阶段2b: GLOBAL-CONTEXT 校验
 
 读取 `docs/GLOBAL-CONTEXT.md`，输出 `FAIL/DECISION/PASS` 清单用于回到 `/scaffold` 修正；**不修改任何文件**。
 

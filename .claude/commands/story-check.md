@@ -8,7 +8,7 @@
 
 - `docs/story-$ARGUMENTS-*.md`（且必须只匹配 1 个文件）
 - `docs/GLOBAL-CONTEXT.md`
-- `docs/PRD.md`（顶部 `状态: Final`）
+- `docs/PRD.md`（只读）
 
 ## 低噪音读取（必须遵守）
 
@@ -20,7 +20,7 @@
 
 ### 0) 基础门禁
 
-- `docs/PRD.md` 顶部 `状态:` 必须为 `Final`
+- `docs/PRD.md` 必须存在
 - `docs/GLOBAL-CONTEXT.md` 必须存在
 - `docs/story-$ARGUMENTS-*.md` 必须存在且仅 1 个
 
@@ -43,6 +43,7 @@ Story 必须包含以下章节；无内容写 `N/A`，但不得省略章节：
 ### 2) 引用格式（必须可追溯）
 
 - 所有 `PRD:` 引用必须使用 `PRD:L[起]-L[止]` 且 `[起]/[止]` 为数字
+- 单行引用也必须写成范围：`PRD:L164-L164`（不接受 `PRD:L164`）
 - 若引用 `GC#BR-###`，必须同时提供该规则的 `PRD:Lx-Ly` 依据
 
 ### 3) 规则一致性（GC#BR 必须存在）

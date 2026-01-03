@@ -6,11 +6,10 @@
 
 ## 必须遵守
 
-- `docs/PRD.md` 顶部 `状态: Final`（否则停止并让用户确认是否回到 `/prd` 定稿）
-- PRD 已冻结，禁止修改 `docs/PRD.md`
+- `docs/PRD.md` 只读（禁止修改）
 - `docs/GLOBAL-CONTEXT.md` 已存在
 - 门禁：`/story-check $ARGUMENTS` 已 `PASS`（否则停止并提示用户在新窗口手动运行 `/story-check $ARGUMENTS`）
-- 只做本 Story；仅读取该 Story 引用的 `PRD:Lx-Ly` 行范围（不要通读整份 PRD）
+- 只做本 Story；仅读取该 Story 引用的 `PRD:Lx-Ly` 行范围（单行写 `PRD:L164-L164`；不要通读整份 PRD）
 
 ## 低噪音读取（必须遵守）
 
@@ -46,6 +45,7 @@
 
 - [ ] 所有验收标准可手工复现或自动化验证
 - [ ] 完成 Story 指定的测试要求（能跑就跑；否则说明原因与替代验证方式）
+- [ ] 如 `docs/GLOBAL-CONTEXT.md` 提供了项目验证命令（test/lint/build 等）：执行并通过；否则写明替代验证方式
 - [ ] 若涉及 DB/接口变更：迁移、回滚策略与错误码符合 PRD/GC 约定
 
 ## 完成后（仅提示下一步动作）
