@@ -8,9 +8,9 @@
 flowchart TD
     subgraph P1[阶段1: /prd]
         A[新窗口] --> B[需求讨论]
-        B --> C[创建/更新 docs/PRD.md（Draft）]
+        B --> C[创建/更新 docs/PRD.md]
         C --> CC[/prd-check（手动循环校验）/]
-        CC -->|PASS| CD[用户手动改 状态: Final（之后不再修改）]
+        CC -->|PASS| CD[用户确认定稿（PRD 只读）]
     end
 
     subgraph P2[阶段2: /scaffold]
@@ -70,9 +70,9 @@ flowchart TD
 
 | 阶段 | 命令 | 读取 | 生成/更新 |
 |------|------|------|----------|
-| 1. 需求定义 | `/prd` | 用户需求 | `docs/PRD.md`（Draft，持续更新） |
+| 1. 需求定义 | `/prd` | 用户需求 | `docs/PRD.md`（持续更新） |
 | 1b. PRD 校验 | `/prd-check` | `docs/PRD.md` | 校验报告（不修改文件） |
-| 2. 脚手架 | `/scaffold` | `docs/PRD.md`（状态: Final） | `docs/GLOBAL-CONTEXT.md`（全局约定/索引） |
+| 2. 脚手架 | `/scaffold` | `docs/PRD.md`（只读） | `docs/GLOBAL-CONTEXT.md`（全局约定/索引） |
 | 2b. GC 校验 | `/scaffold-check` | `docs/GLOBAL-CONTEXT.md` | 校验报告（不修改文件） |
 | 3a. 拆分规划 | `/split-plan` | PRD（索引章）+ GLOBAL-CONTEXT | `docs/split-plan.md` |
 | 3. Story 生成 | `/split` | split-plan + PRD + GLOBAL-CONTEXT | `docs/story-N-slug.md` |
@@ -86,8 +86,8 @@ flowchart TD
 | 阶段 | 模板 |
 |------|------|
 | `/prd` | `.claude/textum/PRD-framework-v1.md` |
-| `/scaffold` | `.claude/textum/GLOBAL-CONTEXT-template-v1.md` |
-| `/split` | `.claude/textum/story-template-v6.md` |
+| `/scaffold` | `.claude/textum/GLOBAL-CONTEXT-template-v2.md` |
+| `/split` | `.claude/textum/story-template-v7.md` |
 
 ## 目录结构
 
@@ -103,7 +103,7 @@ project/
 ## 执行要点（v1）
 
 - 每个阶段使用**新窗口**保持上下文干净
-- PRD 定稿门禁：先跑 `/prd-check` 通过，再由用户手动将 `状态` 改为 `Final`（之后不再修改 `docs/PRD.md`）
+- PRD 只读：`/prd-check` `PASS` 后，后续步骤不修改 `docs/PRD.md`
 - GLOBAL-CONTEXT 只放**全局约定/索引**：不得复述模块细节、逐表字段、接口详情；也不得引入 PRD 中不存在的新信息
 - 规则编号统一：`BR-###`（001 起递增且唯一）；Story 用 `GC#BR-###` 引用规则，并补充 `PRD:Lx-Ly` 依据
 - 稳定ID：接口用 `API-###`、表用 `TBL-###`；Story 接口必须引用 `API-###` 并给出 `PRD:Lx-Ly`

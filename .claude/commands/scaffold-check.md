@@ -46,7 +46,7 @@
 
 ### 4) 噪音控制（不得把 PRD 片段塞进 GC）
 
-- `docs/GLOBAL-CONTEXT.md` 中不得出现 `PRD:Lx-Ly` 行号引用（出现即 `FAIL`）
+- `docs/GLOBAL-CONTEXT.md` 中不得出现任何 PRD 引用（出现即 `FAIL`），包括任何 `PRD#...`
 
 ## PASS（通过后动作）
 

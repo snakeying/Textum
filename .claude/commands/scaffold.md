@@ -1,6 +1,6 @@
 # 阶段2: 上下文提取
 
-读取 `docs/PRD.md`，按 `.claude/textum/GLOBAL-CONTEXT-template-v1.md` 模板生成 `docs/GLOBAL-CONTEXT.md`。
+读取 `docs/PRD.md`，按 `.claude/textum/GLOBAL-CONTEXT-template-v2.md` 模板生成 `docs/GLOBAL-CONTEXT.md`。
 
 ## 前置条件（必满足）
 

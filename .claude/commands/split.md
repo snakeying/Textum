@@ -1,13 +1,13 @@
 # 阶段3: Story 拆分
 
-读取 `docs/split-plan.md`并结合 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，按 `.claude/textum/story-template-v6.md` 格式生成 `docs/story-N-xxx.md`。
+读取 `docs/split-plan.md`并结合 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，按 `.claude/textum/story-template-v7.md` 格式生成 `docs/story-N-xxx.md`。
 
 ## 输入文件
 
 - 拆分规划: `docs/split-plan.md`
 - PRD: `docs/PRD.md`
 - 全局上下文: `docs/GLOBAL-CONTEXT.md`
-- 模板: `.claude/textum/story-template-v6.md`
+- 模板: `.claude/textum/story-template-v7.md`
 
 ## 任务
 
@@ -18,33 +18,15 @@
 - 以 `docs/split-plan.md` 为唯一事实来源：不要在本阶段重新拆分、改 Story 编号、或改 `API-###` 分配
 - 若发现边界/依赖/API 分配不合理：停止，提示用户回到 `/split-plan` 更新 `docs/split-plan.md` 后再运行 `/split`
 
-## 行号引用规则（必须遵守）
+## PRD 引用规则（ID 锚点，必须遵守）
 
-**必须使用精确行号格式**: `PRD:L[起]-L[止]`
-> 单行也必须写成 `PRD:L164-L164`（不要写 `PRD:L164`）。
+Story 中引用 PRD 必须用稳定 ID，并显式写成 `PRD#<ID>`：
 
-1. 读取 PRD 时，记录每个引用段落的实际行号
-2. 数据表定义 → 记录该表从字段行到最后一个字段行的行范围
-3. 接口定义 → 记录从路径到响应（含失败场景）的完整行范围
-4. 业务规则 → 记录规则所在行（或规则表对应行范围）
+- 接口（如适用）：在“接口”章节列出本 Story 负责的每个 `PRD#API-###`
+- 数据表（如适用）：在“数据变更”章节列出本 Story 涉及的每个 `PRD#TBL-###`
+- 业务规则（如需直接引用 PRD）：使用 `PRD#BR-###`（优先引用 `GC#BR-###`）
 
-示例:
-```
-- 定义: PRD:L259-L267      (某数据表)
-- 定义: PRD:L406-L409      (某接口)
-- PRD:L121-L122: 某业务规则描述
-```
-
-> 建议：当引用表/接口时，确保行范围覆盖其 `TBL-###` / `API-###` 标识所在行，便于后续做一致性校验。
-
-## 稳定ID引用（推荐）
-
-为降低行号变化带来的风险，PRD 中的表/接口应有稳定ID：
-
-- 表: `TBL-###`
-- 接口: `API-###`
-
-在 Story 的“数据变更/接口”中引用稳定ID：接口必须包含 `API-###`；同时给出 `PRD:Lx-Ly` 作为最小阅读范围（示例见 Story 模板）。
+> `PRD#<ID>` 作为最小阅读范围的锚点：后续校验将用它来确保引用可定位且无需通读 PRD。
 
 ## 低噪音拆分（必须遵守）
 
@@ -53,7 +35,7 @@
 1. **先读 `docs/split-plan.md`**：把 Story 编号/依赖/模块、以及 `API-###` 分配作为唯一事实来源（不要在本阶段重新“脑拆分”）
 2. **再按 Story 逐个回到 PRD 按需定位**：
    - 用 `API-###` / `TBL-###` 快速定位对应块
-   - 仅补齐本 Story 涉及项的 `PRD:Lx-Ly` 行号范围（不要通读 PRD）
+   - 仅补齐本 Story 涉及项的 `PRD#<ID>` 引用（不要通读 PRD）
 3. **生成 Story 文件**：严格按模板补齐每个章节；无内容写 `N/A`
 
 ## 生成规则（必须遵守）
@@ -61,16 +43,16 @@
 - 每个 Story 必须生成 1 个文件：`docs/story-[编号]-[slug].md`
 - 文件内容严格按模板；模板里的每个章节都必须出现；无内容写 `N/A`，不要省略章节
 - Story 顶部必须填写：编号、模块 `M-xx`、前置 Story、目标/范围/验收标准
-- “接口”章节必须列出本 Story 负责的每个 `API-###`，并为每条接口给出 `PRD:Lx-Ly`
-- “数据变更”章节如涉及表：写 `TBL-###` + `PRD:Lx-Ly`（不涉及则 `N/A`）
-- “业务规则”章节优先引用 `GC#BR-###`；若引用 PRD，必须给出对应 `PRD:Lx-Ly`
+- “接口”章节必须列出本 Story 负责的每个 `PRD#API-###`
+- “数据变更”章节如涉及表：必须列出每个 `PRD#TBL-###`（不涉及则 `N/A`）
+- “业务规则”章节优先引用 `GC#BR-###`；若引用 PRD，必须给出对应 `PRD#BR-###`
 
 ## 输出要求
 
-1. 按 `.claude/textum/story-template-v6.md` 格式生成
+1. 按 `.claude/textum/story-template-v7.md` 格式生成
 2. 文件命名: `docs/story-[编号]-[slug].md`
 3. 编号即执行顺序：若某 Story 声明 `前置Story: Story X`，则必须满足 `X < 当前编号`（确保用户可按 `/story 1..N` 顺序执行）
-4. 每个 Story 的 PRD 引用必须包含精确行号（数据/接口/规则）；接口必须附带 `API-###`，数据表变更建议附带 `TBL-###`
+4. 每个 Story 的 PRD 引用必须包含 `PRD#<ID>`（接口/数据表/规则）
 5. 每个 Story 必须写清：功能点、依赖（前置 Story + 已有资源；尽量写可检索的代码标识符）、验收标准、测试要求
 6. 模板中的每个章节都必须出现；无内容写 `N/A`，不要省略章节
 7. 生成 Story 依赖关系图（可先在拆分结果摘要里给出）
