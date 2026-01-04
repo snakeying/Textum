@@ -5,7 +5,7 @@
 ## 读取 / 写入
 
 - 读取：`docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`
-- 可选输入：`SPLIT_REPLAN_PACK`（来自 `/split-check`）
+- 可选输入：`SPLIT_REPLAN_PACK`
 - 写入：`docs/split-plan.md`
 - 模板：`.claude/textum/split-plan-template.md`
 

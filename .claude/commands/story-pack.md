@@ -2,11 +2,15 @@
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
-生成 1 个可复制的 `STORY_EXEC_PACK`（只输出 1 个代码块），作为该 Story 的最小执行输入。
+生成 1 个 `STORY_EXEC_PACK`，写入 `docs/story-$ARGUMENTS-exec-pack.yaml`，作为该 Story 的最小执行输入。
+
+## 读取 / 写入
+
+- 读取：`docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`、`docs/story-$ARGUMENTS-*.md`
+- 写入：`docs/story-$ARGUMENTS-exec-pack.yaml`（内容为纯 YAML；不包含 ```）
 
 ## 前置条件（必须满足）
 
-- 已在新窗口运行 `/story-check $ARGUMENTS` 且结果为 `PASS`
 - `docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`、`docs/story-$ARGUMENTS-*.md` 均存在且 Story 文件仅匹配 1 个
 - PRD 已包含锚点：
   - 若本 Story 引用 `PRD#TBL-###`：对应表详情标题行包含 `<!-- PRD#TBL-### -->`
@@ -60,7 +64,11 @@
 
 ## 输出（必须严格）
 
-只输出一个代码块，格式如下（字段齐全；内容为原文复制）：
+- 若 `FAIL`：只输出 `FAIL` 清单并停止（不写 pack 文件）
+- 若 `PASS`：
+  1. 写入 `docs/story-$ARGUMENTS-exec-pack.yaml`（字段齐全；内容为原文复制；格式如下）
+
+`docs/story-$ARGUMENTS-exec-pack.yaml` 内容格式（必须严格）：
 
 ```yaml
 STORY_EXEC_PACK: v1
@@ -88,6 +96,11 @@ prd:
     (若无 PRD#BR 引用写 N/A；否则粘贴 PRD 第6节规则表：表头 + 分隔行 + 被引用 BR-### 行)
 ```
 
+  2. 输出：
+     - `PASS`
+     - `written: docs/story-$ARGUMENTS-exec-pack.yaml`
+     - `next: /story $ARGUMENTS`
+
 ## 开始
 
-请提供 Story 编号（例如：`/story-pack 1`）。若已通过 `/story-check`，我会生成可复制的 `STORY_EXEC_PACK`。
+请提供 Story 编号（例如：`/story-pack 1`）。我会写入 `docs/story-$ARGUMENTS-exec-pack.yaml`。

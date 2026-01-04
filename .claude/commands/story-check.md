@@ -95,5 +95,5 @@ Story 必须包含以下章节；无内容写 `N/A`，但不得省略章节：
 ## PASS
 
 - `PASS`：仅提示下一步动作（必须按序）：
-  - 在新窗口运行 `/story-pack $ARGUMENTS` 生成 `STORY_EXEC_PACK`
-  - 再在新窗口运行 `/story $ARGUMENTS` 并粘贴该 pack
+  - 在新窗口运行 `/story-pack $ARGUMENTS` 写入 `docs/story-$ARGUMENTS-exec-pack.yaml`
+  - 再在新窗口运行 `/story $ARGUMENTS`

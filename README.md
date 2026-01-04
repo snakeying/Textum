@@ -46,7 +46,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 - 如果同一个编号出现多个 `docs/story-N-*.md`：先回到 `/split` 修正，然后重跑 `/split-check` 与 `/backfill`
 - Story 声明了“前置 Story”：先完成并合入前置，再做后续（避免并行冲突）
 - 实现阶段不发明新规则/新枚举/新接口：发现缺口就停下来确认是否要回到 `/prd` 修正规格（若 PRD 需要改动，需重跑后续步骤）
-- 为了省 token：`/story` 只读取 `STORY_EXEC_PACK`（由 `/story-pack` 生成，包含 Story/GC 与被引用的 PRD 块原文），不再通读 PRD/GC/Story
+- 为了省 token：`/story` 只读取 `docs/story-N-exec-pack.yaml`（`STORY_EXEC_PACK`；由 `/story-pack` 写入），不再通读 PRD/GC/Story
 
 ## 🧱 低噪音约束（v2）
 
@@ -91,7 +91,7 @@ AI：...（多轮澄清后输出 PRD_INPUT_PACK）
 你：/split-check      → 严格校验拆分结果
 你：/backfill         → 回填依赖图和规则索引
 你：/story-check 1    → 单 Story 门禁校验
-你：/story-pack 1     → 生成低噪音执行包（复制交接包）
+你：/story-pack 1     → 写入 `docs/story-1-exec-pack.yaml`（`STORY_EXEC_PACK`）
 你：/story 1          → 开始第一个任务！
 ```
 

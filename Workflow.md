@@ -53,9 +53,9 @@ flowchart TD
         J[新窗口] --> JC[/story-check N/]
         JC --> JP[新窗口]
         JP --> JPC[/story-pack N/]
-        JPC --> JPO[输出 STORY_EXEC_PACK]
+        JPC --> JPO[写入 docs/story-N-exec-pack.yaml]
         JPO --> JS[新窗口]
-        JS --> JK[/story N（粘贴 STORY_EXEC_PACK）/]
+        JS --> JK[/story N（读取 docs/story-N-exec-pack.yaml）/]
         JK --> L{执行开发}
         L --> M[完成 Story N]
         M --> N{还有Story?}
@@ -96,8 +96,8 @@ flowchart TD
 | 4. 拆分校验 | `/split-check` | split-plan + PRD + GLOBAL-CONTEXT + 所有 story | 校验报告（不修改文件；可能附带 `SPLIT_REPLAN_PACK`） |
 | 5. 回填索引 | `/backfill` | GLOBAL-CONTEXT + 所有 story | 更新 `docs/GLOBAL-CONTEXT.md` |
 | 6a. Story 校验 | `/story-check N` | PRD + GLOBAL-CONTEXT + story-N | 校验报告（不修改文件） |
-| 6b. Story 执行包 | `/story-pack N` | PRD + GLOBAL-CONTEXT + story-N | `STORY_EXEC_PACK`（复制交接包；不修改文件） |
-| 6. Story 执行 | `/story N` | `STORY_EXEC_PACK` | 代码实现 |
+| 6b. Story 执行包 | `/story-pack N` | PRD + GLOBAL-CONTEXT + story-N | 写入 `docs/story-N-exec-pack.yaml`（`STORY_EXEC_PACK`） |
+| 6. Story 执行 | `/story N` | `docs/story-N-exec-pack.yaml` | 代码实现 |
 
 ## 模板文件（当前）
 
@@ -129,5 +129,5 @@ project/
 - 无 API：若 PRD `### 9.2 接口清单` 为 `N/A`，则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 内的 `PRD#<ID>` 引用，减少通读 PRD 的噪音
 - `/split-check` 严格校验：`API-###` 覆盖、规则引用、依赖无环、`PRD#<ID>` 引用可定位；未通过不得进入 `/backfill` 与 `/story N`
-- Story 执行顺序：`/story-check N` `PASS` → `/story-pack N` →（新窗口）`/story N`（只使用 `STORY_EXEC_PACK`，不通读 PRD/GC/Story）
+- Story 执行顺序：`/story-check N` `PASS` → `/story-pack N` →（新窗口）`/story N`（只读取 `docs/story-N-exec-pack.yaml`，不通读 PRD/GC/Story）
 - 若 Story 声明 `前置Story`/`已有资源`：先在 `src/` 下用 `rg` 定向检索已有实现，只读取关键签名，避免重复实现

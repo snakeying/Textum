@@ -27,4 +27,4 @@
 
 ## 完成后
 
-- 提示用户在新窗口运行 `/split-check`，直到 `PASS` 后再运行 `/backfill`
+- 提示用户在新窗口运行 `/split-check`

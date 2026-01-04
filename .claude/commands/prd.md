@@ -6,8 +6,8 @@
 
 ## 输入
 
-- 用户粘贴的 `PRD_INPUT_PACK`（来自需求澄清步骤）
-- （可选）上一轮 `/prd-check` 的 `FAIL/DECISION` 清单（用于精准修正）
+- 用户粘贴的 `PRD_INPUT_PACK`
+- （可选）`FAIL/DECISION` 清单（用于精准修正）
 
 ## 输出
 

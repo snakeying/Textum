@@ -5,7 +5,7 @@
 ## 输入
 
 - 用户需求描述（自由文本），或
-- `PRD_CLARIFY_PACK`（来自 `/prd`）
+- `PRD_CLARIFY_PACK`（可选）
 
 ## `PRD_CLARIFY_PACK` 处理（必须）
 
