@@ -1,6 +1,6 @@
 # Story [编号]: [功能名称]
 
-> 执行前必读: `GLOBAL-CONTEXT.md`
+> 执行前必读: `docs/GLOBAL-CONTEXT.md`
 > ⚠️ 只引用并读取下方明确列出的 PRD 块（按稳定 ID 定位）；不得发明 PRD 中不存在的新规则/新枚举/新接口
 > 引用格式: 统一使用 `PRD#<ID>`（示例：`PRD#API-001`）
 > 去冗余（必须遵守）:
