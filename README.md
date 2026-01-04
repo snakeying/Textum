@@ -52,6 +52,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 - Story 引用 PRD：统一使用 `PRD#<ID>`（如 `PRD#API-001` / `PRD#TBL-001` / `PRD#BR-001`）；规则优先用 `GC#BR-###`
 - PRD 块边界锚点：每个表/接口详情标题行必须包含 `<!-- PRD#TBL-### -->` / `<!-- PRD#API-### -->`（数字一致），供 `/story-pack` 机械抽取
+- 无 API：若 PRD `### 9.2 接口清单` 为 `N/A`，则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
 - `N/A` vs `TBD`：`N/A`=不适用；`TBD`=等待回填（仅允许出现在 `GLOBAL-CONTEXT` 规则表“涉及Story”列与依赖图）
 - 大 Story 早期短路：`/split-check` 触发阈值会输出 `SPLIT_REPLAN_PACK`，用于回到 `/split-plan` 拆分重规划
 

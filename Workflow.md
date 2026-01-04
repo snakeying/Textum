@@ -126,6 +126,7 @@ project/
 - GLOBAL-CONTEXT 只放**全局约定/索引**：不得复述模块细节、逐表字段、接口详情；也不得引入 PRD 中不存在的新信息
 - 规则编号统一：`BR-###`（001 起递增且唯一）；Story 优先用 `GC#BR-###` 引用规则；必要时用 `PRD#BR-###` 引用 PRD
 - 稳定ID：接口 `API-###`、表 `TBL-###`；Story 引用 PRD 一律使用 `PRD#<ID>`（如 `PRD#API-001` / `PRD#TBL-001`）
+- 无 API：若 PRD `### 9.2 接口清单` 为 `N/A`，则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 内的 `PRD#<ID>` 引用，减少通读 PRD 的噪音
 - `/split-check` 严格校验：`API-###` 覆盖、规则引用、依赖无环、`PRD#<ID>` 引用可定位；未通过不得进入 `/backfill` 与 `/story N`
 - Story 执行顺序：`/story-check N` `PASS` → `/story-pack N` →（新窗口）`/story N`（只使用 `STORY_EXEC_PACK`，不通读 PRD/GC/Story）
