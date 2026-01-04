@@ -1,20 +1,20 @@
-# 阶段6a: Story 校验（v1）
+# 阶段6a: Story 校验（/story-check，v1）
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
-读取 `docs/story-$ARGUMENTS-*.md`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`，输出 `FAIL/DECISION/PASS` 清单用于回到 `/split` 修正 Story 或回到 `/prd` 修正规格；**不修改任何文件**。
+读取 `docs/story-$ARGUMENTS-*.md`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`，输出 `FAIL/DECISION/PASS` 清单；不修改任何文件。
 
 ## 读取
 
-- `docs/story-$ARGUMENTS-*.md`（且必须只匹配 1 个文件）
+- `docs/story-$ARGUMENTS-*.md`（必须且仅匹配 1 个）
 - `docs/GLOBAL-CONTEXT.md`
 - `docs/PRD.md`（只读）
 
-## 低噪音读取（必须遵守）
+## 最小读取（避免通读）
 
-1. **先读 Story 只抽取索引**：`模块`、`前置Story`、`GC#BR-###`、`PRD#API-###`、`PRD#TBL-###`、`PRD#BR-###`
-2. **再按索引定位 GC/PRD**：只查被引用的规则/ID/锚点（`PRD#<ID>`）；不要通读全文
-3. 输出只包含清单，不粘贴原文片段
+1. 先读 Story 抽取索引：`模块`、`前置Story`、`GC#BR-###`、`PRD#API-###`、`PRD#TBL-###`、`PRD#BR-###`
+2. 再按索引在 GC/PRD 做定位校验（不通读全文）
+3. 输出只包含清单（不粘贴原文）
 
 ## FAIL 校验项（严格拦截）
 
@@ -74,5 +74,6 @@ Story 必须包含以下章节；无内容写 `N/A`，但不得省略章节：
 
 ## PASS
 
-- `PASS`：仅提示下一步动作：在新窗口手动运行 `/story $ARGUMENTS`
-  - （推荐）为降噪：先在新窗口运行 `/story-pack $ARGUMENTS` 生成 `STORY_EXEC_PACK`，再在新窗口运行 `/story $ARGUMENTS` 并粘贴该 pack
+- `PASS`：仅提示下一步动作（必须按序）：
+  - 在新窗口运行 `/story-pack $ARGUMENTS` 生成 `STORY_EXEC_PACK`
+  - 再在新窗口运行 `/story $ARGUMENTS` 并粘贴该 pack

@@ -2,9 +2,7 @@
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
-生成一个可复制的 `STORY_EXEC_PACK`，用于在**新窗口**执行 `/story $ARGUMENTS` 时替代“同时读 PRD/GC/Story 全文”，从而显著降噪。
-
-> 约束：本命令**不修改任何文件**；只输出一个代码块（便于整段复制）。
+生成 1 个可复制的 `STORY_EXEC_PACK`（只输出 1 个代码块），作为该 Story 的最小执行输入。
 
 ## 前置条件（必须满足）
 
@@ -14,9 +12,9 @@
 
 ## 读取（按顺序，低噪音）
 
-1. `docs/story-$ARGUMENTS-*.md`：只抽取索引（引用集合）
-2. `docs/GLOBAL-CONTEXT.md`：按索引抽取必要片段
-3. `docs/PRD.md`：按锚点机械抽取必要块
+1. `docs/story-$ARGUMENTS-*.md`：抽取索引（引用集合）
+2. `docs/GLOBAL-CONTEXT.md`：按索引抽取片段
+3. `docs/PRD.md`：按锚点抽取块
 
 ## 机械抽取规则（必须遵守）
 
@@ -48,7 +46,7 @@
 - 对每个 `PRD#BR-###`（如适用）：
   - 从 PRD 第 6 节规则表中复制该 `BR-###` 对应行（连同表头与分隔行）
 
-> 若任何 `PRD#<ID>` 找不到对应锚点/块边界：停止并输出 `FAIL` 清单，让用户回到 `/prd` 或 `/split` 修正（不输出 pack）。
+> 若任何 `PRD#<ID>` 找不到对应锚点/块边界：输出 `FAIL` 清单并停止（不输出 pack）。
 
 ## 输出（必须严格）
 
@@ -85,4 +83,3 @@ prd:
 ## 开始
 
 请提供 Story 编号（例如：`/story-pack 1`）。若已通过 `/story-check`，我会生成可复制的 `STORY_EXEC_PACK`。
-

@@ -46,7 +46,14 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 - 如果同一个编号出现多个 `docs/story-N-*.md`：先回到 `/split` 修正，然后重跑 `/split-check` 与 `/backfill`
 - Story 声明了“前置 Story”：先完成并合入前置，再做后续（避免并行冲突）
 - 实现阶段不发明新规则/新枚举/新接口：发现缺口就停下来确认是否要回到 `/prd` 修正规格（若 PRD 需要改动，需重跑后续步骤）
-- 为了省 token：`/story` 只读取 Story 明确引用的 `PRD#<ID>` 块；接口/表用 `API-###`/`TBL-###` 稳定定位，避免行号漂移
+- 为了省 token：`/story` 只读取 `STORY_EXEC_PACK`（由 `/story-pack` 生成，包含 Story/GC 与被引用的 PRD 块原文），不再通读 PRD/GC/Story
+
+## 🧱 低噪音约束（v2）
+
+- Story 引用 PRD：统一使用 `PRD#<ID>`（如 `PRD#API-001` / `PRD#TBL-001` / `PRD#BR-001`）；规则优先用 `GC#BR-###`
+- PRD 块边界锚点：每个表/接口详情标题行必须包含 `<!-- PRD#TBL-### -->` / `<!-- PRD#API-### -->`（数字一致），供 `/story-pack` 机械抽取
+- `N/A` vs `TBD`：`N/A`=不适用；`TBD`=等待回填（仅允许出现在 `GLOBAL-CONTEXT` 规则表“涉及Story”列与依赖图）
+- 大 Story 早期短路：`/split-check` 触发阈值会输出 `SPLIT_REPLAN_PACK`，用于回到 `/split-plan` 拆分重规划
 
 ## 📁 文件会放在哪？
 

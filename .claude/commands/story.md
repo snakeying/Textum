@@ -1,62 +1,28 @@
-# 阶段6: Story 执行（v1）
+# 阶段6: Story 执行（v2）
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
-读取 `docs/story-$ARGUMENTS-*.md`，以其中引用为索引，按需定位 `docs/GLOBAL-CONTEXT.md` 与 `docs/PRD.md` 的最小必要片段，完成该 Story 的开发任务。
+## 必填输入
 
-> 推荐低噪音流程：先在新窗口运行 `/story-pack $ARGUMENTS` 生成 `STORY_EXEC_PACK`，再在新窗口运行 `/story $ARGUMENTS` 并粘贴该 pack；若已提供 `STORY_EXEC_PACK`，则**不得再通读/重读** `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`。
+- 1 个 `STORY_EXEC_PACK` YAML 代码块（由 `/story-pack $ARGUMENTS` 生成）
+- 门禁：`/story-check $ARGUMENTS` 必须为 `PASS`
 
-## 必须遵守
+若缺任一项：停止并提示用户先在新窗口完成 `/story-check` → `/story-pack`。
 
-- `docs/PRD.md` 只读（禁止修改）
-- `docs/GLOBAL-CONTEXT.md` 已存在
-- 门禁：`/story-check $ARGUMENTS` 已 `PASS`（否则停止并提示用户在新窗口手动运行 `/story-check $ARGUMENTS`）
-- 只做本 Story；仅读取该 Story 引用的 PRD 块（`PRD#<ID>`）；不要通读整份 PRD
-  - 若用户粘贴了 `STORY_EXEC_PACK`：以 pack 为准完成本 Story（只把 pack 当作 PRD/GC/Story 的来源）；不要再打开 PRD/GC 文件全文
+## 硬约束
 
-## 低噪音读取（必须遵守）
+- 只做本 Story；严格按 pack 内容实现；不发明 pack 外的新规则/新接口/新字段
+- `STORY_EXEC_PACK` 是 PRD/GC/Story 的唯一来源：禁止再读取/通读 `docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`、`docs/story-*.md`
+- pack 缺失/矛盾/不可执行：停止并输出清单（指示回 `/story-pack` 或 `/split` 或 `/prd` 修复）
 
-为避免上下文被“PRD + GC + 代码库”淹没，严格按以下顺序执行：
+## 执行步骤（必须按序）
 
-1. **先读 Story（或 pack 中的 Story）但只抽取索引**（不要在此阶段理解业务细节，也不要输出索引表）：
-   - `模块（必填）`、`前置Story`、验收标准、测试要求
-   - 引用集合：`GC#BR-###`、`PRD#<ID>`（从中解析 `API-###` / `TBL-###` / `BR-###`；去重；重叠可合并）
-2. **再读 GC（或 pack 中的 GC 摘取）只定位索引命中的内容**（不要通读全文）：
-   - 第 4 节：被引用的 `BR-###` 行
-   - 仅与本 Story 相关的全局约定（例如：权限矩阵、API规范、全局字段约定、枚举值）
-3. **最后读 PRD（或 pack 中的 PRD 块）只读取索引命中的片段**：
-   - 按 Story 提供的 `PRD#API-###` / `PRD#TBL-###` / `PRD#BR-###` 在 PRD 中定位对应块/表格行进行阅读与核对：
-     - 接口/表：优先用标题行锚点 `<!-- PRD#API-### -->` / `<!-- PRD#TBL-### -->` 定位对应块（保证唯一命中）；找不到锚点时才退回全文检索 `API-###` / `TBL-###`
-     - 若缺少 `PRD#<ID>` 引用则停止并提示用户回到 `/split` 修正 Story
-   - 不要通读 PRD；不要把大段 PRD 复制进最终输出
-
-## 代码上下文检索（如有前置Story）
-
-若 Story 声明了 `前置Story` 或 `已有资源`：在完成“低噪音读取”的第 1 步（抽取索引）后，先做一次定向检索，避免重复实现或重复造轮子：
-
-1. 提取关键标识符：`API-###`、Service/Controller 名、表名
-2. 在 `src/` 下执行 `rg "标识符"` 定位相关文件（如实际源码不在 `src/`，改在对应源码目录下执行）
-3. 读取命中文件的关键签名（函数/类/类型定义）
-4. 不要通读整个文件；只提取本 Story 需要调用/复用的部分
-
-## 执行准则
-
-- 严格按 Story 的“功能点/业务规则/数据变更/接口/验收标准/测试要求”实现
-- 不在实现阶段发明新规则/新枚举/新接口；发现缺口就停止并让用户确认
-- 规则编号与引用遵循 `BR-###` / `GC#BR-###`（三位数字，001 起递增且唯一）
-- 全局约定以 `GLOBAL-CONTEXT.md` 为准；冲突时以 `PRD.md` 为事实依据并明确记录待澄清点
-
-## 完成定义（Done）
-
-- [ ] 所有验收标准可手工复现或自动化验证
-- [ ] 完成 Story 指定的测试要求（能跑就跑；否则说明原因与替代验证方式）
-- [ ] 如 `docs/GLOBAL-CONTEXT.md` 提供了项目验证命令（test/lint/build 等）：执行并通过；否则写明替代验证方式
-- [ ] 若涉及 DB/接口变更：迁移、回滚策略与错误码符合 PRD/GC 约定
-
-## 完成后（仅提示下一步动作）
-
-- 如还有下一条 Story：在新窗口手动运行下一条的 `/story-check` → `PASS` 后再运行对应的 `/story`
+1. 解析 `STORY_EXEC_PACK`：提取功能点、依赖、规则、数据变更、接口、验收标准、测试要求
+2. 若声明“前置Story/已有资源”：在仓库中 `rg` 定向检索，只读取必要签名（避免重复实现）
+3. 实现：按验收标准最小改动完成需求，并补齐测试要求
+4. 验证：优先执行 pack 中给出的 test/lint/build 命令；若无则写明替代验证方式
+5. 输出：对照验收标准的完成情况 + 关键变更点 + 测试/验证结果 + 下一条 Story 的入口
 
 ## 开始
 
-请提供 Story 编号。
+请粘贴 `STORY_EXEC_PACK`（YAML 代码块）。

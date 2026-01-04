@@ -1,76 +1,29 @@
-# 阶段3: Story 拆分
+# 阶段3: Story 拆分（/split）
 
-读取 `docs/split-plan.md`并结合 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，按 `.claude/textum/story-template.md` 格式生成 `docs/story-N-xxx.md`。
+读取 `docs/split-plan.md`（规划唯一事实来源）并结合 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，按模板 `.claude/textum/story-template.md` 生成 `docs/story-N-<slug>.md`。
 
-## 输入文件
+## 读取 / 写入
 
-- 拆分规划: `docs/split-plan.md`
-- PRD: `docs/PRD.md`
-- 全局上下文: `docs/GLOBAL-CONTEXT.md`
-- 模板: `.claude/textum/story-template.md`
+- 读取：`docs/split-plan.md`、`docs/PRD.md`（只读）、`docs/GLOBAL-CONTEXT.md`
+- 写入：`docs/story-*-*.md`
+- 模板：`.claude/textum/story-template.md`
 
-## 任务
+## 硬约束
 
-将 `docs/split-plan.md` 的规划落盘为 Story 文件；并确保数据/接口/规则都能被精确引用与实现。
+- 不得更改 `docs/split-plan.md` 的 Story 编号/边界/API 分配：若发现不合理则停止并提示回 `/split-plan`
+- Story 内引用 PRD 必须使用 `PRD#<ID>` 且为具体数字：`PRD#API-001` / `PRD#TBL-001` / `PRD#BR-001`
+- 模板章节不得缺失；无内容写 `N/A`；不得残留占位符（如 `[功能描述]`、`PRD#API-###`）
 
-## 核心约束（必须遵守）
+## 执行步骤（必须按序）
 
-- 以 `docs/split-plan.md` 为唯一事实来源：不要在本阶段重新拆分、改 Story 编号、或改 `API-###` 分配
-- 若发现边界/依赖/API 分配不合理：停止，提示用户回到 `/split-plan` 更新 `docs/split-plan.md` 后再运行 `/split`
+1. 解析 `docs/split-plan.md`：得到 `Story N` 列表与 `API-### -> Story N` 分配
+2. 逐个 Story 生成 1 个文件：`docs/story-N-<slug>.md`
+3. 严格按模板填充：
+   - `模块（必填）`、`前置Story` 与 split-plan 一致
+   - “接口”章节列出该 Story 负责的 `PRD#API-###`（来自 split-plan）
+   - “数据变更/业务规则”按需列出 `PRD#TBL-###` / `GC#BR-###` / `PRD#BR-###`
+4. 自检：Story 编号可执行（前置编号 < 当前编号）；文件名与 split-plan 1:1 对应；无重复编号
 
-## PRD 引用规则（ID 锚点，必须遵守）
+## 完成后
 
-Story 中引用 PRD 必须用稳定 ID，并显式写成 `PRD#<ID>`：
-
-- 接口（如适用）：在“接口”章节列出本 Story 负责的每个 `PRD#API-###`
-- 数据表（如适用）：在“数据变更”章节列出本 Story 涉及的每个 `PRD#TBL-###`
-- 业务规则（如需直接引用 PRD）：使用 `PRD#BR-###`（优先引用 `GC#BR-###`）
-
-> `PRD#<ID>` 作为最小阅读范围的锚点：后续校验将用它来确保引用可定位且无需通读 PRD。
-
-## 低噪音拆分（必须遵守）
-
-为避免被 PRD 细节淹没，严格按以下顺序执行：
-
-1. **先读 `docs/split-plan.md`**：把 Story 编号/依赖/模块、以及 `API-###` 分配作为唯一事实来源（不要在本阶段重新“脑拆分”）
-2. **再按 Story 逐个回到 PRD 按需定位**：
-   - 优先用 PRD 标题行锚点 `<!-- PRD#API-### -->` / `<!-- PRD#TBL-### -->` 定位对应块（保证唯一命中）；找不到锚点时才退回用 `API-###` / `TBL-###`
-   - 仅补齐本 Story 涉及项的 `PRD#<ID>` 引用（不要通读 PRD）
-3. **生成 Story 文件**：严格按模板补齐每个章节；无内容写 `N/A`
-
-## 生成规则（必须遵守）
-
-- 每个 Story 必须生成 1 个文件：`docs/story-[编号]-[slug].md`
-- 文件内容严格按模板；模板里的每个章节都必须出现；无内容写 `N/A`，不要省略章节
-- Story 顶部必须填写：编号、模块 `M-xx`、前置 Story、目标/范围/验收标准
-- “接口”章节必须列出本 Story 负责的每个 `PRD#API-###`
-- “数据变更”章节如涉及表：必须列出每个 `PRD#TBL-###`（不涉及则 `N/A`）
-- “业务规则”章节优先引用 `GC#BR-###`；若引用 PRD，必须给出对应 `PRD#BR-###`
-
-## 输出要求
-
-1. 按 `.claude/textum/story-template.md` 格式生成
-2. 文件命名: `docs/story-[编号]-[slug].md`
-3. 编号即执行顺序：若某 Story 声明 `前置Story: Story X`，则必须满足 `X < 当前编号`（确保用户可按 `/story 1..N` 顺序执行）
-4. 每个 Story 的 PRD 引用必须包含 `PRD#<ID>`（接口/数据表/规则）
-5. 每个 Story 必须写清：功能点、依赖（前置 Story + 已有资源；尽量写可检索的代码标识符）、验收标准、测试要求
-6. 模板中的每个章节都必须出现；无内容写 `N/A`，不要省略章节
-7. 生成 Story 依赖关系图（可先在拆分结果摘要里给出）
-8. `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md` 只读（不修改）；只生成/更新 `docs/story-*.md`
-
-## 一致性检查（必须做）
-
-- 覆盖检查：所有 `P0` 模块、核心表、关键接口至少被一个 Story 覆盖
-- 依赖检查：无循环依赖；如有环，调整 Story 边界或拆分/前置顺序
-- 顺序检查：所有 `前置Story` 的编号必须小于当前 Story 编号（保证可按 `/story 1..N` 顺序执行）
-- 命名检查：Story 简称稳定、可读，避免与未来功能冲突
-
-## 完成后（仅提示下一步动作）
-
-- 在新窗口手动运行 `/split-check`
-- 如 `FAIL/DECISION`：把清单复制回本窗口，修正 Story 文件后再次手动运行 `/split-check`
-- 直到 `PASS`：在新窗口手动运行 `/backfill`
-
-## 开始
-
-请确认已运行 `/split-plan` 并生成 `docs/split-plan.md`；同时 `docs/PRD.md`（只读；不修改）与 `docs/GLOBAL-CONTEXT.md` 已存在。
+- 提示用户在新窗口运行 `/split-check`，直到 `PASS` 后再运行 `/backfill`
