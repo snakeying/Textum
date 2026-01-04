@@ -1,4 +1,4 @@
-# 阶段6: Story 执行（v2）
+# 阶段6: Story 执行
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 

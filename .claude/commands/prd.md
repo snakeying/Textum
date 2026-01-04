@@ -1,6 +1,6 @@
 # 阶段1b: PRD 生成/修正
 
-本命令只做一件事：把用户提供的 `PRD_INPUT_PACK` 落盘为 `docs/PRD.md`（按 `.claude/textum/PRD-framework.md`）。
+只做一件事：把用户提供的 `PRD_INPUT_PACK` 落盘为 `docs/PRD.md`（按 `.claude/textum/PRD-framework.md`）。
 
 > 约束：本命令**不做需求对话**。若信息不足以生成“可检查的 PRD”，只输出 `PRD_CLARIFY_PACK` 并停止（**不修改任何文件**）。
 
@@ -31,6 +31,7 @@
   - 规则：`BR-001` 起递增且唯一
   - 表：`TBL-001` 起递增且唯一（如有表）
   - 接口：`API-001` 起递增且唯一（如有 API）
+- 无 API（如适用）：若 `PRD_INPUT_PACK.api.has_api=false`，则 PRD 第 9 节 `9.2/9.3` 必须写 `N/A`，且全文不得出现任何 `API-###/API-001` 与 `<!-- PRD#API-... -->`
 - 块边界：每个表/接口必须在其详情小节标题包含对应 `TBL-###` / `API-###`；不要把多个 ID 的细节混在同一块里
 - 锚点（机械抽取用）：每个表/接口详情标题行必须追加对应锚点 `<!-- PRD#TBL-### -->` / `<!-- PRD#API-### -->`，且锚点内数字与标题 `TBL-###` / `API-###` 一致
 

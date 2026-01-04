@@ -1,4 +1,4 @@
-# 阶段4: Story 拆分校验（/split-check）
+# 阶段4: Story 拆分校验
 
 ## 读取（只读）
 
@@ -123,8 +123,12 @@ constraints:
 ### F) 覆盖性与 API 唯一归属
 
 - PRD `5.1` 的每个 `P0` 模块至少被 1 个 Story 覆盖（按 Story 的 `模块（必填）`）
-- PRD `9.2` 的所有 `API-###` 必须被覆盖：
-  - split-plan 第 2 节：每个 `API-###` 必须且仅出现一次，且覆盖 PRD `9.2` 的全部 `API-###`
+- 若 PRD `9.2` 为 `N/A`（无 API，API 集合为空）：
+  - split-plan 第 2 节必须只保留表头且无数据行
+  - 所有 Story 的“接口”章节必须为 `N/A`，且不得出现任何 `PRD#API-###`
+  - 跳过本节其余 API 覆盖/唯一归属检查
+- 否则（有 API）：
+  - split-plan 第 2 节必须与 PRD `9.2` 一致：覆盖全部 `API-###` 且仅出现一次；不得出现 PRD `9.2` 中不存在的 `API-###`
   - Story 文件“接口”章节：每个 `PRD#API-###` 必须且仅出现于 1 个 Story，且与 split-plan 分配完全一致（不得漂移/漏写/多写）
 
 ## 输出格式（必须）
@@ -136,4 +140,3 @@ constraints:
 ## 开始
 
 请确认 `docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`、`docs/split-plan.md`、`docs/story-*-*.md` 已存在。
-
