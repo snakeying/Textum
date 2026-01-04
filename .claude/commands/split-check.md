@@ -17,6 +17,7 @@
 - 如存在任何 `FAIL`：只输出 `FAIL` 条目并结束（不输出 `DECISION/PASS`；不提示运行 `/backfill`）
 - 仅当无 `FAIL` 且存在 `DECISION`：只输出 `DECISION` 条目并结束（不输出 `PASS`；不提示运行 `/backfill`）
 - 仅当无 `FAIL/DECISION`：输出 `PASS`，并提示在新窗口手动运行 `/backfill`
+- 若触发“**大 Story 阈值（早期短路）**”：按规则输出 `FAIL` 或 `DECISION`，并在清单后追加一个可复制代码块 `SPLIT_REPLAN_PACK`；然后立即结束（不继续做后续校验；不提示运行 `/backfill`）
 
 ## 注意力控制（必须遵守）
 
@@ -33,9 +34,85 @@
    - `PRD#API-###`（若该 Story “接口”章节非 `N/A`，则必须有）
    - `PRD#TBL-###`（若该 Story “数据变更”章节非 `N/A`，则必须有）
    - `PRD#BR-###`（如适用；仅当 Story 直接引用 PRD 规则）
+2.5 **大 Story 阈值（早期短路）**：只基于 split-plan + Story 文件做机械计数（API/TBL/功能点/验收标准）。若触发阈值则输出 `FAIL/DECISION + SPLIT_REPLAN_PACK` 并结束；不要继续读 GC/PRD
 3. **再读 GC 只看第 4 节业务规则表**：拿到合法的 `BR-###` 集合
 4. **再读 PRD 只看 5.1（模块清单）、8.1（表清单）、9.2（接口清单）**：拿到 `P0` 模块集合、`TBL-###` 表集合与 `API-###` 接口集合（不要通读 PRD）
-5. **最后只按需读取 PRD 片段**：仅在需要验证时，按 `PRD#<ID>` 在 PRD 中定位对应块/表格行进行核验（不要通读 PRD；不要把片段粘贴到输出）
+5. **最后只按需读取 PRD 片段**：仅在需要验证时，按 `PRD#<ID>` 在 PRD 中定位对应块/表格行进行核验（优先用标题行锚点 `<!-- PRD#API-### -->` / `<!-- PRD#TBL-### -->` 唯一命中；不要通读 PRD；不要把片段粘贴到输出）
+
+## 大 Story 阈值（早期短路，DECISION/FAIL）
+
+目的：把“单个 Story 过大导致实现窗口上下文爆炸”的风险前置拦截；一旦触发阈值，后续校验结果大概率会因为重拆而作废，因此必须短路停止。
+
+### 机械计数口径（必须一致）
+
+对每个 `docs/story-N-*.md`：
+
+- `api_refs`：该文件中出现的唯一 `PRD#API-###` 数量（去重）
+- `tbl_refs`：该文件中出现的唯一 `PRD#TBL-###` 数量（去重）
+- `feature_points`：`## 功能点（必填）` 章节下的有效条目数（以 `- ` 开头的行；`N/A` 视为 0）
+- `acceptance_items`：`## 验收标准（必填）` 章节下的勾选项数量（以 `- [ ]` 开头的行）
+
+### 默认阈值（必须按此执行）
+
+| 指标 | 正常 | DECISION | FAIL |
+|------|------|----------|------|
+| `api_refs` | `≤ 3` | `4–5` | `≥ 6` |
+| `tbl_refs` | `≤ 2` | `= 3` | `≥ 4` |
+| `feature_points` | `≤ 8` | `9–12` | `≥ 13` |
+| `acceptance_items` | `≤ 10` | `11–15` | `≥ 16` |
+
+升级规则（必须）：
+- 命中任一 `FAIL` 阈值 → 该 Story 记为 `FAIL`
+- 否则，若同一 Story 命中 **≥ 2 个** `DECISION` 阈值 → 升级为 `FAIL`
+- 否则，若命中任一 `DECISION` 阈值 → 该 Story 记为 `DECISION`
+
+### 触发后输出（必须）
+
+- 仅输出 `FAIL` 或 `DECISION` 清单（按上述规则）
+- 然后追加一个可复制代码块 `SPLIT_REPLAN_PACK`（供 `/split-plan` 接收重规划）
+- 立即结束；不要继续执行后续校验项；不要提示运行 `/backfill`
+
+`SPLIT_REPLAN_PACK` 格式（必须严格输出一个代码块）：
+
+```yaml
+SPLIT_REPLAN_PACK: v1
+trigger: "oversized_story"
+thresholds:
+  api_refs: { ok_max: 3, decision_max: 5, fail_min: 6 }
+  tbl_refs: { ok_max: 2, decision_max: 3, fail_min: 4 }
+  feature_points: { ok_max: 8, decision_max: 12, fail_min: 13 }
+  acceptance_items: { ok_max: 10, decision_max: 15, fail_min: 16 }
+upgrade_rules:
+  - "any FAIL => FAIL"
+  - ">=2 DECISION => FAIL"
+oversized_stories:
+  - story: "Story N"
+    story_file: "docs/story-N-<slug>.md"
+    slug: "<slug>"
+    modules: ["M-xx"]
+    prereq_stories: ["Story X", "Story Y"]
+    metrics:
+      api_refs: 0
+      tbl_refs: 0
+      feature_points: 0
+      acceptance_items: 0
+      decision_hits: []
+      fail_hits: []
+    api_assignments_from_split_plan:
+      - "API-001"
+    prd_refs_from_story:
+      api: ["PRD#API-001"]
+      tbl: ["PRD#TBL-001"]
+      br: ["PRD#BR-001"]
+    gc_rules_from_story:
+      - "GC#BR-001"
+constraints:
+  - "保持不受影响的 Story 尽量不变"
+  - "拆分后的新 Story 必须插入在原 Story 之后，顺序可执行（前置编号 < 当前编号）"
+  - "Story 必须重新按 1..N 连续编号；并同步改写所有前置依赖与 API 分配表引用"
+  - "每个 API 仍需唯一归属且全覆盖（split-plan 第2节 + Story 接口章节一致）"
+  - "拆分后的每个 Story 必须满足上述阈值；否则继续拆"
+```
 
 ## FAIL 校验项（严格拦截）
 
@@ -134,6 +211,7 @@
 - `FAIL`：编号 + 文件名 + 问题描述 + 修复方式（改 Story / 重新 `/split`）
 - `DECISION`：编号 + 文件名 + 风险说明 + 需要用户确认的问题（继续/回退修复）
 - `PASS`：仅提示下一步动作：在新窗口手动运行 `/backfill`
+- 若本次输出包含 `SPLIT_REPLAN_PACK`：必须在清单后追加且仅追加 1 个代码块（便于整段复制到 `/split-plan`）
 
 ## 开始
 

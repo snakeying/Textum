@@ -4,25 +4,30 @@
 
 读取 `docs/story-$ARGUMENTS-*.md`，以其中引用为索引，按需定位 `docs/GLOBAL-CONTEXT.md` 与 `docs/PRD.md` 的最小必要片段，完成该 Story 的开发任务。
 
+> 推荐低噪音流程：先在新窗口运行 `/story-pack $ARGUMENTS` 生成 `STORY_EXEC_PACK`，再在新窗口运行 `/story $ARGUMENTS` 并粘贴该 pack；若已提供 `STORY_EXEC_PACK`，则**不得再通读/重读** `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`。
+
 ## 必须遵守
 
 - `docs/PRD.md` 只读（禁止修改）
 - `docs/GLOBAL-CONTEXT.md` 已存在
 - 门禁：`/story-check $ARGUMENTS` 已 `PASS`（否则停止并提示用户在新窗口手动运行 `/story-check $ARGUMENTS`）
 - 只做本 Story；仅读取该 Story 引用的 PRD 块（`PRD#<ID>`）；不要通读整份 PRD
+  - 若用户粘贴了 `STORY_EXEC_PACK`：以 pack 为准完成本 Story（只把 pack 当作 PRD/GC/Story 的来源）；不要再打开 PRD/GC 文件全文
 
 ## 低噪音读取（必须遵守）
 
 为避免上下文被“PRD + GC + 代码库”淹没，严格按以下顺序执行：
 
-1. **先读 Story 但只抽取索引**（不要在此阶段理解业务细节，也不要输出索引表）：
+1. **先读 Story（或 pack 中的 Story）但只抽取索引**（不要在此阶段理解业务细节，也不要输出索引表）：
    - `模块（必填）`、`前置Story`、验收标准、测试要求
    - 引用集合：`GC#BR-###`、`PRD#<ID>`（从中解析 `API-###` / `TBL-###` / `BR-###`；去重；重叠可合并）
-2. **再读 GC 只定位索引命中的内容**（不要通读全文）：
+2. **再读 GC（或 pack 中的 GC 摘取）只定位索引命中的内容**（不要通读全文）：
    - 第 4 节：被引用的 `BR-###` 行
    - 仅与本 Story 相关的全局约定（例如：权限矩阵、API规范、全局字段约定、枚举值）
-3. **最后读 PRD 只读取索引命中的片段**：
-   - 按 Story 提供的 `PRD#API-###` / `PRD#TBL-###` / `PRD#BR-###` 在 PRD 中定位对应块/表格行进行阅读与核对；若缺少 `PRD#<ID>` 引用则停止并提示用户回到 `/split` 修正 Story
+3. **最后读 PRD（或 pack 中的 PRD 块）只读取索引命中的片段**：
+   - 按 Story 提供的 `PRD#API-###` / `PRD#TBL-###` / `PRD#BR-###` 在 PRD 中定位对应块/表格行进行阅读与核对：
+     - 接口/表：优先用标题行锚点 `<!-- PRD#API-### -->` / `<!-- PRD#TBL-### -->` 定位对应块（保证唯一命中）；找不到锚点时才退回全文检索 `API-###` / `TBL-###`
+     - 若缺少 `PRD#<ID>` 引用则停止并提示用户回到 `/split` 修正 Story
    - 不要通读 PRD；不要把大段 PRD 复制进最终输出
 
 ## 代码上下文检索（如有前置Story）

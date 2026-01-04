@@ -51,6 +51,7 @@ flowchart TD
 
     subgraph P6[阶段6: /story N]
         J[新窗口] --> JC[/story-check N/]
+        JC --> JP[/story-pack N/]
         JC --> K[读取 GLOBAL-CONTEXT + story-N]
         K --> KP[仅读取 story 引用的 PRD#<ID> 块（按 API/TBL/BR 定位）]
         KP --> L{执行开发}
@@ -90,9 +91,10 @@ flowchart TD
 | 2b. GC 校验 | `/scaffold-check` | `docs/GLOBAL-CONTEXT.md` | 校验报告（不修改文件） |
 | 3a. 拆分规划 | `/split-plan` | PRD（索引章）+ GLOBAL-CONTEXT | `docs/split-plan.md` |
 | 3. Story 生成 | `/split` | split-plan + PRD + GLOBAL-CONTEXT | `docs/story-N-slug.md` |
-| 4. 拆分校验 | `/split-check` | split-plan + PRD + GLOBAL-CONTEXT + 所有 story | 校验报告（不修改文件） |
+| 4. 拆分校验 | `/split-check` | split-plan + PRD + GLOBAL-CONTEXT + 所有 story | 校验报告（不修改文件；可能附带 `SPLIT_REPLAN_PACK`） |
 | 5. 回填索引 | `/backfill` | GLOBAL-CONTEXT + 所有 story | 更新 `docs/GLOBAL-CONTEXT.md` |
 | 6a. Story 校验 | `/story-check N` | PRD + GLOBAL-CONTEXT + story-N | 校验报告（不修改文件） |
+| 6b. Story 执行包 | `/story-pack N` | PRD + GLOBAL-CONTEXT + story-N | `STORY_EXEC_PACK`（复制交接包；不修改文件） |
 | 6. Story 执行 | `/story N` | GLOBAL-CONTEXT + story-N + `PRD#<ID>` | 代码实现 |
 
 ## 模板文件（当前）
@@ -125,4 +127,5 @@ project/
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 内的 `PRD#<ID>` 引用，减少通读 PRD 的噪音
 - `/split-check` 严格校验：`API-###` 覆盖、规则引用、依赖无环、`PRD#<ID>` 引用可定位；未通过不得进入 `/backfill` 与 `/story N`
 - `/story-check N` 先做单 Story 门禁，再进入 `/story N` 实现；实现阶段按 `PRD#<ID>` 索引最小读取，避免通读 PRD
+- 为进一步降噪：推荐在 `/story-check N` `PASS` 后先运行 `/story-pack N` 生成 `STORY_EXEC_PACK`，再在新窗口运行 `/story N` 并粘贴该 pack
 - 若 Story 声明 `前置Story`/`已有资源`：先在 `src/` 下用 `rg` 定向检索已有实现，只读取关键签名，避免重复实现

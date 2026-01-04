@@ -36,7 +36,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 | 7️⃣ | `/split` | 按规划生成 Story 文件并补齐 `PRD#<ID>` 引用 |
 | 8️⃣ | `/split-check` | 严格校验拆分结果（与 split-plan 一致、API 覆盖/唯一归属、依赖无环、引用可定位） |
 | 9️⃣ | `/backfill` | 回填 GLOBAL-CONTEXT 的“规则涉及 Story / 依赖图”索引 |
-| 🔟 | `/story-check 1` → `PASS` 后 `/story 1` | 开始做第一个任务，然后按顺序继续 `/story 2`、`/story 3`... |
+| 🔟 | `/story-check 1` → `PASS` 后 `/story-pack 1` → `/story 1` | 开始做第一个任务，然后按顺序继续 `/story-check 2` → `/story-pack 2` → `/story 2`... |
 
 > 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步；`/prd-check` `PASS` 后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续 Story 通过稳定 ID 锚点 `PRD#<ID>` 精确引用，避免通读 PRD 与行号漂移
 
@@ -83,6 +83,7 @@ AI：...（多轮澄清后输出 PRD_INPUT_PACK）
 你：/split-check      → 严格校验拆分结果
 你：/backfill         → 回填依赖图和规则索引
 你：/story-check 1    → 单 Story 门禁校验
+你：/story-pack 1     → 生成低噪音执行包（复制交接包）
 你：/story 1          → 开始第一个任务！
 ```
 
