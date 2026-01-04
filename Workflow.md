@@ -130,4 +130,6 @@ project/
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 内的 `PRD#<ID>` 引用，减少通读 PRD 的噪音
 - `/split-check` 严格校验：`API-###` 覆盖、规则引用、依赖无环、`PRD#<ID>` 引用可定位；未通过不得进入 `/backfill` 与 `/story N`
 - Story 执行顺序：`/story-check N` `PASS` → `/story-pack N` →（新窗口）`/story N`（只读取 `docs/story-N-exec-pack.yaml`，不通读 PRD/GC/Story）
+- 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
+- `/story N` 执行后自动跑验证命令：命令来自 `docs/story-N-exec-pack.yaml` 的 `verification.commands`（由 `GLOBAL-CONTEXT` 第 2 节“项目验证命令”抽取）；若全部为 `N/A` 则输出 `DECISION`
 - 若 Story 声明 `前置Story`/`已有资源`：先在 `src/` 下用 `rg` 定向检索已有实现，只读取关键签名，避免重复实现

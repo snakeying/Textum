@@ -22,9 +22,7 @@ project/
 
 | 类型 | 命令 | 说明 |
 |------|------|------|
-| test | N/A | N/A |
-| lint | N/A | N/A |
-| build | N/A | N/A |
+| check-1 | N/A | N/A |
 
 ## 3. 枚举值定义（必填；无则写 N/A）
 
@@ -94,4 +92,3 @@ project/
 ## 9. Story依赖图（必填；拆分后回填）
 
 TBD
-

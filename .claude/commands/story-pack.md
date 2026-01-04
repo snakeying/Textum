@@ -39,6 +39,9 @@
   - `## 5. 权限矩阵（必填）`
   - `## 8. API规范（必填）`
 - 对于业务规则：仅从第 4 节规则表中复制被引用的 `BR-###` 行（连同表头与分隔行；无引用写 `N/A`）
+- 对于项目验证命令：从 GC 第 2 节 `### 项目验证命令（如适用；否则写 N/A）` 的表格逐行抽取到 pack 的 `verification.commands`（按表格顺序；不改写）
+  - 若该小节为 `N/A` 或表格不存在：`verification.commands` 只写 1 行 `type/command/note` 均为 `N/A`
+  - 否则：对表格每一行数据，原文复制三列到 `type` / `command` / `note`；`command` 允许为 `N/A`
 
 ### C) 从 PRD 抽取（锚点 + 固定边界，避免误命中）
 
@@ -71,11 +74,16 @@
 `docs/story-$ARGUMENTS-exec-pack.yaml` 内容格式（必须严格）：
 
 ```yaml
-STORY_EXEC_PACK: v1
+STORY_EXEC_PACK: v2
 story:
   file: "docs/story-$ARGUMENTS-*.md"
   markdown: |-
     (原文粘贴 Story 全文)
+verification:
+  commands:
+    - type: "check-1"
+      command: "N/A"
+      note: "N/A"
 gc:
   project_structure: |-
     (原文粘贴 GC 第2节)
