@@ -1,10 +1,10 @@
 # 阶段4b: Story 拆分校验（PRD/GC 对齐 + API Smoke / split-check2）
 
-读取 `/split-check1` 产出的 `docs/split-check-index-pack.yaml`，并对齐 `docs/GLOBAL-CONTEXT.md` 与 `docs/PRD.md` 做引用可追溯与（有 API 时）Smoke Test；不读取所有 Story 文件。
+读取 `docs/split-check-index-pack.yaml`，并对齐 `docs/GLOBAL-CONTEXT.md` 与 `docs/PRD.md` 做引用可追溯与（有 API 时）Smoke Test；不读取所有 Story 文件。
 
 ## 读取（只读）
 
-- `docs/split-check-index-pack.yaml`（必须存在；由 `/split-check1` 写入）
+- `docs/split-check-index-pack.yaml`（必须存在；由上一步生成）
 - `docs/GLOBAL-CONTEXT.md`
 - `docs/PRD.md`（只读；不修改）
 
@@ -80,7 +80,7 @@
 
 ## API Smoke Test（仅当 PRD_HAS_API=true 时执行）
 
-目标：确保后续 `/story-pack` 能按锚点与块边界稳定抽取 PRD `9.3` 的接口详情块。
+目标：确保按锚点与块边界稳定抽取 PRD `9.3` 的接口详情块。
 
 对 `P_api` 中每个 `API-###`：
 - PRD 中必须存在且仅存在 1 次锚点：`<!-- PRD#API-### -->`；否则 `FAIL`
@@ -93,4 +93,4 @@
 
 ## 开始
 
-请先运行 `/split-check1` 写入 `docs/split-check-index-pack.yaml`，再运行本命令。
+请先生成 `docs/split-check-index-pack.yaml`，再运行本命令。

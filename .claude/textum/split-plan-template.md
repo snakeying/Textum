@@ -36,4 +36,5 @@ flowchart TD
 
 - `P0` 模块覆盖：PASS/FAIL（FAIL 时列出未覆盖的 `M-xx`）
 - `API-###` 覆盖与唯一分配：PASS/FAIL（FAIL 时列出未分配或重复分配的 `API-###`）
+- `API` 分配阈值预检（仅基于第 2 节计数）：PASS/DECISION/N/A（DECISION 时列出 Story 与 `api_assigned`；无 API 写 N/A）
 - 依赖合法性：PASS/FAIL（FAIL 时列出环/违规顺序的链路）

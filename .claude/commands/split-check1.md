@@ -129,7 +129,7 @@ constraints:
 
 ## 生成索引交接包（必须；仅 PASS 时写入）
 
-目标：供 `/split-check2` 使用，避免复读所有 Story 文件。
+目标：生成一个小而稳定的索引交接包，供后续对齐校验使用，避免复读所有 Story 文件。
 
 规则：
 - 严格按 `.claude/textum/split-check-index-pack-template.md` 的 YAML 结构写入（纯 YAML；不含 ```）

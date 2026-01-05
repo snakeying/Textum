@@ -1,6 +1,6 @@
-# split-check 索引pack（用于 split-check1 → split-check2 交接）
+# split-check 索引pack（用于两阶段拆分校验交接）
 
-目标：把 `docs/split-plan.md` 与 `docs/story-*-*.md` 的“可解析索引”抽取成一个小而稳定的 YAML，让 `/split-check2` 不再复读所有 Story 文件。
+目标：把 `docs/split-plan.md` 与 `docs/story-*-*.md` 的“可解析索引”抽取成一个小而稳定的 YAML，供后续对齐校验使用，避免复读所有 Story 文件。
 
 约束：
 - 只做抽取与机械计数：不得新增任何 PRD/GC 中不存在的信息
@@ -53,4 +53,3 @@ summary:
     prd_tbl_ids: ["TBL-001"]
     prd_br_ids: ["BR-002"]
 ```
-
