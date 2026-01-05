@@ -129,8 +129,8 @@ prd:
 
   2. 输出：
      - `PASS`
-     - `written: docs/story-$ARGUMENTS-exec-pack.yaml`
-     - `next: /story $ARGUMENTS`
+     - `已写入：docs/story-$ARGUMENTS-exec-pack.yaml`
+     - `下一步：/story $ARGUMENTS`
 
 ## 开始
 

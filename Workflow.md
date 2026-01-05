@@ -1,85 +1,85 @@
-# Textum - PRD → Story 开发工作流（v3）
+# Textum - PRD → Story 开发工作流（v4）
 
-> 本版本采用“多窗口 + 低噪音 + 门禁校验”的流程：所有引用一律使用稳定 ID 锚点（`GC#BR-###` / `PRD#API-###` / `PRD#TBL-###` / `PRD#BR-###`），并通过 `/prd-check` `/scaffold-check` `/split-check` `/story-check` 降噪与把关。
+> 本版本采用“多窗口 + 低噪音 + 门禁校验”的流程：所有引用一律使用稳定 ID 锚点（`GC#BR-###` / `PRD#API-###` / `PRD#TBL-###` / `PRD#BR-###`），并通过 `/prd-check` `/scaffold-check` `/split-check1` `/split-check2` `/story-check` 降噪与把关。
 
 ## 流程图
 
 ```mermaid
-flowchart TD
-    subgraph P1A[阶段1a: /prd-plan]
-        A[新窗口] --> B[需求讨论/澄清]
-        B --> BP[输出 PRD_INPUT_PACK（复制交接包）]
+flowchart TB
+    %% 图例：蓝=命令 | 粉=校验 | 黄=文件 | 绿=交接包
+
+    classDef cmd fill:#E3F2FD,stroke:#1E88E5,color:#0D47A1
+    classDef chk fill:#FCE4EC,stroke:#D81B60,color:#880E4F
+    classDef file fill:#FFFDE7,stroke:#F9A825,color:#6D4C41
+    classDef pack fill:#E8F5E9,stroke:#43A047,color:#1B5E20
+    classDef dec fill:#EDE7F6,stroke:#5E35B1,color:#311B92
+    classDef note fill:#F5F5F5,stroke:#616161,color:#212121
+
+    subgraph B1["1. PRD 阶段"]
+        direction LR
+        U([用户需求]):::note
+        P1[/prd-plan 澄清需求/]:::cmd
+        PK1[[INPUT_PACK]]:::pack
+        P2[/prd 生成PRD/]:::cmd
+        PK2[[CLARIFY_PACK]]:::pack
+        F1[(PRD.md)]:::file
+        C1{{prd-check}}:::chk
+
+        U --> P1 --> PK1 --> P2
+        P2 -.->|信息不足| PK2 -.-> P1
+        P2 --> F1 --> C1
+        C1 -.->|FAIL| P2
     end
 
-    subgraph P1[阶段1b: /prd]
-        C[新窗口] --> CP[粘贴 PRD_INPUT_PACK]
-        CP -->|信息不足| CQ[输出 PRD_CLARIFY_PACK（不写文件）]
-        CP -->|信息足够| D[创建/更新 docs/PRD.md]
+    subgraph B2["2. Scaffold 阶段"]
+        direction LR
+        S1[/scaffold 抽取上下文/]:::cmd
+        F2[(GLOBAL-CONTEXT.md)]:::file
+        C2{{scaffold-check}}:::chk
+
+        S1 --> F2 --> C2
+        C2 -.->|FAIL| S1
     end
 
-    subgraph P1C[阶段1c: /prd-check]
-        PC[新窗口] --> CC[/prd-check（手动循环校验）/]
-        CC -->|FAIL/DECISION| CR[复制清单回 /prd 修正]
-        CC -->|PASS| CD[PRD 只读（后续不修改）]
+    subgraph B3["3. Split 阶段"]
+        direction LR
+        SP[/split-plan 规划Story/]:::cmd
+        FP[(split-plan.md)]:::file
+        SS[/split 生成Story/]:::cmd
+        FS[(story-*.md)]:::file
+        C3{{split-check1 结构}}:::chk
+        IX[(index-pack.yaml)]:::file
+        C4{{split-check2 引用}}:::chk
+
+        SP --> FP --> SS --> FS --> C3
+        C3 -.->|规划问题| SP
+        C3 -.->|Story问题| SS
+        C3 -->|PASS| IX --> C4
+        C4 -.->|FAIL| C3
     end
 
-    subgraph P2[阶段2: /scaffold]
-        S2[新窗口] --> E[读取 docs/PRD.md]
-        E --> F[生成 docs/GLOBAL-CONTEXT.md（全局约定/索引）]
-        F --> FC[/scaffold-check/]
+    subgraph B4["4. Story 执行"]
+        direction LR
+        BF[/backfill 回填索引/]:::cmd
+        F3[(GC.md)]:::file
+        PK{选择Story}:::dec
+        C5{{story-check}}:::chk
+        PKG[/story-pack/]:::cmd
+        FE[(exec-pack.yaml)]:::file
+        EX[/story N 执行/]:::cmd
+        MR{还有Story}:::dec
+        DN([完成]):::note
+
+        BF --> F3 --> PK --> C5
+        C5 -.->|FAIL: 按清单修正后重跑| C5
+        C5 -->|PASS| PKG --> FE --> EX --> MR
+        MR -->|是| PK
+        MR -->|否| DN
     end
 
-    subgraph P3A[阶段3a: /split-plan]
-        G[新窗口] --> H[读取 PRD 索引章 + GLOBAL-CONTEXT]
-        H --> HP[生成 docs/split-plan.md（Story列表+API分配+依赖）]
-    end
-
-    subgraph P3[阶段3: /split]
-        SP[新窗口] --> SH[读取 split-plan + PRD + GLOBAL-CONTEXT]
-        SH --> I[生成 docs/story-N-slug.md（含模块 M-xx、PRD#API-###/PRD#TBL-### 引用）]
-    end
-
-    subgraph P4[阶段4: /split-check]
-        SC[新窗口] --> SD[读取 split-plan + PRD + GLOBAL-CONTEXT + story-*]
-        SD --> SE[输出校验结果（FAIL/DECISION/PASS）]
-    end
-
-    subgraph P5[阶段5: /backfill]
-        BF[新窗口] --> BG[读取 story-* 回填索引]
-        BG --> BH[更新 docs/GLOBAL-CONTEXT.md（规则涉及Story/依赖图）]
-    end
-
-    subgraph P6[阶段6: /story N]
-        J[新窗口] --> JC[/story-check N/]
-        JC --> JP[新窗口]
-        JP --> JPC[/story-pack N/]
-        JPC --> JPO[写入 docs/story-N-exec-pack.yaml]
-        JPO --> JS[新窗口]
-        JS --> JK[/story N（读取 docs/story-N-exec-pack.yaml）/]
-        JK --> L{执行开发}
-        L --> M[完成 Story N]
-        M --> N{还有Story?}
-        N -->|是| J
-        N -->|否| O[项目完成]
-    end
-
-    CQ --> A
-    BP --> C
-    D --> PC
-    CD --> S2
-    FC --> G
-    HP --> SP
-    I --> SC
-    SE --> BF
-    BH --> J
-
-    style P1 fill:#e1f5fe
-    style P2 fill:#fff3e0
-    style P3A fill:#f3e5f5
-    style P3 fill:#f3e5f5
-    style P4 fill:#f3e5f5
-    style P5 fill:#f3e5f5
-    style P6 fill:#e8f5e9
+    C1 -->|PASS| S1
+    C2 -->|PASS| SP
+    C4 -->|PASS| BF
 ```
 
 ## 各阶段输入输出
@@ -93,7 +93,8 @@ flowchart TD
 | 2b. GC 校验 | `/scaffold-check` | `docs/GLOBAL-CONTEXT.md` | 校验报告（不修改文件） |
 | 3a. 拆分规划 | `/split-plan` | PRD（索引章）+ GLOBAL-CONTEXT | `docs/split-plan.md` |
 | 3. Story 生成 | `/split` | split-plan + PRD + GLOBAL-CONTEXT | `docs/story-N-slug.md` |
-| 4. 拆分校验 | `/split-check` | split-plan + PRD + GLOBAL-CONTEXT + 所有 story | 校验报告（不修改文件；可能附带 `SPLIT_REPLAN_PACK`） |
+| 4a. 拆分校验（Core） | `/split-check1` | split-plan + 所有 story | 校验报告；`PASS` 时写入 `docs/split-check-index-pack.yaml`；可能附带 `SPLIT_REPLAN_PACK` |
+| 4b. 拆分校验（PRD/GC + API Smoke） | `/split-check2` | `docs/split-check-index-pack.yaml` + PRD + GLOBAL-CONTEXT | 校验报告（不修改文件） |
 | 5. 回填索引 | `/backfill` | GLOBAL-CONTEXT + 所有 story | 更新 `docs/GLOBAL-CONTEXT.md` |
 | 6a. Story 校验 | `/story-check N` | PRD + GLOBAL-CONTEXT + story-N | 校验报告（不修改文件） |
 | 6b. Story 执行包 | `/story-pack N` | PRD + GLOBAL-CONTEXT + story-N | 写入 `docs/story-N-exec-pack.yaml`（`STORY_EXEC_PACK`） |
@@ -107,6 +108,7 @@ flowchart TD
 | `/scaffold` | `.claude/textum/GLOBAL-CONTEXT-template.md` |
 | `/split-plan` | `.claude/textum/split-plan-template.md` |
 | `/split` | `.claude/textum/story-template.md` |
+| `/split-check1` | `.claude/textum/split-check-index-pack-template.md` |
 
 ## 目录结构
 
@@ -128,7 +130,7 @@ project/
 - 稳定ID：接口 `API-###`、表 `TBL-###`；Story 引用 PRD 一律使用 `PRD#<ID>`（如 `PRD#API-001` / `PRD#TBL-001`）
 - 无 API：若 PRD `### 9.2 接口清单` 为 `N/A`，则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 内的 `PRD#<ID>` 引用，减少通读 PRD 的噪音
-- `/split-check` 严格校验：`API-###` 覆盖、规则引用、依赖无环、`PRD#<ID>` 引用可定位；未通过不得进入 `/backfill` 与 `/story N`
+- `/split-check1`（结构/阈值）`PASS` 后运行 `/split-check2`（PRD/GC 对齐；有 API 时 Smoke Test）；未通过不得进入 `/backfill` 与 `/story N`
 - Story 执行顺序：`/story-check N` `PASS` → `/story-pack N` →（新窗口）`/story N`（只读取 `docs/story-N-exec-pack.yaml`，不通读 PRD/GC/Story）
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
 - `/story N` 执行后自动跑验证命令：命令来自 `docs/story-N-exec-pack.yaml` 的 `verification.commands`（由 `GLOBAL-CONTEXT` 第 2 节“项目验证命令”抽取）；若全部为 `N/A` 则输出 `DECISION`

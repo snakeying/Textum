@@ -1,18 +1,24 @@
-# 阶段4: Story 拆分校验
+# 阶段4a: Story 拆分校验（Core / split-check1）
 
-## 读取（只读）
+读取 `docs/split-plan.md` 与所有 `docs/story-*-*.md`，做“结构/一致性/阈值”校验；仅在 `PASS` 时写入索引交接包 `docs/split-check-index-pack.yaml`；不读取 PRD/GC。
 
-- `docs/split-plan.md`
-- `docs/story-*-*.md`（所有 Story 文件）
-- `docs/GLOBAL-CONTEXT.md`
-- `docs/PRD.md`（只读；不修改）
+## 读取 / 写入
 
-## 输出（只读）
+- 读取：`docs/split-plan.md`、`docs/story-*-*.md`
+- 写入（仅 PASS 时）：`docs/split-check-index-pack.yaml`
+- 模板：`.claude/textum/split-check-index-pack-template.md`
 
-- 若存在任何 `FAIL`：只输出 `FAIL` 清单并结束
-- 否则若存在任何 `DECISION`：只输出 `DECISION` 清单并结束
-- 否则：输出 `PASS`，并提示在新窗口运行 `/backfill`
-- 若触发“大 Story 阈值（早期短路）”：输出 `FAIL` 或 `DECISION` 清单 + 1 个 `SPLIT_REPLAN_PACK` 代码块，然后立即结束（不继续后续校验；不提示 `/backfill`）
+## 输出
+
+- 若触发“大 Story 阈值（早期短路）”：输出 `FAIL` 或 `DECISION` 清单 + 1 个 `SPLIT_REPLAN_PACK` 代码块，然后结束（不写 pack）
+- 否则若存在任何 `FAIL`：输出 `FAIL` 清单，并在末尾追加：
+  - `下一步：/split（如需调整规划则先 /split-plan）`
+  - `重跑：/split-check1`
+  然后结束（不写 pack）
+- 否则：写入 `docs/split-check-index-pack.yaml`，输出：
+  - `PASS`
+  - `已写入：docs/split-check-index-pack.yaml`
+  - `下一步：/split-check2`
 
 ## 执行步骤（必须按序）
 
@@ -24,9 +30,8 @@
    - 引用：`GC#BR-###`、`PRD#API-###`、`PRD#TBL-###`、`PRD#BR-###`
    - 计数：`api_refs` / `tbl_refs` / `feature_points` / `acceptance_items`
 3. **大 Story 阈值（早期短路）**：若触发阈值 → 输出 `FAIL/DECISION + SPLIT_REPLAN_PACK` 并结束
-4. 解析 `docs/GLOBAL-CONTEXT.md`：只读取第 4 节业务规则表，得到合法 `BR-###` 集合
-5. 解析 `docs/PRD.md`：只读取 `5.1`（模块清单）、`8.1`（表清单）、`9.2`（接口清单）得到 `P0` 模块集合、`TBL-###` 集合、`API-###` 集合；必要时按 `PRD#<ID>` 定位块核验（接口/表优先用标题行锚点 `<!-- PRD#API-### -->` / `<!-- PRD#TBL-### -->`）
-6. 执行全量门禁（见下）
+4. 执行门禁（见下）
+5. 生成索引交接包（见下），写入 `docs/split-check-index-pack.yaml`
 
 ## 大 Story 阈值（早期短路）
 
@@ -85,7 +90,7 @@ constraints:
   - "拆分后的每个 Story 必须满足阈值；否则继续拆"
 ```
 
-## 全量门禁（未触发早期短路时才执行）
+## 门禁（未触发早期短路时才执行）
 
 ### A) split-plan 格式与稳定可解析
 
@@ -108,35 +113,35 @@ constraints:
 - 不得残留占位符：`[功能描述]`、`PRD#API-###`、`PRD#TBL-###`、`PRD#BR-###`、`GC#BR-###` 等
 - 所有 PRD 引用必须为具体数字：`PRD#API-001` / `PRD#TBL-001` / `PRD#BR-001`
 
-### D) 引用一致性（可追溯）
-
-- `GC#BR-###`：必须存在于 `docs/GLOBAL-CONTEXT.md` 第 4 节规则表
-- `PRD#API-###`：对应 `API-###` 必须存在于 PRD `9.2 接口清单`
-- `PRD#TBL-###`：对应 `TBL-###` 必须能在 PRD `8.1/8.2` 中定位到
-- `PRD#BR-###`：对应 `BR-###` 必须存在于 PRD 第 6 节规则表
-
-### E) 依赖合法性
+### D) 依赖合法性
 
 - 引用的 `前置Story` 必须存在；禁止自依赖；依赖无环
 - 若 `Story A` 依赖 `Story B`：必须满足 `B < A`
 
-### F) 覆盖性与 API 唯一归属
+### E) split-plan ↔ Story 的 API 分配一致性（不读 PRD；只校验“是否按规划写”）
 
-- PRD `5.1` 的每个 `P0` 模块至少被 1 个 Story 覆盖（按 Story 的 `模块（必填）`）
-- 若 PRD `9.2` 为 `N/A`（无 API，API 集合为空）：
-  - split-plan 第 2 节必须只保留表头且无数据行
-  - 所有 Story 的“接口”章节必须为 `N/A`，且不得出现任何 `PRD#API-###`
-  - 跳过本节其余 API 覆盖/唯一归属检查
-- 否则（有 API）：
-  - split-plan 第 2 节必须与 PRD `9.2` 一致：覆盖全部 `API-###` 且仅出现一次；不得出现 PRD `9.2` 中不存在的 `API-###`
-  - Story 文件“接口”章节：每个 `PRD#API-###` 必须且仅出现于 1 个 Story，且与 split-plan 分配完全一致（不得漂移/漏写/多写）
+- 若 split-plan 第 2 节无任何 API 数据行：
+  - 所有 Story 不得出现任何 `PRD#API-###`
+  - 所有 Story 的“接口”章节必须为 `N/A`
+- 若 split-plan 第 2 节存在 API 分配：
+  - split-plan 中每个 `API-###` 必须在且仅在 1 个 Story 中出现（按 Story 文件内 `PRD#API-###` 去重集合）
+  - 对每个 Story：其 `PRD#API-###` 去重集合必须与 split-plan 分配到该 Story 的 `API-###` 集合一致（不得缺失/多写）
 
-## 输出格式（必须）
+## 生成索引交接包（必须；仅 PASS 时写入）
 
-- `FAIL`：`F-001` 起编号；每条包含：文件名 + 问题 + 修复方式（改 Story / 回 `/split-plan` / 重新 `/split`）
-- `DECISION`：`D-001` 起编号；每条包含：风险 + 需要用户确认的问题
-- `PASS`：仅提示下一步：在新窗口运行 `/backfill`
+目标：供 `/split-check2` 使用，避免复读所有 Story 文件。
+
+规则：
+- 严格按 `.claude/textum/split-check-index-pack-template.md` 的 YAML 结构写入（纯 YAML；不含 ```）
+- `modules` 解析为 `["M-01","M-02"]` 数组；`prereq_stories` 解析为 `["Story 1"]` 数组（无则空数组）
+- 引用只记录 ID（去掉 `GC#`/`PRD#` 前缀），并分类输出：
+  - `gc_br_ids`: `BR-###`
+  - `prd_api_ids`: `API-###`
+  - `prd_tbl_ids`: `TBL-###`
+  - `prd_br_ids`: `BR-###`
+- `summary.refs.*` 为全量 union（去重、升序）
+- 不得残留占位符（如 `[...]`、`###`）
 
 ## 开始
 
-请确认 `docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`、`docs/split-plan.md`、`docs/story-*-*.md` 已存在。
+请确认 `docs/split-plan.md` 与 `docs/story-*-*.md` 已存在。

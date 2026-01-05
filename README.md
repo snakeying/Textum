@@ -23,7 +23,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 把 `.claude` 文件夹放到你的项目里就行了，就这么简单。
 
-## 🎯 主流程命令（推荐）
+## 🎯 主流程命令
 
 | 步骤 | 命令 | 做什么 |
 |------|------|--------|
@@ -34,7 +34,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 | 5️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
 | 6️⃣ | `/split-plan` | 先做低噪音拆分规划（Story 列表 + API 分配 + 依赖） |
 | 7️⃣ | `/split` | 按规划生成 Story 文件并补齐 `PRD#<ID>` 引用 |
-| 8️⃣ | `/split-check` | 严格校验拆分结果（与 split-plan 一致、API 覆盖/唯一归属、依赖无环、引用可定位） |
+| 8️⃣ | `/split-check1` → `PASS` 后 `/split-check2` | 拆分校验（结构/阈值 → 引用可追溯；有 API 时 Smoke Test） |
 | 9️⃣ | `/backfill` | 回填 GLOBAL-CONTEXT 的“规则涉及 Story / 依赖图”索引 |
 | 🔟 | `/story-check 1` → `PASS` 后 `/story-pack 1` → `/story 1` | 开始做第一个任务，然后按顺序继续 `/story-check 2` → `/story-pack 2` → `/story 2`... |
 
@@ -43,7 +43,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 ## 🧭 执行注意事项（强烈推荐看一遍）
 
 - 一次只跑一个 `/story N`：按顺序跑 `/story 1`、`/story 2`、`/story 3`...
-- 如果同一个编号出现多个 `docs/story-N-*.md`：先回到 `/split` 修正，然后重跑 `/split-check` 与 `/backfill`
+- 如果同一个编号出现多个 `docs/story-N-*.md`：先回到 `/split` 修正，然后重跑 `/split-check1` → `PASS` 后 `/split-check2`，再 `/backfill`
 - Story 声明了“前置 Story”：先完成并合入前置，再做后续（避免并行冲突）
 - 实现阶段不发明新规则/新枚举/新接口：发现缺口就停下来确认是否要回到 `/prd` 修正规格（若 PRD 需要改动，需重跑后续步骤）
 - 为了省 token：`/story` 只读取 `docs/story-N-exec-pack.yaml`（`STORY_EXEC_PACK`；由 `/story-pack` 写入），不再通读 PRD/GC/Story
@@ -56,7 +56,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 - 无 API：若 PRD `### 9.2 接口清单` 为 `N/A`，则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
 - `N/A` vs `TBD`：`N/A`=不适用；`TBD`=等待回填（仅允许出现在 `GLOBAL-CONTEXT` 规则表“涉及Story”列与依赖图）
-- 大 Story 早期短路：`/split-check` 触发阈值会输出 `SPLIT_REPLAN_PACK`，用于回到 `/split-plan` 拆分重规划
+- 大 Story 早期短路：`/split-check1` 触发阈值会输出 `SPLIT_REPLAN_PACK`，用于回到 `/split-plan` 拆分重规划
 
 ## 📁 文件会放在哪？
 
@@ -90,7 +90,8 @@ AI：...（多轮澄清后输出 PRD_INPUT_PACK）
 你：/scaffold-check   → 校验全局上下文
 你：/split-plan       → 生成拆分规划（Story列表 + API分配）
 你：/split            → 生成 Story 文件并补齐 PRD#<ID> 引用
-你：/split-check      → 严格校验拆分结果
+你：/split-check1     → 拆分校验（Core：结构/一致性/阈值）
+你：/split-check2     → 拆分校验（PRD/GC 对齐 + 有 API 时 Smoke Test）
 你：/backfill         → 回填依赖图和规则索引
 你：/story-check 1    → 单 Story 门禁校验
 你：/story-pack 1     → 写入 `docs/story-1-exec-pack.yaml`（`STORY_EXEC_PACK`）

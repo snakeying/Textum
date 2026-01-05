@@ -28,4 +28,4 @@
 
 ## 完成后
 
-- 提示用户在新窗口运行 `/split-check`
+- 提示用户在新窗口运行 `/split-check1`，`PASS` 后再运行 `/split-check2`
