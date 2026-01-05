@@ -1,4 +1,4 @@
-# Textum - PRD → Story 开发工作流（v2）
+# Textum - PRD → Story 开发工作流（v3）
 
 > 本版本采用“多窗口 + 低噪音 + 门禁校验”的流程：所有引用一律使用稳定 ID 锚点（`GC#BR-###` / `PRD#API-###` / `PRD#TBL-###` / `PRD#BR-###`），并通过 `/prd-check` `/scaffold-check` `/split-check` `/story-check` 降噪与把关。
 

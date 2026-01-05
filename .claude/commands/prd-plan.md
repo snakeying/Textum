@@ -69,7 +69,9 @@ modules:
     deps: ["无"]
     summary: ""
     feature_points:
-      - ""
+      - desc: ""
+        landing: "N/A" # N/A 或逗号分隔：DB:<table> / FILE:<path/glob> / CFG:<key> / EXT:<system>
+        note: ""
     scenarios:
       - actor: ""
         given: ""
@@ -105,8 +107,8 @@ states_enums:
 
 data_model:
   persistence:
-    must_persist: true
-    storage_choice: "本地文件/SQLite/其它（请写清楚）"
+    has_durable_artifacts: true
+    notes: ""
   tables:
     - table: ""
       purpose: ""
