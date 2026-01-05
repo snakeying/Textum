@@ -106,6 +106,14 @@ AI：...（多轮澄清后输出 PRD_INPUT_PACK）
 | 🌿 中型 | 15-25 | ✅ 可靠完成 | 简单博客、问卷系统 |
 | 🌳 较大 | 25-35 | ⚠️ 需人工校验，中等风险 | 多角色后台、预约平台 |
 
+[V2版本模拟测试报告](/simulate-test-reports/v2simulate-test-report-opus.md) 
+
+[V3版本模拟测试报告](/simulate-test-reports/v3simulate-test-report-opus.md) 
+
+[V4版本模拟测试报告](/simulate-test-reports/v4simulate-test-report-opus.md) 
+
+以上模拟均采用 Claude opus 4.5 模型。
+
 > 更大的项目？老实说，建议拆成几个独立子项目 🙏
 
 ---
