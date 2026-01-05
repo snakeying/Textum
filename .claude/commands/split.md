@@ -21,8 +21,9 @@
 2. 逐个 Story 生成 1 个文件：`docs/story-N-<slug>.md`
 3. 严格按模板填充：
    - `模块（必填）`、`前置Story` 与 split-plan 一致
+   - `关联功能点（必填）`：填写本 Story 覆盖的 `FP-xx`（必须是 PRD 中存在的具体数字）
    - “接口”章节：若分配了 `API-###`，列出对应 `PRD#API-###`；若未分配任何 API，则写 `N/A`
-   - “数据变更/业务规则”按需列出 `PRD#TBL-###` / `GC#BR-###` / `PRD#BR-###`
+   - “数据/产物落点/业务规则”按需列出 `PRD#TBL-###`、`ART:FILE/CFG/EXT:*`、`GC#BR-###`、`PRD#BR-###`
 4. 自检：Story 编号可执行（前置编号 < 当前编号）；文件名与 split-plan 1:1 对应；无重复编号
 
 ## 完成后

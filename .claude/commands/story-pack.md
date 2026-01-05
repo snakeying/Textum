@@ -27,7 +27,9 @@
 ### A) 从 Story 抽取索引
 
 - 收集 `GC#BR-###`
+- 收集 `FP-xx`：从 `关联功能点（必填）:` 行抽取（去重后按编号升序）
 - 收集 `PRD#API-###` / `PRD#TBL-###` / `PRD#BR-###`
+- 收集 `ART:*`：从以 `ART:` 开头的落点条目中抽取（例如 `ART:FILE:...` / `ART:CFG:...` / `ART:EXT:...`；只取 token 本体，忽略后续描述）
 - 去重后按 ID 升序排列
 
 ### B) 从 GC 抽取（避免通读）
@@ -42,6 +44,21 @@
 - 对于项目验证命令：从 GC 第 2 节 `### 项目验证命令（如适用；否则写 N/A）` 的表格逐行抽取到 pack 的 `verification.commands`（按表格顺序；不改写）
   - 若该小节为 `N/A` 或表格不存在：`verification.commands` 只写 1 行 `type/command/note` 均为 `N/A`
   - 否则：对表格每一行数据，原文复制三列到 `type` / `command` / `note`；`command` 允许为 `N/A`
+
+### C0) FP→落点映射预检查（必须；兜底防硬违约）
+
+目标：避免进入 `/story $ARGUMENTS` 后被迫“发明 pack 外的新字段/新文件/新表”，导致最终产出偏离用户预期。
+
+1. 在 PRD 中定位 `### 8.0 功能点→落点映射（必填）` 表，抽取本 Story 关联的 `FP-xx` 对应行（表头 + 分隔行 + 行；按 `FP-xx` 升序）
+2. 对每个 `FP-xx` 的“落点”列：解析为集合（`N/A` 或逗号分隔多项），允许项前缀仅：`DB:` / `FILE:` / `CFG:` / `EXT:` / `N/A`
+3. 计算期望覆盖集合（去重）：
+   - `E_tbl =` 所有 `DB:TBL-###` 转换为 `PRD#TBL-###`（必须为具体数字）
+   - `E_art =` 所有 `FILE:` / `CFG:` / `EXT:` 转换为 `ART:FILE:` / `ART:CFG:` / `ART:EXT:`（token 精确匹配）
+4. 校验（任一不满足即 `FAIL` 并停止，不输出 pack）：
+   - `E_tbl` 必须是 Story 内 `PRD#TBL-###` 的子集（缺失则列出缺失项）
+   - `E_art` 必须是 Story 内 `ART:*` token 集合的子集（缺失则列出缺失项）
+
+> 注：此处只做“是否显式声明落点”的兜底，不评估落点设计优劣；优劣由 PRD 与验收标准决定。
 
 ### C) 从 PRD 抽取（锚点 + 固定边界，避免误命中）
 
@@ -62,6 +79,10 @@
 - 若 `S_prd_br` 为空：在 pack 中写 `prd.rule_rows` 为 `N/A`
 - 若 `S_prd_br` 非空：
   - 从 PRD 第 6 节规则表中复制：表头 + 分隔行 + `S_prd_br` 对应行（按 ID 升序）
+
+- `prd.fp_artifact_rows`：
+  - 若 Story 未声明任何 `FP-xx`：输出 `FAIL` 并停止（不输出 pack）
+  - 否则：粘贴 PRD `8.0 功能点→落点映射` 表中与本 Story 关联 `FP-xx` 对应的行（包含表头 + 分隔行 + 行；按 `FP-xx` 升序）
 
 > 若任何 `PRD#<ID>` 找不到对应锚点/块边界：输出 `FAIL` 清单并停止（不输出 pack）。
 
@@ -96,6 +117,8 @@ gc:
   referenced_rules: |-
     (若无 GC#BR 引用写 N/A；否则粘贴 GC 第4节规则表：表头 + 分隔行 + 被引用 BR-### 行)
 prd:
+  fp_artifact_rows: |-
+    (原文粘贴 PRD 8.0 表：表头 + 分隔行 + 本 Story 关联 FP 行；若不适用写 N/A)
   api_blocks: |-
     (若无 PRD#API 引用写 N/A；否则按 PRD#API-### 顺序逐块原文粘贴；每块包含标题行锚点)
   table_blocks: |-
