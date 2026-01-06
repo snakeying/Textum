@@ -1,10 +1,10 @@
 # Story [编号]: [功能名称]
 
 模块（必填）: [M-xx / M-xx,M-yy]
-关联功能点（必填）: FP-01, FP-02
+关联功能点（必填）: FP-xx, FP-yy
 
 ## 功能点（必填）
-- [功能描述]
+- FP-xx: [功能描述]
 
 ## 依赖（必填）
 - 前置Story: [无 / Story X, Y]
@@ -17,9 +17,9 @@
 ## 数据/产物落点（必填；无则写 N/A）
 
 - PRD#TBL-###: [数据库表（如适用）] - [本Story对该表的职责/边界]
-- ART:FILE:<path/glob>: [文件/目录/生成产物（如适用）] - [本Story职责说明]
-- ART:CFG:<key>: [配置项（如适用）] - [本Story职责说明]
-- ART:EXT:<system>: [外部依赖（如适用）] - [本Story职责说明]
+- ART:FILE:[path_glob] - [本Story职责说明]
+- ART:CFG:[key] - [本Story职责说明]
+- ART:EXT:[system] - [本Story职责说明]
 
 ## 接口（如无写 N/A）
 - PRD#API-###: [接口名称] - [本Story职责说明]

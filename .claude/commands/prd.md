@@ -19,6 +19,9 @@
 ## PACK 完备性校验（必须）
 
 - `PRD_INPUT_PACK` 是唯一事实来源：PRD 只能从 pack 的已确认字段映射出来（不得脑补）
+- 必须满足最小可用性：
+  - `modules` 至少 1 个，且至少 1 个模块 `priority = P0`
+  - `business_rules` 至少 1 条且每条非空（否则后续 GLOBAL-CONTEXT 无法生成可用规则索引）
 - 对照 `.claude/textum/PRD-framework.md` 的必填章/表逐项校验：必须能**完整填满**且不残留任何占位符（如 `[...]`、`[field]`、`[METHOD]`、`[table]`、`PRD#API-###`、`PRD#TBL-###`）
 - 必须可闭合“功能点→落点映射”（PRD `8.0`）：
   - pack 来源：`modules[].feature_points[].landing`（不可为空；不明确就回 `PRD_CLARIFY_PACK`）

@@ -27,6 +27,7 @@
    - 第 2 节 API 分配表：`API-### -> Story N`
 2. 解析所有 `docs/story-*-*.md`（只抽取索引 + 机械计数）：
    - `模块（必填）`、`前置Story`
+   - 关联功能点：从 `关联功能点（必填）:` 行抽取 `FP-xx`（去重、升序）
    - 引用：`GC#BR-###`、`PRD#API-###`、`PRD#TBL-###`、`PRD#BR-###`
    - 计数：`api_refs` / `tbl_refs` / `feature_points` / `acceptance_items`
 3. **大 Story 阈值（早期短路）**：若触发阈值 → 输出 `FAIL/DECISION + SPLIT_REPLAN_PACK` 并结束
@@ -110,7 +111,9 @@ constraints:
 ### C) Story 模板完整性与占位符
 
 - 每个 Story 必须包含模板全部章节；无内容写 `N/A`，不得省略
-- 不得残留占位符：`[功能描述]`、`PRD#API-###`、`PRD#TBL-###`、`PRD#BR-###`、`GC#BR-###` 等
+- 必须存在行：`关联功能点（必填）:`，且至少包含 1 个具体数字 `FP-xx`（如 `FP-01`）；禁止 `FP-xx/FP-##` 等占位符
+- `## 功能点（必填）` 章节内每条条目必须为 `- FP-xx: ...`，且该章节出现的 `FP-xx` 去重集合必须与“关联功能点”一致
+- 不得残留占位符：`[功能描述]`、`PRD#API-###`、`PRD#TBL-###`、`PRD#BR-###`、`GC#BR-###`、`ART:FILE:[path_glob]`、`ART:CFG:[key]`、`ART:EXT:[system]` 等
 - 所有 PRD 引用必须为具体数字：`PRD#API-001` / `PRD#TBL-001` / `PRD#BR-001`
 
 ### D) 依赖合法性
@@ -135,6 +138,7 @@ constraints:
 - 严格按 `.claude/textum/split-check-index-pack-template.md` 的 YAML 结构写入（纯 YAML；不含 ```）
 - `modules` 解析为 `["M-01","M-02"]` 数组；`prereq_stories` 解析为 `["Story 1"]` 数组（无则空数组）
 - 引用只记录 ID（去掉 `GC#`/`PRD#` 前缀），并分类输出：
+  - `fp_ids`: `FP-xx`
   - `gc_br_ids`: `BR-###`
   - `prd_api_ids`: `API-###`
   - `prd_tbl_ids`: `TBL-###`

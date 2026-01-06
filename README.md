@@ -49,14 +49,17 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 - 为了省 token：`/story` 只读取 `docs/story-N-exec-pack.yaml`（`STORY_EXEC_PACK`；由 `/story-pack` 写入），不再通读 PRD/GC/Story
 - 自动验证：`/story` 会按 `docs/story-N-exec-pack.yaml` 的 `verification.commands` 执行验证命令（来源：`docs/GLOBAL-CONTEXT.md` 第 2 节“项目验证命令”）；若全部为 `N/A` 则输出 `DECISION`（不猜命令）
 
-## 🧱 低噪音约束（v2）
+## 🧱 低噪音约束
 
 - Story 引用 PRD：统一使用 `PRD#<ID>`（如 `PRD#API-001` / `PRD#TBL-001` / `PRD#BR-001`）；规则优先用 `GC#BR-###`
 - PRD 块边界锚点：每个表/接口详情标题行必须包含 `<!-- PRD#TBL-### -->` / `<!-- PRD#API-### -->`（数字一致），供 `/story-pack` 机械抽取
+- PRD `8.0 功能点→落点映射` 是“可追溯落点”的唯一合约：Story 的 `PRD#TBL-###` 与 `ART:*` 必须覆盖到该 Story 关联的 `FP-xx` 对应的落点（`/story-check` 与 `/story-pack` 会做兜底子集校验，避免实现阶段被迫发明 pack 外新落点）
+- `ART:*` token 规范：只允许 `ART:FILE:<path/glob>` / `ART:CFG:<key>` / `ART:EXT:<system>`（token 与后续说明用空格或 ` - ` 分隔；不要把额外的冒号/括号塞进 token）
 - 无 API：若 PRD `### 9.2 接口清单` 为 `N/A`，则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
 - `N/A` vs `TBD`：`N/A`=不适用；`TBD`=等待回填（仅允许出现在 `GLOBAL-CONTEXT` 规则表“涉及Story”列与依赖图）
 - 大 Story 早期短路：`/split-check1` 触发阈值会输出 `SPLIT_REPLAN_PACK`，用于回到 `/split-plan` 拆分重规划
+- FP 覆盖：PRD `8.0` 中每个 `FP-xx` 必须至少被 1 个 Story 的「关联功能点」覆盖（`/split-check2` 会校验）
 
 ## 📁 文件会放在哪？
 
@@ -113,6 +116,8 @@ AI：...（多轮澄清后输出 PRD_INPUT_PACK）
 [V4版本模拟测试报告](/simulate-test-reports/v4simulate-test-report-opus.md) 
 
 以上模拟均采用 Claude opus 4.5 模型。
+
+**⚠️ 模拟测试不代表实际项目运行时的效果，仅供参考。**
 
 > 更大的项目？老实说，建议拆成几个独立子项目 🙏
 

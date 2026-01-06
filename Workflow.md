@@ -1,4 +1,4 @@
-# Textum - PRD → Story 开发工作流（v4）
+# Textum - PRD → Story 开发工作流（v5）
 
 > 本版本采用“多窗口 + 低噪音 + 门禁校验”的流程：所有引用一律使用稳定 ID 锚点（`GC#BR-###` / `PRD#API-###` / `PRD#TBL-###` / `PRD#BR-###`），并通过 `/prd-check` `/scaffold-check` `/split-check1` `/split-check2` `/story-check` 降噪与把关。
 
@@ -48,7 +48,7 @@ flowchart TB
         SS[/split 生成Story/]:::cmd
         FS[(story-*.md)]:::file
         C3{{split-check1 结构}}:::chk
-        IX[(index-pack.yaml)]:::file
+        IX[(split-check-index-pack.yaml)]:::file
         C4{{split-check2 引用}}:::chk
 
         SP --> FP --> SS --> FS --> C3
@@ -131,7 +131,9 @@ project/
 - 无 API：若 PRD `### 9.2 接口清单` 为 `N/A`，则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 内的 `PRD#<ID>` 引用，减少通读 PRD 的噪音
 - `/split-check1`（结构/阈值）`PASS` 后运行 `/split-check2`（PRD/GC 对齐；有 API 时 Smoke Test）；未通过不得进入 `/backfill` 与 `/story N`
+- FP 覆盖：PRD `8.0 功能点→落点映射` 中的每个 `FP-xx` 必须至少被 1 个 Story 的「关联功能点」覆盖；否则应回到 `/split`（必要时先 `/split-plan`）调整边界
 - Story 执行顺序：`/story-check N` `PASS` → `/story-pack N` →（新窗口）`/story N`（只读取 `docs/story-N-exec-pack.yaml`，不通读 PRD/GC/Story）
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
 - `/story N` 执行后自动跑验证命令：命令来自 `docs/story-N-exec-pack.yaml` 的 `verification.commands`（由 `GLOBAL-CONTEXT` 第 2 节“项目验证命令”抽取）；若全部为 `N/A` 则输出 `DECISION`
+- 落点 token：Story 的 `ART:FILE:<path>` / `ART:CFG:<key>` / `ART:EXT:<system>` 必须与 PRD `8.0` 映射中的 `FILE:` / `CFG:` / `EXT:` 精确对齐（`/story-check` 与 `/story-pack` 会做兜底子集校验）
 - 若 Story 声明 `前置Story`/`已有资源`：先在 `src/` 下用 `rg` 定向检索已有实现，只读取关键签名，避免重复实现

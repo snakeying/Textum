@@ -20,7 +20,14 @@
 - 全程中文（必要技术词可用英文）
 - 每轮最多提 4 个问题；优先问会阻塞 PRD 落盘的缺失信息
 - 未确认的信息不得写入 `PRD_INPUT_PACK`；未知必须继续追问
-- 每完成一个主题块，输出 3-6 行「当前需求小结」并让用户确认/补充
+- 每完成一个主题块，输出 1-3 行「当前需求小结」并让用户确认/补充
+
+## 收敛门禁（输出 pack 前必须满足）
+
+- `modules` 至少 1 个，且至少 1 个模块 `priority = P0`
+- 每个模块至少 1 个 `feature_points[]`，且每个 `feature_points[].landing` 非空（允许 `N/A`）
+- `business_rules` 至少 1 条且非空
+- `permission_matrix.operations` 至少 1 行
 
 ## 输出规则（必须遵守）
 
