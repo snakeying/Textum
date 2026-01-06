@@ -40,26 +40,25 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 > 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步；`/prd-check` `PASS` 后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续 Story 通过稳定 ID 锚点 `PRD#<ID>` 精确引用，避免通读 PRD 与行号漂移
 
-## 🧭 执行注意事项（强烈推荐看一遍）
+## 🧭 执行注意事项
 
-- 一次只跑一个 `/story N`：按顺序跑 `/story 1`、`/story 2`、`/story 3`...
-- 如果同一个编号出现多个 `docs/story-N-*.md`：先回到 `/split` 修正，然后重跑 `/split-check1` → `PASS` 后 `/split-check2`，再 `/backfill`
-- Story 声明了“前置 Story”：先完成并合入前置，再做后续（避免并行冲突）
-- 实现阶段不发明新规则/新枚举/新接口：发现缺口就停下来确认是否要回到 `/prd` 修正规格（若 PRD 需要改动，需重跑后续步骤）
-- 为了省 token：`/story` 只读取 `docs/story-N-exec-pack.yaml`（`STORY_EXEC_PACK`；由 `/story-pack` 写入），不再通读 PRD/GC/Story
-- 自动验证：`/story` 会按 `docs/story-N-exec-pack.yaml` 的 `verification.commands` 执行验证命令（来源：`docs/GLOBAL-CONTEXT.md` 第 2 节“项目验证命令”）；若全部为 `N/A` 则输出 `DECISION`（不猜命令）
+- 按顺序执行 `/story 1`、`/story 2`、`/story 3`...（一次只跑一个）
+- Story 有"前置 Story"时，先完成前置再做后续
+- 实现阶段发现缺口？停下来确认是否要回到 `/prd` 修正（改了 PRD 需重跑后续步骤）
 
-## 🧱 低噪音约束
+## 💡 为什么这么设计
 
-- Story 引用 PRD：统一使用 `PRD#<ID>`（如 `PRD#API-001` / `PRD#TBL-001` / `PRD#BR-001`）；规则优先用 `GC#BR-###`
-- PRD 块边界锚点：每个表/接口详情标题行必须包含 `<!-- PRD#TBL-### -->` / `<!-- PRD#API-### -->`（数字一致），供 `/story-pack` 机械抽取
-- PRD `8.0 功能点→落点映射` 是“可追溯落点”的唯一合约：Story 的 `PRD#TBL-###` 与 `ART:*` 必须覆盖到该 Story 关联的 `FP-xx` 对应的落点（`/story-check` 与 `/story-pack` 会做兜底子集校验，避免实现阶段被迫发明 pack 外新落点）
-- `ART:*` token 规范：只允许 `ART:FILE:<path/glob>` / `ART:CFG:<key>` / `ART:EXT:<system>`（token 与后续说明用空格或 ` - ` 分隔；不要把额外的冒号/括号塞进 token）
-- 无 API：若 PRD `### 9.2 接口清单` 为 `N/A`，则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
-- 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
-- `N/A` vs `TBD`：`N/A`=不适用；`TBD`=等待回填（仅允许出现在 `GLOBAL-CONTEXT` 规则表“涉及Story”列与依赖图）
-- 大 Story 早期短路：`/split-check1` 触发阈值会输出 `SPLIT_REPLAN_PACK`，用于回到 `/split-plan` 拆分重规划
-- FP 覆盖：PRD `8.0` 中每个 `FP-xx` 必须至少被 1 个 Story 的「关联功能点」覆盖（`/split-check2` 会校验）
+试过把详细 PRD 直接丢给模型吗？结果往往是：写到模块 D 的时候，模块 A 定义的字段名已经忘得差不多了。
+
+这不是哪个工具的锅，是现阶段 LLM 的局限——上下文越长，关键信息越容易被淹没。
+
+所以这个流程的核心就俩字：**降噪**。
+
+- 每个阶段开新窗口，别让历史上下文污染当前任务
+- 引用全用稳定 ID（`PRD#API-001` 这种），别指望模型记住"上面说的那个接口"
+- 执行阶段只给当前 Story 需要的上下文，不让模型通读整个 PRD
+
+技术细节见 [Workflow.md](./Workflow.md)
 
 ## 📁 文件会放在哪？
 
