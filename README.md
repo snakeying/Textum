@@ -67,10 +67,12 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 你的项目/
 ├── .claude/          # 🔧 工具本身（你下载的）
 ├── docs/             # 📄 生成的文档都在这
-│   ├── PRD.md           # 需求文档（定稿后不要改）
-│   ├── GLOBAL-CONTEXT.md # 全局约定/索引（/backfill 回填索引）
-│   ├── split-plan.md     # 拆分规划（/split-plan 生成）
-│   └── story-1-slug.md   # 任务清单
+│   ├── PRD.md                        # 需求文档（定稿后不要改）
+│   ├── GLOBAL-CONTEXT.md             # 全局约定/索引（/backfill 回填索引）
+│   ├── split-plan.md                 # 拆分规划（/split-plan 生成）
+│   ├── split-check-index-pack.yaml   # 索引交接包（/split-check1 生成）
+│   ├── story-1-slug.md               # 任务清单
+│   └── story-1-exec-pack.yaml        # 执行包（/story-pack 生成）
 └── src/              # 💻 代码会写在这
 ```
 
@@ -114,6 +116,8 @@ AI：...（多轮澄清后输出 PRD_INPUT_PACK）
 [V3版本模拟测试报告](/simulate-test-reports/v3simulate-test-report-opus.md) 
 
 [V4版本模拟测试报告](/simulate-test-reports/v4simulate-test-report-opus.md) 
+
+[V5版本模拟测试报告](/simulate-test-reports/v5simulate-test-report-opus.md) 
 
 以上模拟均采用 Claude opus 4.5 模型。
 
