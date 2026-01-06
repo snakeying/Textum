@@ -11,7 +11,7 @@
 ## 输出
 
 - 若触发“大 Story 阈值（早期短路）”：输出 `FAIL` 或 `DECISION` 清单 + 1 个 `SPLIT_REPLAN_PACK` 代码块，然后结束（不写 pack）
-- 否则若存在任何 `FAIL`：输出 `FAIL` 清单，并在末尾追加：
+- 否则若存在任何 `FAIL`：输出 `FAIL` 清单（`F-001` 起编号；每条必须包含：问题 / 影响 / 修复方式（只给 1 个动作或命令）），并在末尾追加：
   - `下一步：/split（如需调整规划则先 /split-plan）`
   - `重跑：/split-check1`
   然后结束（不写 pack）
@@ -61,7 +61,7 @@
 
 ### 触发后输出（必须）
 
-1. 输出 `FAIL` 或 `DECISION` 清单（每条包含：Story 文件名 + 触发指标 + 命中阈值）
+1. 输出 `FAIL` 或 `DECISION` 清单（`F-001` 起编号；每条必须包含：问题 / 影响 / 修复方式（只给 1 个动作或命令）；并包含：Story 文件名 + 触发指标 + 命中阈值）
 2. 紧接着追加且仅追加 1 个代码块 `SPLIT_REPLAN_PACK`（供复制到 `/split-plan`）
 3. 立即结束
 
@@ -113,7 +113,12 @@ constraints:
 - 每个 Story 必须包含模板全部章节；无内容写 `N/A`，不得省略
 - 必须存在行：`关联功能点（必填）:`，且至少包含 1 个具体数字 `FP-xx`（如 `FP-01`）；禁止 `FP-xx/FP-##` 等占位符
 - `## 功能点（必填）` 章节内每条条目必须为 `- FP-xx: ...`，且该章节出现的 `FP-xx` 去重集合必须与“关联功能点”一致
-- 不得残留占位符：`[功能描述]`、`PRD#API-###`、`PRD#TBL-###`、`PRD#BR-###`、`GC#BR-###`、`ART:FILE:[path_glob]`、`ART:CFG:[key]`、`ART:EXT:[system]` 等
+- 占位符门禁：剔除 fenced code blocks 后逐行检查；不得残留占位符：`[...]`、`[功能描述]`、`PRD#API-###`、`PRD#TBL-###`、`PRD#BR-###`、`GC#BR-###`、`ART:FILE:[path_glob]`、`ART:CFG:[key]`、`ART:EXT:[system]` 等
+- 方括号门禁（避免漏检）：剔除 fenced code blocks 后逐行检查；若出现 `[` 或 `]`：仅允许
+  - 行首任务清单标记：`- [ ]` / `- [x]` / `* [ ]` / `* [x]`
+  - Markdown 链接：`[text](...)`
+  - 路径/路由等“包含 `/` 或 `\\` 的字符串”中的方括号（如 `pages/[slug].tsx`、`/posts/[slug]`、`ART:FILE:content/[slug].md`）
+  - 其余一律 `FAIL`
 - 所有 PRD 引用必须为具体数字：`PRD#API-001` / `PRD#TBL-001` / `PRD#BR-001`
 
 ### D) 依赖合法性
