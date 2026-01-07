@@ -111,36 +111,44 @@ Story 1（用户认证模块）的执行产出覆盖了 4 个功能点、3 个 A
 
 ## 7. 附录
 
-### 使用到的命令清单（按执行顺序）
+### A. 执行的命令
 
-1. `/prd-plan`（5 轮）
-2. `/prd`
-3. `/prd-check`
-4. `/scaffold`
-5. `/scaffold-check`
-6. `/split-plan`
-7. `/split`
-8. `/split-check1`
-9. `/split-check2`
-10. `/split-checkout`
-11. `/story-check 1`
-12. `/story-pack 1`
-13. `/story 1`
+| 命令 | 执行次数 | 最终结果 |
+|------|----------|----------|
+| /prd-plan | 5 轮 | PASS |
+| /prd | 1 | PASS |
+| /prd-check | 1 | PASS |
+| /scaffold | 1 | PASS |
+| /scaffold-check | 1 | PASS |
+| /split-plan | 1 | PASS |
+| /split | 1 | PASS |
+| /split-check1 | 1 | PASS |
+| /split-check2 | 1 | PASS |
+| /split-checkout | 1 | PASS |
+| /story-check | 1 | PASS |
+| /story-pack | 1 | PASS |
+| /story | 1 | PASS |
 
-### 虚拟产物清单
+### B. 生成的文档
 
-- `docs/prd-plan-pack.yaml`
-- `docs/PRD.md`
-- `docs/GLOBAL-CONTEXT.md`
-- `docs/split-plan.yaml`
-- `docs/story-1-auth.md`
-- `docs/story-2-chat-core.md`
-- `docs/story-3-conversation-mgmt.md`
-- `docs/story-4-subscription.md`
-- `docs/story-5-settings.md`
-- `docs/story-6-admin-user.md`
-- `docs/story-7-admin-sub.md`
-- `docs/story-8-share-export.md`
-- `docs/split-check-index-pack.yaml`
-- `docs/story-mermaid.md`
-- `docs/story-1-exec-pack.yaml`
+| 文件 | 状态 |
+|------|------|
+| docs/prd-plan-pack.yaml | 模拟生成 |
+| docs/PRD.md | 模拟生成 |
+| docs/GLOBAL-CONTEXT.md | 模拟生成 |
+| docs/split-plan.yaml | 模拟生成 |
+| docs/story-1-auth.md ~ docs/story-8-share-export.md | 模拟生成 |
+| docs/split-check-index-pack.yaml | 模拟生成 |
+| docs/story-mermaid.md | 模拟生成 |
+| docs/story-1-exec-pack.yaml | 模拟生成 |
+
+### C. 生成的代码
+
+| 文件 | 职责 |
+|------|------|
+| prisma/schema.prisma | 数据库 Schema（6 张表） |
+| src/lib/auth.ts | JWT 认证工具 |
+| src/app/api/auth/register/route.ts | 用户注册 API |
+| src/app/api/auth/login/route.ts | 用户登录 API |
+| src/app/api/auth/logout/route.ts | 用户登出 API |
+| src/middleware.ts | 认证中间件 |
