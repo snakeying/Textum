@@ -118,7 +118,9 @@ AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
 
 [V4版本模拟测试报告](/simulate-test-reports/v4simulate-test-report-opus.md) 
 
-[V5版本模拟测试报告](/simulate-test-reports/v5simulate-test-report-opus.md)  <--相对V2/3/4, 更为复杂模糊的需求。
+[V5版本模拟测试报告](/simulate-test-reports/v5simulate-test-report-opus.md)  <--V5开始的模拟任务相对V2/3/4, 更为复杂模糊。
+
+[V6版本模拟测试报告](/simulate-test-reports/v6simulate-test-report-opus.md)
 
 以上模拟均采用 Claude opus 4.5 模型。
 
