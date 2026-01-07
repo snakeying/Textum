@@ -1,4 +1,4 @@
-SPLIT_CHECK_INDEX_PACK:
+SPLIT_CHECK_INDEX_PACK: v1
 source:
   split_plan: "docs/split-plan.yaml"
   stories_glob: "docs/story-*-*.md"

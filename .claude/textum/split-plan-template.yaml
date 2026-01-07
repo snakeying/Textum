@@ -1,4 +1,4 @@
-SPLIT_PLAN_PACK:
+SPLIT_PLAN_PACK: v1
 source:
   prd: "docs/PRD.md"
   global_context: "docs/GLOBAL-CONTEXT.md"

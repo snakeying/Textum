@@ -33,12 +33,12 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 | 4️⃣ | `/scaffold` | 从 PRD 提取全局约定/索引（GLOBAL-CONTEXT） |
 | 5️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
 | 6️⃣ | `/split-plan` | 先做低噪音拆分规划（Story 列表 + API 分配 + 依赖） |
-| 7️⃣ | `/split` | 按规划生成 Story 文件并补齐 `PRD#<ID>` 引用 |
+| 7️⃣ | `/split` | 按规划生成 Story 文件（含 YAML front-matter：`fp_ids/refs/artifacts`） |
 | 8️⃣ | `/split-check1` → `PASS` 后 `/split-check2` | 拆分校验（结构/阈值 → 引用可追溯；有 API 时 Smoke Test） |
 | 9️⃣ | `/split-checkout` | 导出 Story 依赖图（写入 `docs/story-mermaid.md`） |
 | 🔟 | `/story-check 1` → `PASS` 后 `/story-pack 1` → `/story 1` | 开始做第一个任务，然后按顺序继续 `/story-check 2` → `/story-pack 2` → `/story 2`... |
 
-> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步；`/prd-check` `PASS` 后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续 Story 通过稳定 ID 锚点 `PRD#<ID>` 精确引用，避免通读 PRD 与行号漂移
+> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步；`/prd-check` `PASS` 后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续通过 PRD 详情锚点 `<!-- PRD#... -->` 精确定位（如 `<!-- PRD#API-001 -->` / `<!-- PRD#TBL-001 -->`），避免通读 PRD 与行号漂移
 
 ## 🧭 执行注意事项
 
@@ -55,7 +55,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 所以这个流程的核心就俩字：**降噪**。
 
 - 每个阶段开新窗口，别让历史上下文污染当前任务
-- 引用全用稳定 ID（`PRD#API-001` 这种），别指望模型记住"上面说的那个接口"
+- 引用全用稳定 ID 锚点（`<!-- PRD#API-001 -->` 这种），别指望模型记住"上面说的那个接口"
 - 执行阶段只给当前 Story 需要的上下文，不让模型通读整个 PRD
 
 技术细节见 [Workflow.md](./Workflow.md)
@@ -95,7 +95,7 @@ AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
 你：/scaffold         → 生成全局上下文
 你：/scaffold-check   → 校验全局上下文
 你：/split-plan       → 生成拆分规划（Story列表 + API分配）
-你：/split            → 生成 Story 文件并补齐 PRD#<ID> 引用
+你：/split            → 生成 Story 文件（含 YAML front-matter：`fp_ids/refs/artifacts`）
 你：/split-check1     → 拆分校验（Core：结构/一致性/阈值）
 你：/split-check2     → 拆分校验（引用可追溯 + 有 API 时 Smoke Test）
 你：/split-checkout   → 导出 Story 依赖图（docs/story-mermaid.md）

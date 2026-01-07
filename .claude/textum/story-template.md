@@ -1,5 +1,5 @@
 ---
-STORY:
+STORY: v1
 story: "Story N"
 n: 1
 slug: "kebab-case"
