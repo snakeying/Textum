@@ -1,0 +1,52 @@
+PRD_INPUT_PACK: v1
+
+project:
+  name: ""
+  one_liner: ""
+
+goals: []
+non_goals: []
+
+scope:
+  in: []
+  out: []
+
+assumptions_constraints: []
+
+roles: []
+
+permission_matrix:
+  legend: "A=允许, D=禁止, O=仅自己的/所属范围"
+  operations: []
+
+modules: []
+
+ui_routes: []
+
+business_rules: []
+
+states_enums:
+  enums: []
+  state_machines: []
+
+data_model:
+  persistence:
+    has_durable_artifacts: true
+    notes: ""
+  tables: []
+  relations: ""
+
+api:
+  has_api: false
+  base_url: "/api"
+  auth: ""
+  pagination_sort_filter: ""
+  response_wrapper: ""
+  extra_error_codes: []
+  endpoints: []
+
+nfr:
+  security: ""
+  audit: ""
+  performance: ""
+  observability: ""

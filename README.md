@@ -27,8 +27,8 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 | 步骤 | 命令 | 做什么 |
 |------|------|--------|
-| 1️⃣ | `/prd-plan` | 需求澄清，输出 `PRD_INPUT_PACK`（复制交接包） |
-| 2️⃣ | `/prd` | 用 `PRD_INPUT_PACK` 生成/修正 `docs/PRD.md`（信息不足则输出 `PRD_CLARIFY_PACK`） |
+| 1️⃣ | `/prd-plan` | 需求澄清，持续写入 `docs/prd-plan-pack.yaml`（唯一事实来源） |
+| 2️⃣ | `/prd` | 读取 `docs/prd-plan-pack.yaml` 生成/修正 `docs/PRD.md`（信息不足则输出 `PRD_PLAN_CLARIFY_PACK`） |
 | 3️⃣ | `/prd-check` | 机械性校验 PRD（结构/占位符/ID一致性）；`PASS` 后 PRD 只读 |
 | 4️⃣ | `/scaffold` | 从 PRD 提取全局约定/索引（GLOBAL-CONTEXT） |
 | 5️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
@@ -66,6 +66,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 你的项目/
 ├── .claude/          # 🔧 工具本身（你下载的）
 ├── docs/             # 📄 生成的文档都在这
+│   ├── prd-plan-pack.yaml               # 需求澄清计划包（唯一事实来源）
 │   ├── PRD.md                        # 需求文档（定稿后不要改）
 │   ├── GLOBAL-CONTEXT.md             # 全局约定/索引（/backfill 回填索引）
 │   ├── split-plan.md                 # 拆分规划（/split-plan 生成）
@@ -83,12 +84,12 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 AI：你好！告诉我你想做一个什么样的应用？
 你：我想做一个记账的小程序
 AI：好的！这个记账应用是给谁用的呢？...
-AI：...（多轮澄清后输出 PRD_INPUT_PACK）
+AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
 ```
 
 **后面的步骤**
 ```
-你：/prd              → 粘贴 PRD_INPUT_PACK，生成/修正 docs/PRD.md（或返回 PRD_CLARIFY_PACK）
+你：/prd              → 读取 docs/prd-plan-pack.yaml，生成/修正 docs/PRD.md（或返回 PRD_PLAN_CLARIFY_PACK）
 你：/prd-check         → 机械校验并补齐，直到 PASS；从此 PRD 只读
 你：/scaffold         → 生成全局上下文
 你：/scaffold-check   → 校验全局上下文

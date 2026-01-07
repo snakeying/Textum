@@ -22,7 +22,7 @@ stories:
     modules: ["M-01"]
     prereq_stories: []
     refs:
-      fp_ids: ["FP-01"]
+      fp_ids: ["FP-001"]
       gc_br_ids: ["BR-001"]
       prd_api_ids: ["API-001"]
       prd_tbl_ids: ["TBL-001"]
@@ -37,7 +37,7 @@ summary:
   story_count: 1
   api_assignment_count: 1
   refs:
-    fp_ids: ["FP-01"]
+    fp_ids: ["FP-001"]
     gc_br_ids: ["BR-001"]
     prd_api_ids: ["API-001"]
     prd_tbl_ids: ["TBL-001"]

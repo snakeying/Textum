@@ -19,13 +19,13 @@ flowchart TB
         direction LR
         U([用户需求]):::note
         P1[/prd-plan 澄清需求/]:::cmd
-        PK1[[INPUT_PACK]]:::pack
+        F0[(docs/prd-plan-pack.yaml)]:::file
         P2[/prd 生成PRD/]:::cmd
-        PK2[[CLARIFY_PACK]]:::pack
+        PK2[[PRD_PLAN_CLARIFY_PACK]]:::pack
         F1[(PRD.md)]:::file
         C1{{prd-check}}:::chk
 
-        U --> P1 --> PK1 --> P2
+        U --> P1 --> F0 --> P2
         P2 -.->|信息不足| PK2 -.-> P1
         P2 --> F1 --> C1
         C1 -.->|FAIL| P2
@@ -86,8 +86,8 @@ flowchart TB
 
 | 阶段 | 命令 | 读取 | 生成/更新 |
 |------|------|------|----------|
-| 1a. 需求澄清 | `/prd-plan` | 用户需求 / `PRD_CLARIFY_PACK` | `PRD_INPUT_PACK`（复制交接包；不修改文件） |
-| 1b. PRD 生成/修正 | `/prd` | `PRD_INPUT_PACK`（可选：`/prd-check` 清单） | `docs/PRD.md`（或输出 `PRD_CLARIFY_PACK`；不修改文件） |
+| 1a. 需求澄清 | `/prd-plan` | 用户需求 / `PRD_PLAN_CLARIFY_PACK` /（可选）`docs/prd-plan-pack.yaml` | 更新 `docs/prd-plan-pack.yaml`（唯一事实来源；每轮写入） |
+| 1b. PRD 生成/修正 | `/prd` | `docs/prd-plan-pack.yaml`（可选：`/prd-check` 清单） | `docs/PRD.md`（或输出 `PRD_PLAN_CLARIFY_PACK`；不修改文件） |
 | 1c. PRD 校验 | `/prd-check` | `docs/PRD.md` | 校验报告（不修改文件） |
 | 2. 脚手架 | `/scaffold` | `docs/PRD.md`（只读） | `docs/GLOBAL-CONTEXT.md`（全局约定/索引） |
 | 2b. GC 校验 | `/scaffold-check` | `docs/GLOBAL-CONTEXT.md` | 校验报告（不修改文件） |
@@ -104,6 +104,7 @@ flowchart TB
 
 | 阶段 | 模板 |
 |------|------|
+| `/prd-plan` | `.claude/textum/prd-plan-pack-template.yaml` |
 | `/prd` | `.claude/textum/PRD-framework.md` |
 | `/scaffold` | `.claude/textum/GLOBAL-CONTEXT-template.md` |
 | `/split-plan` | `.claude/textum/split-plan-template.md` |
@@ -128,10 +129,10 @@ project/
 - GLOBAL-CONTEXT 只放**全局约定/索引**：不得复述模块细节、逐表字段、接口详情；也不得引入 PRD 中不存在的新信息
 - 规则编号统一：`BR-###`（001 起递增且唯一）；Story 优先用 `GC#BR-###` 引用规则；必要时用 `PRD#BR-###` 引用 PRD
 - 稳定ID：接口 `API-###`、表 `TBL-###`；Story 引用 PRD 一律使用 `PRD#<ID>`（如 `PRD#API-001` / `PRD#TBL-001`）
-- 无 API：若 PRD `### 9.2 接口清单` 为 `N/A`，则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
+- 无 API：若 PRD `### 9.2 接口清单` 满足 `N/A_STRICT`（正文仅一行 `N/A`），则后续不得出现任何 `PRD#API-###`，所有 Story 的“接口”章节写 `N/A`
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 内的 `PRD#<ID>` 引用，减少通读 PRD 的噪音
 - `/split-check1`（结构/阈值）`PASS` 后运行 `/split-check2`（PRD/GC 对齐；有 API 时 Smoke Test）；未通过不得进入 `/backfill` 与 `/story N`
-- FP 覆盖：PRD `8.0 功能点→落点映射` 中的每个 `FP-xx` 必须至少被 1 个 Story 的「关联功能点」覆盖；否则应回到 `/split`（必要时先 `/split-plan`）调整边界
+- FP 覆盖：PRD `8.0 功能点→落点映射` 中的每个 `FP-001` 必须至少被 1 个 Story 的「关联功能点」覆盖；否则应回到 `/split`（必要时先 `/split-plan`）调整边界
 - Story 执行顺序：`/story-check N` `PASS` → `/story-pack N` →（新窗口）`/story N`（只读取 `docs/story-N-exec-pack.yaml`，不通读 PRD/GC/Story）
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
 - `/story N` 执行后自动跑验证命令：命令来自 `docs/story-N-exec-pack.yaml` 的 `verification.commands`（由 `GLOBAL-CONTEXT` 第 2 节“项目验证命令”抽取）；若全部为 `N/A` 则输出 `DECISION`
