@@ -1,19 +1,8 @@
-# 阶段4b: Story 拆分校验（PRD/GC 对齐 + API Smoke / split-check2）
+# 阶段4b: Story 拆分校验（引用可追溯 + API Smoke / split-check2）
 
 读取 `docs/split-check-index-pack.yaml`，并对齐 `docs/GLOBAL-CONTEXT.md` 与 `docs/PRD.md` 做引用可追溯与（有 API 时）Smoke Test；不读取所有 Story 文件。
 
-## 读取（只读）
-
-- `docs/split-check-index-pack.yaml`（必须存在）
-- `docs/GLOBAL-CONTEXT.md`
-- `docs/PRD.md`（只读；不修改）
-
-## 输出（只读）
-
-- 若存在任何 `FAIL`：只输出 `FAIL` 清单并结束
-- 否则：输出 `PASS`，并提示在新窗口运行 `/backfill`
-
-## 最小读取（避免通读）
+## 最小读取（必须；避免通读）
 
 1. 解析 index pack：得到 Story 列表、模块覆盖、引用集合、API 分配
 2. 读取 GC：仅第 4 节业务规则表（得到合法 `BR-###` 集合）
@@ -24,6 +13,22 @@
    - `8.1 表清单`（得到 `TBL-###` 集合）
    - `9.2 接口清单`（按 `N/A_STRICT` 判断是否无 API；得到 `API-###` 集合）
 4. 仅当触发 API Smoke Test 时：再读取 PRD `9.3 接口详情`（按锚点 `<!-- PRD#API-### -->` 定向检索，不通读）
+
+## 读取（只读）
+
+- `docs/split-check-index-pack.yaml`（必须存在）
+- `docs/GLOBAL-CONTEXT.md`
+- `docs/PRD.md`（只读；不修改）
+
+## 输出（只读）
+
+- 若存在任何 `FAIL`：
+  - 输出 `FAIL` 清单（`F-001` 起编号；每条必须包含：问题 / 影响 / 修复方式（只给 1 个动作或命令））
+  - 末尾追加：
+    - `修正：按 FAIL 清单逐条修复（必要时重跑 /split-check1 重新写入 docs/split-check-index-pack.yaml）`
+    - `重跑：/split-check2`
+  - 然后结束
+- 否则：输出 `PASS`，并提示下一步：`/backfill`
 
 ## FAIL 校验项（机械性门禁）
 
@@ -96,11 +101,6 @@
 对 `P_api` 中每个 `API-###`：
 - PRD 中必须存在且仅存在 1 次锚点：`<!-- PRD#API-### -->`；否则 `FAIL`
 - 该锚点必须出现在以 `#### 9.3.` 开头的接口详情标题行中，且标题行必须包含同一个 `API-###`；否则 `FAIL`
-
-## 输出格式（必须）
-
-- `FAIL`：`F-001` 起编号；每条包含：问题 + 影响 + 修复方式（回 `/prd` / 重新 `/split-plan` / 重新 `/split` / 重跑 `/split-check1`）
-- `PASS`：仅提示下一步：在新窗口运行 `/backfill`
 
 ## 开始
 

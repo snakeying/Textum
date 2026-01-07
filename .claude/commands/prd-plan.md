@@ -22,8 +22,6 @@
 
 ## 收敛门禁（宣布 READY 前必须满足）
 
-以下门禁用于保证 `/prd` 可一次性落盘 `docs/PRD.md` 且不残留占位符：
-
 - `project.name`、`project.one_liner` 非空
 - `goals` 至少 1 条且非空；`non_goals` 至少 1 条且非空
 - `scope.in` / `scope.out` 至少各 1 条且非空

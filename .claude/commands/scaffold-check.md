@@ -12,7 +12,7 @@
 - 若存在任何 `FAIL`：
   - 输出 `FAIL` 清单（`F-001` 起编号；每条必须包含：问题 / 影响 / 修复方式（只给 1 个动作或命令））
   - 末尾追加：
-    - `下一步：/scaffold`
+    - `修正：将 FAIL 清单作为可选输入粘贴给 /scaffold，逐条修正 docs/GLOBAL-CONTEXT.md`
     - `重跑：/scaffold-check`
   - 然后结束
 - 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`
@@ -87,9 +87,11 @@
 - 若“项目验证命令”表存在，但所有数据行的 `命令` 都为 `N/A`：
   - 输出 `DECISION`：提示该项目暂无可自动执行的验证步骤，后续 `/story N` 将只能做“按验收标准的人工验证/自检”，建议在合适时补充至少 1 条可重复执行的验证命令
   - 约定：新增命令行时 `类型` 必须为 `gate:<name>` 或 `opt:<name>`（见第 6) 门禁）
-  - 末尾追加：`下一步：/split-plan`
+  - 末尾追加：
+    - `接受 DECISION：继续 /split-plan`
+    - `不接受 DECISION：先 /scaffold 补齐后重跑 /scaffold-check`
 
 ## PASS（通过后动作）
 
 - `PASS`：仅提示下一步动作：
-  - 在新窗口手动运行 `/split-plan` 生成 `docs/split-plan.md`
+  - `/split-plan`（生成 `docs/split-plan.yaml`）

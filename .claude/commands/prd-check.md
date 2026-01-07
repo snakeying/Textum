@@ -12,7 +12,7 @@
 - 若存在任何 `FAIL`：
   - 输出 `FAIL` 清单（`F-001` 起编号；每条必须包含：问题 / 影响 / 修复方式（只给 1 个动作或命令））
   - 末尾追加：
-    - `下一步：/prd`
+    - `修正：将 FAIL 清单作为可选输入粘贴给 /prd，逐条修正 docs/PRD.md`
     - `重跑：/prd-check`
   - 然后结束
 - 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`
@@ -104,3 +104,9 @@
 - `PASS`：仅提示下一步动作：
   - 从现在开始，后续任何步骤都不要修改 `docs/PRD.md` 的任何内容；如需修改，请回到 `/prd` 更新 PRD 并重跑后续步骤
   - 然后在新窗口运行 `/scaffold` 生成 `docs/GLOBAL-CONTEXT.md`
+
+## DECISION（不阻断；需要用户确认）
+
+- 若输出 `DECISION`：
+  - 接受：继续 `/scaffold`
+  - 不接受：先修正后重跑 `/prd-check`

@@ -1,6 +1,6 @@
-SPLIT_CHECK_INDEX_PACK: v1
+SPLIT_CHECK_INDEX_PACK:
 source:
-  split_plan: "docs/split-plan.md"
+  split_plan: "docs/split-plan.yaml"
   stories_glob: "docs/story-*-*.md"
 
 split_plan:
@@ -42,4 +42,3 @@ summary:
     prd_api_ids: ["API-001"]
     prd_tbl_ids: ["TBL-001"]
     prd_br_ids: ["BR-002"]
-

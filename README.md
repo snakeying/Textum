@@ -69,8 +69,9 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 │   ├── prd-plan-pack.yaml               # 需求澄清计划包（唯一事实来源）
 │   ├── PRD.md                        # 需求文档（定稿后不要改）
 │   ├── GLOBAL-CONTEXT.md             # 全局约定/索引（/backfill 回填索引）
-│   ├── split-plan.md                 # 拆分规划（/split-plan 生成）
+│   ├── split-plan.yaml               # 拆分规划（/split-plan 生成）
 │   ├── split-check-index-pack.yaml   # 索引交接包（/split-check1 生成）
+│   ├── story-mermaid.md              # Story 依赖图（/backfill 生成）
 │   ├── story-1-slug.md               # 任务清单
 │   └── story-1-exec-pack.yaml        # 执行包（/story-pack 生成）
 └── src/              # 💻 代码会写在这
@@ -96,7 +97,7 @@ AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
 你：/split-plan       → 生成拆分规划（Story列表 + API分配）
 你：/split            → 生成 Story 文件并补齐 PRD#<ID> 引用
 你：/split-check1     → 拆分校验（Core：结构/一致性/阈值）
-你：/split-check2     → 拆分校验（PRD/GC 对齐 + 有 API 时 Smoke Test）
+你：/split-check2     → 拆分校验（引用可追溯 + 有 API 时 Smoke Test）
 你：/backfill         → 回填依赖图和规则索引
 你：/story-check 1    → 单 Story 门禁校验
 你：/story-pack 1     → 写入 `docs/story-1-exec-pack.yaml`（`STORY_EXEC_PACK`）
