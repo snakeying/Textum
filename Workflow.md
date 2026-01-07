@@ -60,7 +60,7 @@ flowchart TB
 
     subgraph B4["4. Story 执行"]
         direction LR
-        BF[/backfill 回填索引/]:::cmd
+        BF[/split-checkout 导出依赖图/]:::cmd
         F3[(GLOBAL-CONTEXT.md)]:::file
         FM[(story-mermaid.md)]:::file
         PK{选择Story}:::dec
@@ -71,8 +71,9 @@ flowchart TB
         MR{还有Story}:::dec
         DN([完成]):::note
 
-        BF --> F3 --> PK --> C5
         BF --> FM
+        FM --> PK --> C5
+        F3 --> C5
         C5 -.->|FAIL: 按清单修正后重跑| C5
         C5 -->|PASS| PKG --> FE --> EX --> MR
         MR -->|是| PK
@@ -97,7 +98,7 @@ flowchart TB
 | 3. Story 生成 | `/split` | split-plan + PRD + GLOBAL-CONTEXT | `docs/story-N-slug.md` |
 | 4a. 拆分校验（Core） | `/split-check1` | split-plan + 所有 story | 校验报告；`PASS` 时写入 `docs/split-check-index-pack.yaml`；可能附带 `SPLIT_REPLAN_PACK` |
 | 4b. 拆分校验（引用可追溯 + API Smoke） | `/split-check2` | `docs/split-check-index-pack.yaml` + PRD + GLOBAL-CONTEXT | 校验报告（不修改文件） |
-| 5. 回填索引 | `/backfill` | GLOBAL-CONTEXT + 所有 story | 更新 `docs/GLOBAL-CONTEXT.md`；生成 `docs/story-mermaid.md` |
+| 5. 导出依赖图 | `/split-checkout` | 所有 story | 写入 `docs/story-mermaid.md` |
 | 6a. Story 校验 | `/story-check N` | PRD + GLOBAL-CONTEXT + story-N | 校验报告（不修改文件） |
 | 6b. Story 执行包 | `/story-pack N` | PRD + GLOBAL-CONTEXT + story-N | 写入 `docs/story-N-exec-pack.yaml`（`STORY_EXEC_PACK`） |
 | 6. Story 执行 | `/story N` | `docs/story-N-exec-pack.yaml` | 代码实现 |
@@ -133,7 +134,7 @@ project/
 - 稳定ID：接口 `API-###`、表 `TBL-###`；Story 在 YAML front-matter `refs.prd_api`/`refs.prd_tbl` 中只记录 `API-###`/`TBL-###`
 - 无 API：若 PRD `### 9.2 接口清单` 满足 `N/A_STRICT`（正文仅一行 `N/A`），则所有 Story 的 `refs.prd_api=[]` 且 `## 接口` 写 `N/A`
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 的 YAML front-matter（`fp_ids/refs/artifacts`），减少通读 PRD 的噪音
-- `/split-check1`（结构/阈值）`PASS` 后运行 `/split-check2`（引用可追溯 + 有 API 时 Smoke Test）；未通过不得进入 `/backfill` 与 `/story N`
+- `/split-check1`（结构/阈值）`PASS` 后运行 `/split-check2`（引用可追溯 + 有 API 时 Smoke Test）；未通过不得进入 `/split-checkout` 与 `/story N`
 - FP 覆盖：PRD `8.0 功能点→落点映射` 中的每个 `FP-001` 必须至少被 1 个 Story 的「关联功能点」覆盖；否则应回到 `/split`（必要时先 `/split-plan`）调整边界
 - Story 执行顺序：`/story-check N` `PASS` → `/story-pack N` →（新窗口）`/story N`（只读取 `docs/story-N-exec-pack.yaml`；禁止再读取 `docs/PRD.md` / `docs/GLOBAL-CONTEXT.md` / `docs/story-*.md`）
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）

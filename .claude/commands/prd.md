@@ -2,7 +2,7 @@
 
 只做一件事：把 `docs/prd-plan-pack.yaml` 落盘为 `docs/PRD.md`（按 `.claude/textum/PRD-framework.md`）。
 
-> 约束：本命令**不做需求对话**。若信息不足以生成“可检查的 PRD”，只输出 `PRD_PLAN_CLARIFY_PACK` 并停止（**不修改任何文件**）。
+> 约束：本命令**不做需求对话**。若信息不足以生成“可检查的 PRD”，输出 `PRD_PLAN_CLARIFY_PACK` 并停止（**不修改任何文件**）。
 
 ## 输入
 
@@ -13,8 +13,13 @@
 
 二选一（必须遵守）：
 
-1. **成功**：创建/更新 `docs/PRD.md`（不含任何模板占位符），并提示用户在新窗口运行 `/prd-check`
-2. **信息不足**：只输出 `PRD_PLAN_CLARIFY_PACK`（不修改任何文件）
+1. **成功**：创建/更新 `docs/PRD.md`（不含任何模板占位符），并输出：
+   - `PASS`
+   - `已写入：docs/PRD.md`
+   - `下一步：/prd-check`
+2. **信息不足**：输出 `PRD_PLAN_CLARIFY_PACK` 代码块后，追加两行纯文本指引（不修改任何文件）：
+   - `下一步：复制 PRD_PLAN_CLARIFY_PACK 粘贴给 /prd-plan`
+   - `重跑：/prd`
 
 ## PACK 完备性校验（必须）
 
@@ -50,7 +55,7 @@
 
 ## `PRD_PLAN_CLARIFY_PACK` 格式（必须严格按此输出）
 
-只输出一个代码块（YAML），便于复制回 `/prd-plan` 进行补齐：
+先输出 1 个代码块（YAML），便于复制回 `/prd-plan` 进行补齐；然后追加两行纯文本指引（见上文“输出/信息不足”）：
 
 ```yaml
 PRD_PLAN_CLARIFY_PACK: 
@@ -70,4 +75,4 @@ blockers:
 
 ## 开始
 
-我会读取 `docs/prd-plan-pack.yaml`（以及可选的 `/prd-check` 清单）。信息足够时一次性生成/修正 `docs/PRD.md`；否则只返回 `PRD_PLAN_CLARIFY_PACK`。
+我会读取 `docs/prd-plan-pack.yaml`（以及可选的 `/prd-check` 清单）。信息足够时一次性生成/修正 `docs/PRD.md`；信息不足时输出 `PRD_PLAN_CLARIFY_PACK` 并给出下一步指引。

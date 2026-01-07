@@ -28,7 +28,7 @@
     - `修正：按 FAIL 清单逐条修复（必要时重跑 /split-check1 重新写入 docs/split-check-index-pack.yaml）`
     - `重跑：/split-check2`
   - 然后结束
-- 否则：输出 `PASS`，并提示下一步：`/backfill`
+- 否则：输出 `PASS`，并提示下一步：`/split-checkout`
 
 ## FAIL 校验项（机械性门禁）
 

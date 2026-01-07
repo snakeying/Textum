@@ -35,7 +35,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 | 6️⃣ | `/split-plan` | 先做低噪音拆分规划（Story 列表 + API 分配 + 依赖） |
 | 7️⃣ | `/split` | 按规划生成 Story 文件并补齐 `PRD#<ID>` 引用 |
 | 8️⃣ | `/split-check1` → `PASS` 后 `/split-check2` | 拆分校验（结构/阈值 → 引用可追溯；有 API 时 Smoke Test） |
-| 9️⃣ | `/backfill` | 回填 GLOBAL-CONTEXT 的“规则涉及 Story / 依赖图”索引 |
+| 9️⃣ | `/split-checkout` | 导出 Story 依赖图（写入 `docs/story-mermaid.md`） |
 | 🔟 | `/story-check 1` → `PASS` 后 `/story-pack 1` → `/story 1` | 开始做第一个任务，然后按顺序继续 `/story-check 2` → `/story-pack 2` → `/story 2`... |
 
 > 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步；`/prd-check` `PASS` 后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续 Story 通过稳定 ID 锚点 `PRD#<ID>` 精确引用，避免通读 PRD 与行号漂移
@@ -68,10 +68,10 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 ├── docs/             # 📄 生成的文档都在这
 │   ├── prd-plan-pack.yaml               # 需求澄清计划包（唯一事实来源）
 │   ├── PRD.md                        # 需求文档（定稿后不要改）
-│   ├── GLOBAL-CONTEXT.md             # 全局约定/索引（/backfill 回填索引）
+│   ├── GLOBAL-CONTEXT.md             # 全局约定/索引（/scaffold 生成；定稿后不改）
 │   ├── split-plan.yaml               # 拆分规划（/split-plan 生成）
 │   ├── split-check-index-pack.yaml   # 索引交接包（/split-check1 生成）
-│   ├── story-mermaid.md              # Story 依赖图（/backfill 生成）
+│   ├── story-mermaid.md              # Story 依赖图（/split-checkout 生成）
 │   ├── story-1-slug.md               # 任务清单
 │   └── story-1-exec-pack.yaml        # 执行包（/story-pack 生成）
 └── src/              # 💻 代码会写在这
@@ -98,7 +98,7 @@ AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
 你：/split            → 生成 Story 文件并补齐 PRD#<ID> 引用
 你：/split-check1     → 拆分校验（Core：结构/一致性/阈值）
 你：/split-check2     → 拆分校验（引用可追溯 + 有 API 时 Smoke Test）
-你：/backfill         → 回填依赖图和规则索引
+你：/split-checkout   → 导出 Story 依赖图（docs/story-mermaid.md）
 你：/story-check 1    → 单 Story 门禁校验
 你：/story-pack 1     → 写入 `docs/story-1-exec-pack.yaml`（`STORY_EXEC_PACK`）
 你：/story 1          → 开始第一个任务！
