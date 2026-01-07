@@ -4,7 +4,7 @@
 
 ## 读取（只读）
 
-- `docs/split-check-index-pack.yaml`（必须存在；由上一步生成）
+- `docs/split-check-index-pack.yaml`（必须存在）
 - `docs/GLOBAL-CONTEXT.md`
 - `docs/PRD.md`（只读；不修改）
 

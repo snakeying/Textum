@@ -11,7 +11,7 @@
 ## 输入
 
 - 用户需求描述（自由文本），或
-- `PRD_PLAN_CLARIFY_PACK`（可选；由 `/prd` 生成的 blockers）
+- `PRD_PLAN_CLARIFY_PACK`（可选）
 
 ## 对话规则（必须遵守）
 

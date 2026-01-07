@@ -1,4 +1,4 @@
-# Textum - PRD → Story 开发工作流（v5）
+# Textum - PRD → Story 开发工作流（v6）
 
 > 本版本采用“多窗口 + 低噪音 + 门禁校验”的流程：所有引用一律使用稳定 ID 锚点（`GC#BR-###` / `PRD#API-###` / `PRD#TBL-###` / `PRD#BR-###`），并通过 `/prd-check` `/scaffold-check` `/split-check1` `/split-check2` `/story-check` 降噪与把关。
 
@@ -109,7 +109,7 @@ flowchart TB
 | `/scaffold` | `.claude/textum/GLOBAL-CONTEXT-template.md` |
 | `/split-plan` | `.claude/textum/split-plan-template.md` |
 | `/split` | `.claude/textum/story-template.md` |
-| `/split-check1` | `.claude/textum/split-check-index-pack-template.md` |
+| `/split-check1` | `.claude/textum/split-check-index-pack-template.yaml` |
 
 ## 目录结构
 

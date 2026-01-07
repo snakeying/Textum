@@ -53,7 +53,7 @@
 只输出一个代码块（YAML），便于复制回 `/prd-plan` 进行补齐：
 
 ```yaml
-PRD_PLAN_CLARIFY_PACK: v1
+PRD_PLAN_CLARIFY_PACK: 
 target_file: "docs/prd-plan-pack.yaml"
 blockers:
   - id: "Q-001"

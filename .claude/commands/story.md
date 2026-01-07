@@ -4,7 +4,7 @@
 
 ## 读取（唯一事实来源）
 
-- `docs/story-$ARGUMENTS-exec-pack.yaml`（由 `/story-pack $ARGUMENTS` 写入）
+- `docs/story-$ARGUMENTS-exec-pack.yaml`（必须存在）
 
 若 pack 文件不存在：停止并提示用户先运行 `/story-pack $ARGUMENTS` 写入 pack 文件。
 

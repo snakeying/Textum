@@ -6,7 +6,7 @@
 
 - 读取：`docs/split-plan.md`、`docs/story-*-*.md`
 - 写入（仅无 FAIL 时）：`docs/split-check-index-pack.yaml`
-- 模板：`.claude/textum/split-check-index-pack-template.md`
+- 模板：`.claude/textum/split-check-index-pack-template.yaml`
 
 ## 输出（DECISION 不阻断）
 
@@ -84,7 +84,7 @@
 `SPLIT_REPLAN_PACK`（必须严格输出一个代码块）：
 
 ```yaml
-SPLIT_REPLAN_PACK: v1
+SPLIT_REPLAN_PACK: 
 trigger: "oversized_story"
 oversized_stories:
   - story: "Story N"
@@ -156,7 +156,7 @@ constraints:
 目标：生成一个小而稳定的索引交接包，供后续对齐校验使用，避免复读所有 Story 文件。
 
 规则：
-- 严格按 `.claude/textum/split-check-index-pack-template.md` 的 YAML 结构写入（纯 YAML；不含 ```）
+- 严格按 `.claude/textum/split-check-index-pack-template.yaml` 的 YAML 结构写入（纯 YAML；不含 ```）
 - `modules` 解析为 `["M-01","M-02"]` 数组；`prereq_stories` 解析为 `["Story 1"]` 数组（无则空数组）
 - 引用只记录 ID（去掉 `GC#`/`PRD#` 前缀），并分类输出：
   - `fp_ids`: `FP-001`
