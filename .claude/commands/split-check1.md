@@ -1,12 +1,8 @@
 # 阶段4a: Story 拆分校验（Core / split-check1）
 
-读取 `docs/split-plan.yaml` 与所有 `docs/story-*-*.md`，做“结构/一致性/阈值”校验；仅在 **无 `FAIL`** 时写入索引交接包 `docs/split-check-index-pack.yaml`（`PASS/DECISION` 都写）；不读取 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`。
+读取：`docs/split-plan.yaml`、`docs/story-*-*.md` | 写入：`docs/split-check-index-pack.yaml`（仅无 `FAIL`；`PASS/DECISION` 都写） | 模板：`.claude/textum/split-check-index-pack-template.yaml`
 
-## 读取 / 写入
-
-- 读取：`docs/split-plan.yaml`、`docs/story-*-*.md`
-- 写入（仅无 FAIL 时）：`docs/split-check-index-pack.yaml`
-- 模板：`.claude/textum/split-check-index-pack-template.yaml`
+做“结构/一致性/阈值”校验；不读取 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`。
 
 ## 输出（DECISION 不阻断）
 

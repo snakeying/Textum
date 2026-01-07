@@ -1,18 +1,13 @@
 # 阶段3a: Story 拆分规划（/split-plan）
 
-读取 `docs/PRD.md`（只读）与 `docs/GLOBAL-CONTEXT.md`，生成 `docs/split-plan.yaml`（规划 pack；不生成 Story 文件）。
+读取：`docs/PRD.md`（只读）、`docs/GLOBAL-CONTEXT.md` | 写入：`docs/split-plan.yaml`（纯 YAML；不包含 ```） | 模板：`.claude/textum/split-plan-template.yaml` | 可选输入：`SPLIT_REPLAN_PACK`
+
+生成 split-plan 规划 pack；不生成 Story 文件。
 
 ## 最小读取范围（必须；避免通读）
 
 - PRD：`5.1`（模块清单）、`6`（规则表）、`8.1`（表清单）、`9.2`（接口清单；若 `N/A_STRICT` 则跳过）
 - GC：默认只读第 4 节规则表与第 8 节 API规范
-
-## 读取 / 写入
-
-- 读取：`docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`
-- 可选输入：`SPLIT_REPLAN_PACK`
-- 写入：`docs/split-plan.yaml`（纯 YAML；不包含 ```）
-- 模板：`.claude/textum/split-plan-template.yaml`
 
 ## 硬约束
 

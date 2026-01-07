@@ -1,13 +1,10 @@
 # 阶段5: Split checkout（导出 Story 依赖图 / split-checkout）
 
+读取：`docs/story-*-*.md` | 写入：`docs/story-mermaid.md` | 模板：`N/A`
+
 ## 最小读取（必须；避免通读）
 
 1. 读取所有 Story：只解析 YAML front-matter（不通读正文）
-
-## 读取 / 写入
-
-- 读取：`docs/story-*-*.md`
-- 写入：`docs/story-mermaid.md`
 
 ## 硬约束
 

@@ -2,9 +2,7 @@
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
-## 读取（唯一事实来源）
-
-- `docs/story-$ARGUMENTS-exec-pack.yaml`（必须存在）
+读取：`docs/story-$ARGUMENTS-exec-pack.yaml`（唯一事实来源；必须存在） | 写入：仓库文件（代码/测试；仅本 Story） | 模板：`N/A`
 
 若 pack 文件不存在：停止并提示用户先运行 `/story-pack $ARGUMENTS` 写入 pack 文件。
 

@@ -1,10 +1,8 @@
 # 阶段1c: PRD 校验
 
-读取 `docs/PRD.md`，输出 `FAIL/DECISION/PASS` 清单用于回到 `/prd` 补齐；**不修改任何文件**。
+读取：`docs/PRD.md` | 写入：无（只输出 `FAIL/DECISION/PASS`；不修改文件） | 模板：`N/A`
 
-## 读取
-
-- `docs/PRD.md`
+输出 `FAIL/DECISION/PASS` 清单用于回到 `/prd` 补齐；**不修改任何文件**。
 
 ## 输出规则（只读）
 

@@ -2,7 +2,9 @@
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
-读取 `docs/story-$ARGUMENTS-*.md`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`，输出 `FAIL/DECISION/PASS` 清单；不修改任何文件。
+读取：`docs/story-$ARGUMENTS-*.md`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`（只读） | 写入：无（只输出 `FAIL/DECISION/PASS`；不修改文件） | 模板：`N/A`
+
+校验单个 Story 并输出 `FAIL/DECISION/PASS` 清单；不修改任何文件。
 
 ## 最小读取（必须；避免通读）
 
@@ -15,12 +17,6 @@
    - 第 6 节规则表：抽取 `BR-###` 集合
    - 若 `refs.prd_api` 非空：按锚点 `<!-- PRD#API-### -->` 定向校验 PRD `9.3` 接口详情存在性（不通读）
    - 若 `refs.prd_tbl` 非空：按锚点 `<!-- PRD#TBL-### -->` 定向校验 PRD `8.2` 表定义存在性（不通读）
-
-## 读取
-
-- `docs/story-$ARGUMENTS-*.md`（必须且仅匹配 1 个）
-- `docs/GLOBAL-CONTEXT.md`
-- `docs/PRD.md`（只读）
 
 ## 输出规则（只读）
 
@@ -173,4 +169,3 @@ FP→落点闭合（任一不满足即 `FAIL`）：
 - `PASS`：仅提示下一步动作（必须按序）：
   - `/story-pack $ARGUMENTS`
   - `/story $ARGUMENTS`
-

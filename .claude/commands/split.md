@@ -1,6 +1,8 @@
 # 阶段3: Story 拆分（/split）
 
-读取 `docs/split-plan.yaml`（规划唯一事实来源）并结合 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`，按模板 `.claude/textum/story-template.md` 生成 `docs/story-N-<slug>.md`。
+读取：`docs/split-plan.yaml`、`docs/PRD.md`（只读）、`docs/GLOBAL-CONTEXT.md` | 写入：`docs/story-*-*.md` | 模板：`.claude/textum/story-template.md`
+
+按 split-plan 生成 Story 文件（含 YAML front-matter）。
 
 ## 最小读取范围（必须；避免通读）
 
@@ -12,12 +14,6 @@
   - `8.0 功能点→落点映射`：用于把 `FP-001` 映射到本 Story 必须声明的 `refs.prd_tbl[]` / `artifacts.*[]`
   - `8.1 表清单`：用于校验/选择可用 `TBL-###`（如适用）
   - `9.2 接口清单`：仅用于确认接口 ID 集合（Story 的 `refs.prd_api` 来自 split-plan 分配）
-
-## 读取 / 写入
-
-- 读取：`docs/split-plan.yaml`、`docs/PRD.md`（只读）、`docs/GLOBAL-CONTEXT.md`
-- 写入：`docs/story-*-*.md`
-- 模板：`.claude/textum/story-template.md`
 
 ## 硬约束
 

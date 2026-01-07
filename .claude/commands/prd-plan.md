@@ -2,11 +2,7 @@
 
 目标：通过多轮对话把“已确认事实”持续写入 `docs/prd-plan-pack.yaml`（唯一事实来源），避免最后才生成 YAML 导致信息丢失/注意力漂移。
 
-## 读取 / 写入
-
-- 读取（如存在）：`docs/prd-plan-pack.yaml`
-- 写入（每轮都更新）：`docs/prd-plan-pack.yaml`（纯 YAML；不包含 ```）
-- 模板（用于初始化）：`.claude/textum/prd-plan-pack-template.yaml`
+读取：`docs/prd-plan-pack.yaml`（如存在） | 写入：`docs/prd-plan-pack.yaml`（每轮更新；纯 YAML；不包含 ```） | 模板：`.claude/textum/prd-plan-pack-template.yaml`
 
 ## 输入
 

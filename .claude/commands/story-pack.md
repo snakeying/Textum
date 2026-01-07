@@ -2,6 +2,8 @@
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
+读取：`docs/story-$ARGUMENTS-*.md`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`（只读） | 写入：`docs/story-$ARGUMENTS-exec-pack.yaml`（纯 YAML；不包含 ```） | 模板：`N/A`
+
 生成 1 个 `STORY_EXEC_PACK`，写入 `docs/story-$ARGUMENTS-exec-pack.yaml`，作为该 Story 的最小执行输入。
 
 ## 最小读取（必须；避免通读）
@@ -9,11 +11,6 @@
 1. 读取 Story：仅解析 YAML front-matter 作为索引（不依赖正文抽取 ID）
 2. 读取 GC：按索引抽取片段（固定章节 + 规则表行 + 验证命令表）
 3. 读取 PRD：按索引/锚点抽取块（不通读；必须原文复制；不做摘要/改写）
-
-## 读取 / 写入
-
-- 读取：`docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`、`docs/story-$ARGUMENTS-*.md`
-- 写入：`docs/story-$ARGUMENTS-exec-pack.yaml`（内容为纯 YAML；不包含 ```）
 
 ## 前置条件（必须满足）
 
@@ -143,4 +140,3 @@ prd:
 ## 开始
 
 请提供 Story 编号（例如：`/story-pack 1`）。我会写入 `docs/story-$ARGUMENTS-exec-pack.yaml`。
-

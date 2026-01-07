@@ -1,12 +1,14 @@
 # 阶段1b: PRD 生成/修正
 
-只做一件事：把 `docs/prd-plan-pack.yaml` 落盘为 `docs/PRD.md`（按 `.claude/textum/PRD-framework.md`）。
+只做一件事：把 plan-pack 落盘为 PRD（按模板）。
 
 > 约束：本命令**不做需求对话**。若信息不足以生成“可检查的 PRD”，输出 `PRD_PLAN_CLARIFY_PACK` 并停止（**不修改任何文件**）。
 
+读取：`docs/prd-plan-pack.yaml` | 写入：`docs/PRD.md`（信息不足则不写） | 模板：`.claude/textum/PRD-framework.md` | 可选输入：`FAIL/DECISION` 清单
+
 ## 输入
 
-- 读取 `docs/prd-plan-pack.yaml`（唯一事实来源；不得向用户索要整包粘贴）
+- plan-pack（唯一事实来源；不得向用户索要整包粘贴）
 - （可选）`FAIL/DECISION` 清单（用于精准修正）
 
 ## 输出

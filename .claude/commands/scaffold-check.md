@@ -1,10 +1,8 @@
 # 阶段2b: GLOBAL-CONTEXT 校验
 
-读取 `docs/GLOBAL-CONTEXT.md`，输出 `FAIL/DECISION/PASS` 清单用于回到 `/scaffold` 修正；**不修改任何文件**。
+读取：`docs/GLOBAL-CONTEXT.md` | 写入：无（只输出 `FAIL/DECISION/PASS`；不修改文件） | 模板：`N/A`
 
-## 读取
-
-- `docs/GLOBAL-CONTEXT.md`
+输出 `FAIL/DECISION/PASS` 清单用于回到 `/scaffold` 修正；**不修改任何文件**。
 
 ## 输出规则（只读）
 
@@ -35,7 +33,6 @@
 - `## 6. 数据模型概览（必填；如无 DB 写 N/A）`
 - `## 7. 命名规范（如适用；否则写 N/A）`
 - `## 8. API规范（必填）`
-- `## 9. Story依赖图（必填；拆分后回填）`
 
 ### 2) 模板占位符（不得残留）
 
@@ -66,7 +63,6 @@
 
 - `TBD` 仅允许出现在：
   - 第 4 节业务规则表的 “涉及Story” 列
-  - 第 9 节 Story依赖图
 - 若在其它任何位置出现 `TBD`：视为 `FAIL`
 
 ### 6) 项目验证命令表（必须存在；可为 N/A）

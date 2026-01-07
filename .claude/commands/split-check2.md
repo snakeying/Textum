@@ -1,6 +1,8 @@
 # 阶段4b: Story 拆分校验（引用可追溯 + API Smoke / split-check2）
 
-读取 `docs/split-check-index-pack.yaml`，并对齐 `docs/GLOBAL-CONTEXT.md` 与 `docs/PRD.md` 做引用可追溯与（有 API 时）Smoke Test；不读取所有 Story 文件。
+读取：`docs/split-check-index-pack.yaml`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`（只读） | 写入：无（只输出 `FAIL/PASS`；不修改文件） | 模板：`N/A`
+
+对齐 GC/PRD 做引用可追溯与（有 API 时）Smoke Test；不读取所有 Story 文件。
 
 ## 最小读取（必须；避免通读）
 
@@ -13,12 +15,6 @@
    - `8.1 表清单`（得到 `TBL-###` 集合）
    - `9.2 接口清单`（按 `N/A_STRICT` 判断是否无 API；得到 `API-###` 集合）
 4. 仅当触发 API Smoke Test 时：再读取 PRD `9.3 接口详情`（按锚点 `<!-- PRD#API-### -->` 定向检索，不通读）
-
-## 读取（只读）
-
-- `docs/split-check-index-pack.yaml`（必须存在）
-- `docs/GLOBAL-CONTEXT.md`
-- `docs/PRD.md`（只读；不修改）
 
 ## 输出（只读）
 
