@@ -116,7 +116,8 @@ Story 中不得出现 fenced code blocks（```）；出现即 `FAIL`。
 `N/A_STRICT` 判定口径（权威；逐字一致；禁止改写）：
 - 定位 PRD 小节 `### 9.2 接口清单（必填）` 的正文（标题行之后到下一同级小节标题之前）
 - 判定 `N/A_STRICT = true` 当且仅当：正文去掉空行并 Trim 后仅剩 1 行且该行严格等于 `N/A`
-- 若 `N/A_STRICT = true`：`PRD_HAS_API = false`；否则：`PRD_HAS_API = true` 并抽取 `P_api` 集合
+
+据此：若 `N/A_STRICT = true` 则 `PRD_HAS_API = false`；否则 `PRD_HAS_API = true` 并抽取 `P_api` 集合。
 
 令：`S_api = refs.prd_api[]` 去重集合。
 

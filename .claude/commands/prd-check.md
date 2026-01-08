@@ -66,7 +66,8 @@ PRD 中不得出现 fenced code blocks（```）；出现即 `FAIL`。
 `N/A_STRICT` 判定口径（权威；逐字一致；禁止改写）：
 - 定位 PRD 小节 `### 9.2 接口清单（必填）` 的正文（标题行之后到下一同级小节标题之前）
 - 判定 `N/A_STRICT = true` 当且仅当：正文去掉空行并 Trim 后仅剩 1 行且该行严格等于 `N/A`
-- 若 `N/A_STRICT = true`：`PRD_HAS_API = false`；否则：`PRD_HAS_API = true`
+
+据此：若 `N/A_STRICT = true` 则 `PRD_HAS_API = false`；否则 `PRD_HAS_API = true`。
 
 若 `PRD_HAS_API = false`：
 - 第 9 节 `9.1/9.2/9.3` 三个小节正文必须全部满足 `N/A_STRICT`（仅一行 `N/A`；不得残留表格/子标题/其它文本）

@@ -29,7 +29,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 |------|------|--------|
 | 1️⃣ | `/prd-plan` | 需求澄清，持续写入 `docs/prd-plan-pack.yaml`（唯一事实来源） |
 | 2️⃣ | `/prd` | 读取 `docs/prd-plan-pack.yaml` 生成/修正 `docs/PRD.md`（信息不足则输出 `PRD_PLAN_CLARIFY_PACK`） |
-| 3️⃣ | `/prd-check` | 机械性校验 PRD（结构/占位符/ID一致性）；`PASS` 后 PRD 只读 |
+| 3️⃣ | `/prd-check` | 机械性校验 PRD（结构/占位符/ID一致性），输出 `FAIL/DECISION/PASS` 清单；无 `FAIL`（`PASS` 或接受 `DECISION`）后 PRD 只读 |
 | 4️⃣ | `/scaffold` | 从 PRD 提取全局约定/索引（GLOBAL-CONTEXT） |
 | 5️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
 | 6️⃣ | `/split-plan` | 先做低噪音拆分规划（Story 列表 + API 分配 + 依赖） |
@@ -91,7 +91,7 @@ AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
 **后面的步骤**
 ```
 你：/prd              → 读取 docs/prd-plan-pack.yaml，生成/修正 docs/PRD.md（或返回 PRD_PLAN_CLARIFY_PACK）
-你：/prd-check         → 机械校验并补齐，直到 PASS；从此 PRD 只读
+你：/prd-check         → 输出 FAIL/DECISION/PASS 清单；无 FAIL（PASS 或接受 DECISION）后 PRD 只读
 你：/scaffold         → 生成全局上下文
 你：/scaffold-check   → 校验全局上下文
 你：/split-plan       → 生成拆分规划（Story列表 + API分配）
