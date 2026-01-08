@@ -5,40 +5,40 @@ source:
 
 split_plan:
   stories:
-    - story: "Story 1"
+    - story: "Story N"
       n: 1
-      slug: "kebab-case"
-      modules: ["M-01"]
+      slug: "TBD"
+      modules: ["M-xx"]
       prereq_stories: [] # ["Story 2"]
   api_assignments:
-    - api: "API-001"
-      story: "Story 1"
+    - api: "API-###"
+      story: "Story N"
 
 stories:
-  - file: "docs/story-1-kebab-case.md"
-    story: "Story 1"
+  - file: "docs/story-N-TBD.md"
+    story: "Story N"
     n: 1
-    slug: "kebab-case"
-    modules: ["M-01"]
+    slug: "TBD"
+    modules: ["M-xx"]
     prereq_stories: []
     refs:
-      fp_ids: ["FP-001"]
-      gc_br_ids: ["BR-001"]
-      prd_api_ids: ["API-001"]
-      prd_tbl_ids: ["TBL-001"]
-      prd_br_ids: ["BR-002"]
+      fp_ids: ["FP-###"]
+      gc_br_ids: ["BR-###"]
+      prd_api_ids: ["API-###"]
+      prd_tbl_ids: ["TBL-###"]
+      prd_br_ids: ["BR-###"]
     metrics:
-      api_refs: 1
-      tbl_refs: 1
-      feature_points: 3
-      acceptance_items: 5
+      api_refs: 0
+      tbl_refs: 0
+      feature_points: 0
+      acceptance_items: 0
 
 summary:
   story_count: 1
   api_assignment_count: 1
   refs:
-    fp_ids: ["FP-001"]
-    gc_br_ids: ["BR-001"]
-    prd_api_ids: ["API-001"]
-    prd_tbl_ids: ["TBL-001"]
-    prd_br_ids: ["BR-002"]
+    fp_ids: ["FP-###"]
+    gc_br_ids: ["BR-###"]
+    prd_api_ids: ["API-###"]
+    prd_tbl_ids: ["TBL-###"]
+    prd_br_ids: ["BR-###"]

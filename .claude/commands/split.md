@@ -19,16 +19,45 @@
 
 - 不得更改 `docs/split-plan.yaml` 的 Story 编号/边界/API 分配：若发现不合理则停止并提示回 `/split-plan`
 - 每个 Story 文件必须包含 **YAML front-matter**（文件首部 `--- ... ---`），且字段齐全、可解析（结构以模板为准）
+- 每个 Story 文件不得出现 fenced code blocks（```）
 - YAML front-matter 中所有 ID 必须为具体数字：
   - `modules[]`: `M-01`
   - `fp_ids[]`: `FP-001`
   - `refs.gc_br[]` / `refs.prd_br[]`: `BR-001`
   - `refs.prd_tbl[]`: `TBL-001`
   - `refs.prd_api[]`: `API-001`
-- Story 模板章节不得缺失；无内容写 `N/A`；不得残留占位符（如 `[功能描述]`、`M-xx`、`FP-###`、`Story N`）
+- Story 模板章节不得缺失；无内容写 `N/A`；不得残留占位符（如 `TBD`、`[功能描述]`、`M-xx`、`FP-###`、`Story N`）
 - 若 `docs/split-plan.yaml` 的 `api_assignments` 为空（无 API）：
   - 每个 Story front-matter `refs.prd_api` 必须为空数组
   - 每个 Story 的 `## 接口` 章节正文必须严格为 1 行 `N/A`
+
+## FP 分配规则（必须；机械可执行）
+
+目标：为每个 Story 生成 `fp_ids[]`，并保证覆盖 PRD `8.0` 的全部功能点。
+
+1. 定义 `P_fp`：从 PRD `### 8.0 功能点→落点映射（必填）` 表第一列抽取全部 `FP-001`，升序排序
+2. 定义 `P_fp_by_module[M-xx]`：从 PRD `5.2` 各模块小节的「功能点」表抽取 `FP-001`（保留在 `P_fp` 中的），按 `FP` 升序排序
+3. 若任一 `FP-001` 在 PRD `5.2` 的多个模块小节出现：停止并提示修正 PRD（保证 FP 唯一归属一个模块）
+4. 对每个模块 `M-xx`：
+   - 定义 `S(M-xx)`：split-plan 中 `stories[]` 里 `modules` 包含该 `M-xx` 的 Story 列表（按 `n` 升序）
+   - 若 `S(M-xx)` 为空：停止并提示修正 split-plan（必须覆盖该模块）
+   - 将 `P_fp_by_module[M-xx]` 依序按 round-robin 分配给 `S(M-xx)`：第 i 个 FP → `S(M-xx)[(i-1) mod |S(M-xx)|]`
+5. 对每个 Story：`fp_ids =` 分配给该 Story 的 FP 并集（升序）；不得为空
+6. 全局一致性：所有 Story 的 `fp_ids` 并集必须与 `P_fp` 完全一致（无遗漏/无重复归属）
+
+## 落点 token 生成规则（必须；机械可执行）
+
+目标：把 Story 的 `fp_ids[]` 机械映射为 `refs.prd_tbl[]` 与 `artifacts.*[]`（不发明新 token）。
+
+对每个 Story：
+1. 对其 `fp_ids[]` 中每个 `FP-001`：在 PRD `8.0` 映射表中定位对应行，取 `落点` 单元格
+2. 若 `落点 == N/A`：跳过该 FP
+3. 否则按逗号分隔为若干项（逐项 Trim），对每项按前缀处理并写入集合：
+   - `DB:TBL-001` → `refs.prd_tbl` 加入 `TBL-001`（仅保留 `TBL-###`）
+   - `FILE:<path>` → `artifacts.file` 加入 `ART:FILE:<path>`
+   - `CFG:<key>` → `artifacts.cfg` 加入 `ART:CFG:<key>`
+   - `EXT:<system>` → `artifacts.ext` 加入 `ART:EXT:<system>`
+4. 对 `refs.prd_tbl` 与 `artifacts.*` 去重、排序后写入 YAML front-matter
 
 ## 执行步骤（必须按序）
 
@@ -38,22 +67,24 @@
    - 先填 YAML front-matter：
      - `story/n/slug/title` 与文件名一致
      - `modules/prereq_stories` 与 split-plan 一致
-     - `fp_ids`：为本 Story 分配的 `FP-001`（必须能在 PRD `8.0` 中定位）
-     - `refs`：填写 `gc_br/prd_br/prd_tbl/prd_api`（ID 列表；不带 `GC#`/`PRD#` 前缀）
+     - `fp_ids`：按“FP 分配规则”得到本 Story 的 `FP-001` 列表
+     - `refs`：填写 `gc_br/prd_br/prd_tbl/prd_api`（ID 列表；不带 `GC#`/`PRD#` 前缀）；其中 `prd_tbl` 与 `artifacts.*` 必须按“落点 token 生成规则”从 PRD `8.0` 映射得到
      - `artifacts`：
-       - `artifacts.file[]`：`ART:FILE:<path>` token（token 精确匹配）
-       - `artifacts.cfg[]`：`ART:CFG:<key>` token（token 精确匹配）
-       - `artifacts.ext[]`：`ART:EXT:<system>` token（token 精确匹配）
+        - `artifacts.file[]`：`ART:FILE:<path>` token（token 精确匹配）
+        - `artifacts.cfg[]`：`ART:CFG:<key>` token（token 精确匹配）
+        - `artifacts.ext[]`：`ART:EXT:<system>` token（token 精确匹配）
    - 再填 Markdown 正文各章节（不发明 front-matter 外的新 ID/token）
    - “接口”章节：若 `refs.prd_api` 为空则正文严格写 1 行 `N/A`；否则必须为非 `N/A`
    - “数据/产物落点”章节：若 `refs.prd_tbl` 与 `artifacts.*` 全为空则正文严格写 1 行 `N/A`；否则必须为非 `N/A`
 4. 生成后占位符自检（必须；必须在本命令内修正）：
-   - 对每个 `docs/story-N-<slug>.md` 逐行扫描（忽略 fenced code blocks），确保不存在任何模板占位符残留（包含 YAML front-matter 与正文），至少包括：
+   - 对每个 `docs/story-N-<slug>.md` 逐行扫描，确保不存在任何模板占位符残留（包含 YAML front-matter 与正文），至少包括：
+     - fenced code blocks（```）
+     - `TBD`
      - `[...]`、`[功能描述]`、`[规则摘要]`、`[接口名称]` 等方括号占位符
      - `Story N` / `功能名称`
      - `FP-###`
-      - `M-xx` / `M-yy`
-      - `BR-###` / `TBL-###` / `API-###`（仍为 `###` 占位）
+     - `M-xx` / `M-yy`
+     - `BR-###` / `TBL-###` / `API-###`（仍为 `###` 占位）
      - `ART:FILE:[path_glob]` / `ART:CFG:[key]` / `ART:EXT:[system]`
    - 若命中任一项：必须立即在对应 Story 文件中修正并再次自检，直到全量通过
 5. 结构自检：Story 编号可执行（前置编号 < 当前编号）；文件名与 split-plan 1:1 对应；无重复编号

@@ -2,7 +2,7 @@
 
 读取：`docs/split-plan.yaml`、`docs/story-*-*.md` | 写入：`docs/split-check-index-pack.yaml`（仅无 `FAIL`；`PASS/DECISION` 都写） | 模板：`.claude/textum/split-check-index-pack-template.yaml`
 
-做“结构/一致性/阈值”校验；不读取 `docs/PRD.md` 与 `docs/GLOBAL-CONTEXT.md`。
+做“结构/一致性/阈值”校验。
 
 ## 输出（DECISION 不阻断）
 
@@ -129,6 +129,7 @@ constraints:
 - 必须存在键：`stories`、`api_assignments`
 - `stories` 至少 1 条；且编号必须为 `Story 1..N` 连续（`stories[].n` 连续且 `stories[].story == "Story {n}"`）
 - `stories[].slug` 必须唯一且符合 `kebab-case`
+- `docs/split-plan.yaml` 中不得出现 `TBD`
 
 ### B) Story 文件集合与编号
 
@@ -145,11 +146,12 @@ constraints:
 - 每个 Story 必须包含 YAML front-matter（首部 `--- ... ---`），且必须存在键：`STORY`、`story`、`n`、`slug`、`modules`、`prereq_stories`、`fp_ids`、`refs`、`artifacts`
 - `fp_ids` 必须至少 1 个，且每个必须为 `FP-001`（3 位数字）；禁止 `FP-01`、`FP-###` 等
 - `## 功能点（必填）` 章节必须至少 1 条 `- ` 条目，且条目数必须等于 `fp_ids` 去重数量
-- 占位符门禁：剔除 fenced code blocks 后逐行检查；不得残留占位符：`[...]`、`Story N`、`M-xx`、`FP-###`、`BR-###`、`TBL-###`、`API-###`、`ART:FILE:[path_glob]`、`ART:CFG:[key]`、`ART:EXT:[system]` 等
+- Story 中不得出现 fenced code blocks（```）；出现即 `FAIL`
+- 占位符门禁：剔除 fenced code blocks 后逐行检查；不得残留占位符：`TBD`、`[...]`、`Story N`、`M-xx`、`FP-###`、`BR-###`、`TBL-###`、`API-###`、`ART:FILE:[path_glob]`、`ART:CFG:[key]`、`ART:EXT:[system]` 等
 - 方括号门禁（避免漏检）：剔除 fenced code blocks 后逐行检查；若出现 `[` 或 `]`：仅允许
   - 行首任务清单标记：`- [ ]` / `- [x]` / `* [ ]` / `* [x]`
   - Markdown 链接：`[text](...)`
-  - 路径/路由等“包含 `/` 或 `\\` 的字符串”中的方括号（如 `pages/[slug].tsx`、`/posts/[slug]`、`ART:FILE:content/[slug].md`）
+  - 路径/路由 token 中的 Next.js 风格动态段（`[` 必须紧跟在 `/` 或 `\\` 之后，且 `[]` 内不得包含空白、`/`、`\\`），如 `/posts/[slug]`、`pages/[id].tsx`、`ART:FILE:content/[slug].md`
   - 其余一律 `FAIL`
 - 方括号门禁执行范围：**不扫描 YAML front-matter 区域**（仅用于避免 YAML `[]` 误伤）；但占位符门禁必须扫描 YAML front-matter
 
@@ -181,7 +183,7 @@ constraints:
   - `prd_tbl_ids`: `TBL-###`
   - `prd_br_ids`: `BR-###`
 - `summary.refs.*` 为全量 union（去重、升序）
-- 不得残留占位符（如 `[...]`、`###`）
+- 不得残留占位符（如 `TBD`、`[...]`、`###`）
 
 ## 开始
 

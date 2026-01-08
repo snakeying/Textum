@@ -29,7 +29,7 @@
 - 必须满足最小可用性：
   - `modules` 至少 1 个，且至少 1 个模块 `priority = P0`
   - `business_rules` 至少 1 条且每条非空（否则后续 GLOBAL-CONTEXT 无法生成可用规则索引）
-- 对照 `.claude/textum/PRD-framework.md` 的必填章/表逐项校验：必须能**完整填满**且不残留任何占位符（如 `[...]`、`[field]`、`[METHOD]`、`[table]`、`PRD#API-###`、`PRD#TBL-###`）
+- 对照 `.claude/textum/PRD-framework.md` 的必填章/表逐项校验：必须能**完整填满**且不残留任何占位符（如 `TBD`、`[...]`、`[field]`、`[METHOD]`、`[PATH]`、`[table]`、`PRD#API-###`、`PRD#TBL-###`）
 - 必须可闭合“功能点→落点映射”（PRD `8.0`）：
   - pack 来源：`modules[].feature_points[].landing`（不可为空；不明确就回 `PRD_PLAN_CLARIFY_PACK`）
   - pack 中每条 `landing` 允许值：`N/A` 或逗号分隔多项集合（不改写 token 本体）：
@@ -45,6 +45,8 @@
 
 - 严格按 `.claude/textum/PRD-framework.md` 的结构输出所有章节
 - 低噪音：短句/表格优先；禁止长段散文复述；一行一条
+- 禁止 fenced code blocks：PRD 中不得出现任何 ```（用表格/短句替代）
+- 全文不得出现 `TBD`
 - 稳定ID：
   - 模块：`M-01` 起递增且唯一
   - 规则：`BR-001` 起递增且唯一

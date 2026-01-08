@@ -22,7 +22,10 @@
 - `goals` 至少 1 条且非空；`non_goals` 至少 1 条且非空
 - `scope.in` / `scope.out` 至少各 1 条且非空
 - `roles` 至少 1 个；每个 role 的 `role/description` 非空；`typical_scenarios` 至少 1 条
-- `permission_matrix.operations` 至少 1 行；且 `per_role` 的 key 必须是 `roles[].role` 的子集
+- `permission_matrix.operations` 至少 1 行；每行必须满足：
+  - `op` 非空
+  - `per_role` 至少 1 个 key；key 必须是 `roles[].role` 的子集；value 只能是 `A` / `D` / `O`
+  - `note` 可为 `N/A`
 - `modules` 至少 1 个，且至少 1 个模块 `priority = P0`
 - 每个模块：
   - `summary` 非空
@@ -31,7 +34,10 @@
 - `business_rules` 至少 1 条且非空；每条 `scope` 非空
 - `api.has_api` 必须为布尔值：
   - 若 `api.has_api=false`：`api.endpoints` 必须为空数组；`api.base_url/auth/...` 可为 `N/A`
-  - 若 `api.has_api=true`：`api.endpoints` 至少 1 条；每条 `method/path/permission/summary` 非空
+  - 若 `api.has_api=true`：
+    - `api.base_url` 非空
+    - `api.auth` 非空（无认证写 `None`）
+    - `api.endpoints` 至少 1 条；每条 `method/path/permission/summary` 非空
 - `modules[].feature_points[].landing` 规则（不改写 token）：
   - 允许：`N/A` 或逗号分隔多项集合
   - 每项必须以以下前缀之一开头：`DB:` / `FILE:` / `CFG:` / `EXT:`

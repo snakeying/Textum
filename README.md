@@ -34,11 +34,11 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 | 5️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
 | 6️⃣ | `/split-plan` | 先做低噪音拆分规划（Story 列表 + API 分配 + 依赖） |
 | 7️⃣ | `/split` | 按规划生成 Story 文件（含 YAML front-matter：`fp_ids/refs/artifacts`） |
-| 8️⃣ | `/split-check1` → `PASS` 后 `/split-check2` | 拆分校验（结构/阈值 → 引用可追溯；有 API 时 Smoke Test） |
+| 8️⃣ | `/split-check1`（无 `FAIL`）→ `/split-check2` | 拆分校验（结构/阈值 → 引用可追溯；有 API 时 Smoke Test） |
 | 9️⃣ | `/split-checkout` | 导出 Story 依赖图（写入 `docs/story-mermaid.md`） |
-| 🔟 | `/story-check 1` → `PASS` 后 `/story-pack 1` → `/story 1` | 开始做第一个任务，然后按顺序继续 `/story-check 2` → `/story-pack 2` → `/story 2`... |
+| 🔟 | `/story-check 1`（无 `FAIL`）→ `/story-pack 1` → `/story 1` | 开始做第一个任务，然后按顺序继续 `/story-check 2` → `/story-pack 2` → `/story 2`... |
 
-> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步；`/prd-check` `PASS` 后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续通过 PRD 详情锚点 `<!-- PRD#... -->` 精确定位（如 `<!-- PRD#API-001 -->` / `<!-- PRD#TBL-001 -->`），避免通读 PRD 与行号漂移
+> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步（若输出 `DECISION`，确认接受后再继续）；`/prd-check` 输出 `PASS/DECISION` 且确认接受后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续通过 PRD 详情锚点 `<!-- PRD#... -->` 精确定位（如 `<!-- PRD#API-001 -->` / `<!-- PRD#TBL-001 -->`），避免通读 PRD 与行号漂移
 
 ## 🧭 执行注意事项
 

@@ -2,9 +2,11 @@
 
 读取：`docs/split-check-index-pack.yaml`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`（只读） | 写入：无（只输出 `FAIL/PASS`；不修改文件） | 模板：`N/A`
 
-对齐 GC/PRD 做引用可追溯与（有 API 时）Smoke Test；不读取所有 Story 文件。
+对齐 GC/PRD 做引用可追溯与（有 API 时）Smoke Test。
 
 ## 最小读取（必须；避免通读）
+
+只允许引用本节列出的内容范围；其余一律视为不可用。
 
 1. 解析 index pack：得到 Story 列表、模块覆盖、引用集合、API 分配
 2. 读取 GC：仅第 4 节业务规则表（得到合法 `BR-###` 集合）
@@ -14,7 +16,7 @@
    - `8.0 功能点→落点映射`（得到 `FP-001` 集合）
    - `8.1 表清单`（得到 `TBL-###` 集合）
    - `9.2 接口清单`（按 `N/A_STRICT` 判断是否无 API；得到 `API-###` 集合）
-4. 仅当触发 API Smoke Test 时：再读取 PRD `9.3 接口详情`（按锚点 `<!-- PRD#API-### -->` 定向检索，不通读）
+4. 仅当触发 API Smoke Test 时：再读取 PRD `9.3 接口详情`（按锚点 `<!-- PRD#API-### -->` 定向检索）
 
 ## 输出（只读）
 
@@ -31,8 +33,17 @@
 ### 0) 基础门禁
 
 - `docs/split-check-index-pack.yaml` 必须存在且可解析
+- 根键必须为 `SPLIT_CHECK_INDEX_PACK: v1`
 - `docs/GLOBAL-CONTEXT.md` 必须存在
 - `docs/PRD.md` 必须存在
+
+### 0.5) index pack 占位符门禁
+
+- `docs/split-check-index-pack.yaml` 中不得出现任何模板占位符；命中任一即 `FAIL`（并提示先回到 `/split-check1` 重写 pack）：
+  - `TBD`
+  - `Story N`
+  - `M-xx`
+  - `FP-###` / `BR-###` / `TBL-###` / `API-###`
 
 ### 1) GC 规则引用一致性（GC#BR）
 

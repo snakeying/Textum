@@ -8,9 +8,11 @@
 
 ## 最小读取（必须；避免通读）
 
-1. 读取 Story：仅解析 YAML front-matter 作为索引（不依赖正文抽取 ID）
+只允许引用本节列出的内容范围；其余一律视为不可用。
+
+1. 读取 Story：仅解析 YAML front-matter 作为索引
 2. 读取 GC：按索引抽取片段（固定章节 + 规则表行 + 验证命令表）
-3. 读取 PRD：按索引/锚点抽取块（不通读；必须原文复制；不做摘要/改写）
+3. 读取 PRD：仅按索引/锚点抽取块（必须逐字原文复制）
 
 ## 前置条件（必须满足）
 
@@ -33,7 +35,7 @@
 
 ### B) 从 GC 抽取（避免通读）
 
-- 必须原文复制（不做摘要/改写）
+- 必须逐字原文复制
 - 固定复制以下 **整段章节**（按标题边界截取，`## X.` 到下一个 `##` 之前）：
   - `## 2. 项目结构（必填）`
   - `## 3. 枚举值定义（必填；无则写 N/A）`
@@ -62,7 +64,7 @@
 `N/A_STRICT` 判定口径（权威；逐字一致；禁止改写）：
 - 定位 PRD 小节 `### 9.2 接口清单（必填）` 的正文（标题行之后到下一同级小节标题之前）
 - 判定 `N/A_STRICT = true` 当且仅当：正文去掉空行并 Trim 后仅剩 1 行且该行严格等于 `N/A`
-- 必须原文复制（不做摘要/改写）
+- 必须逐字原文复制
 
 **接口块**
 
@@ -97,42 +99,28 @@
 
 - 若 `FAIL`：只输出 `FAIL` 清单并停止（不写 pack 文件；`F-001` 起编号；每条必须包含：问题 / 影响 / 修复方式（只给 1 个动作或命令））
 - 若 `PASS`：
-  1. 写入 `docs/story-$ARGUMENTS-exec-pack.yaml`（字段齐全；内容为原文复制；格式如下）
+  1. 写入 `docs/story-$ARGUMENTS-exec-pack.yaml`（纯 YAML；不得包含 ```；不得额外加键；多行内容必须用 YAML block scalar `|-` 逐字原文粘贴）
 
-`docs/story-$ARGUMENTS-exec-pack.yaml` 内容格式（必须严格）：
+`docs/story-$ARGUMENTS-exec-pack.yaml` 字段结构（必须严格）：
 
-```yaml
-STORY_EXEC_PACK: v2
-story:
-  file: "docs/story-$ARGUMENTS-*.md"
-  markdown: |-
-    (原文粘贴 Story 全文)
-verification:
-  commands:
-    - type: "N/A"
-      command: "N/A"
-      note: "N/A"
-gc:
-  project_structure: |-
-    (原文粘贴 GC 第2节)
-  enums: |-
-    (原文粘贴 GC 第3节)
-  permission_matrix: |-
-    (原文粘贴 GC 第5节)
-  api_conventions: |-
-    (原文粘贴 GC 第8节)
-  referenced_rules: |-
-    (若无 refs.gc_br 引用写 N/A；否则粘贴 GC 第4节规则表：表头 + 分隔行 + 被引用 BR-### 行)
-prd:
-  fp_artifact_rows: |-
-    (原文粘贴 PRD 8.0 表：表头 + 分隔行 + 本 Story 关联 FP 行)
-  api_blocks: |-
-    (若无 refs.prd_api 引用写 N/A；否则按 API-### 升序逐块原文粘贴；每块包含标题行锚点)
-  table_blocks: |-
-    (若无 refs.prd_tbl 引用写 N/A；否则按 TBL-### 升序逐块原文粘贴；每块包含标题行锚点)
-  rule_rows: |-
-    (若无 refs.prd_br 引用写 N/A；否则粘贴 PRD 第6节规则表：表头 + 分隔行 + 被引用 BR-### 行)
-```
+- 根键：`STORY_EXEC_PACK: v2`
+- `story`：
+  - `file`：实际 Story 文件路径（必须为 `docs/story-$ARGUMENTS-*.md` 且仅匹配 1 个）
+  - `markdown`：`|-` 原文粘贴该 Story 全文（包含 YAML front-matter 与全部章节）
+- `verification.commands`：
+  - 若 GC 中无可用表格：仅 1 行，且 `type/command/note` 均为 `N/A`
+  - 否则：按 GC 表格行顺序逐行原文复制三列到 `type` / `command` / `note`（不改写）
+- `gc`：
+  - `project_structure`：`|-` 原文粘贴 GC 第 2 节（按标题边界截取的整段章节）
+  - `enums`：`|-` 原文粘贴 GC 第 3 节整段章节
+  - `permission_matrix`：`|-` 原文粘贴 GC 第 5 节整段章节
+  - `api_conventions`：`|-` 原文粘贴 GC 第 8 节整段章节
+  - `referenced_rules`：若 `S_gc_br` 为空则写 `N/A`；否则 `|-` 原文粘贴 GC 第 4 节规则表：表头 + 分隔行 + 被引用 `BR-###` 行（按 ID 升序）
+- `prd`（全部必须逐字原文粘贴）：
+  - `fp_artifact_rows`：`|-` 原文粘贴 PRD `8.0` 表：表头 + 分隔行 + 本 Story 的 `S_fp` 行（按 `FP-001` 升序）
+  - `api_blocks`：若 `S_api` 为空则写 `N/A`；否则 `|-` 按 `API-###` 升序逐块原文粘贴（每块从标题行开始到下一条 `#### 9.3.*` 之前；包含标题行锚点）
+  - `table_blocks`：若 `S_tbl` 为空则写 `N/A`；否则 `|-` 按 `TBL-###` 升序逐块原文粘贴（每块从标题行开始到下一条 `#### 8.2.*` 之前；包含标题行锚点）
+  - `rule_rows`：若 `S_prd_br` 为空则写 `N/A`；否则 `|-` 原文粘贴 PRD 第 6 节规则表：表头 + 分隔行 + 被引用 `BR-###` 行（按 ID 升序）
 
   2. 输出：
      - `PASS`

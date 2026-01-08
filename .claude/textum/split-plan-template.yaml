@@ -6,30 +6,9 @@ source:
 stories:
   - story: "Story 1"
     n: 1
-    slug: "kebab-case"
-    modules:
-      - "M-01"
-    goal: "一句话目标"
+    slug: "TBD"
+    modules: ["M-01"]
+    goal: "TBD"
     prereq_stories: []
 
-api_assignments:
-  - api: "API-001"
-    story: "Story 1"
-    note: "N/A"
-
-self_check:
-  p0_module_coverage:
-    status: "PASS"
-    uncovered_modules: []
-  api_coverage_and_uniqueness:
-    status: "PASS"
-    missing_api_ids: []
-    duplicate_api_ids: []
-  api_threshold_precheck:
-    status: "PASS"
-    per_story:
-      - story: "Story 1"
-        api_assigned: 1
-  dependency_validity:
-    status: "PASS"
-    issues: []
+api_assignments: []

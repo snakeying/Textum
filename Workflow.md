@@ -1,4 +1,4 @@
-# Textum - PRD → Story 开发工作流（v6）
+# Textum - PRD → Story 开发工作流（v6.35）
 
 > 本版本采用“多窗口 + 低噪音 + 门禁校验”的流程：PRD/GC 内用稳定 ID（`BR-###` / `TBL-###` / `API-###`）+ PRD 详情锚点（`<!-- PRD#... -->`）；Story 在 YAML front-matter 中只记录 ID（不带前缀），并通过 `/prd-check` `/scaffold-check` `/split-check1` `/split-check2` `/story-check` 把关。
 
@@ -22,7 +22,7 @@ flowchart TB
         F0[(docs/prd-plan-pack.yaml)]:::file
         P2[/prd 生成PRD/]:::cmd
         PK2[[PRD_PLAN_CLARIFY_PACK]]:::pack
-        F1[(PRD.md)]:::file
+        F1[(docs/PRD.md)]:::file
         C1{{prd-check}}:::chk
 
         U --> P1 --> F0 --> P2
@@ -34,7 +34,7 @@ flowchart TB
     subgraph B2["2. Scaffold 阶段"]
         direction LR
         S1[/scaffold 抽取上下文/]:::cmd
-        F2[(GLOBAL-CONTEXT.md)]:::file
+        F2[(docs/GLOBAL-CONTEXT.md)]:::file
         C2{{scaffold-check}}:::chk
 
         S1 --> F2 --> C2
@@ -44,29 +44,29 @@ flowchart TB
     subgraph B3["3. Split 阶段"]
         direction LR
         SP[/split-plan 规划Story/]:::cmd
-        FP[(split-plan.yaml)]:::file
+        FP[(docs/split-plan.yaml)]:::file
         SS[/split 生成Story/]:::cmd
-        FS[(story-*.md)]:::file
+        FS[(docs/story-*.md)]:::file
         C3{{split-check1 结构}}:::chk
-        IX[(split-check-index-pack.yaml)]:::file
+        IX[(docs/split-check-index-pack.yaml)]:::file
         C4{{split-check2 引用}}:::chk
 
         SP --> FP --> SS --> FS --> C3
         C3 -.->|规划问题| SP
         C3 -.->|Story问题| SS
-        C3 -->|PASS| IX --> C4
+        C3 -->|PASS/DECISION| IX --> C4
         C4 -.->|FAIL| C3
     end
 
     subgraph B4["4. Story 执行"]
         direction LR
         BF[/split-checkout 导出依赖图/]:::cmd
-        F3[(GLOBAL-CONTEXT.md)]:::file
-        FM[(story-mermaid.md)]:::file
+        F3[(docs/GLOBAL-CONTEXT.md)]:::file
+        FM[(docs/story-mermaid.md)]:::file
         PK{选择Story}:::dec
         C5{{story-check}}:::chk
         PKG[/story-pack/]:::cmd
-        FE[(exec-pack.yaml)]:::file
+        FE[(docs/story-N-exec-pack.yaml)]:::file
         EX[/story N 执行/]:::cmd
         MR{还有Story}:::dec
         DN([完成]):::note
@@ -75,13 +75,13 @@ flowchart TB
         FM --> PK --> C5
         F3 --> C5
         C5 -.->|FAIL: 按清单修正后重跑| C5
-        C5 -->|PASS| PKG --> FE --> EX --> MR
+        C5 -->|PASS/DECISION| PKG --> FE --> EX --> MR
         MR -->|是| PK
         MR -->|否| DN
     end
 
-    C1 -->|PASS| S1
-    C2 -->|PASS| SP
+    C1 -->|PASS/DECISION| S1
+    C2 -->|PASS/DECISION| SP
     C4 -->|PASS| BF
 ```
 
@@ -91,15 +91,15 @@ flowchart TB
 |------|------|------|----------|
 | 1a. 需求澄清 | `/prd-plan` | 用户需求 / `PRD_PLAN_CLARIFY_PACK` /（可选）`docs/prd-plan-pack.yaml` | 更新 `docs/prd-plan-pack.yaml`（唯一事实来源；每轮写入） |
 | 1b. PRD 生成/修正 | `/prd` | `docs/prd-plan-pack.yaml`（可选：`/prd-check` 清单） | `docs/PRD.md`（或输出 `PRD_PLAN_CLARIFY_PACK`；不修改文件） |
-| 1c. PRD 校验 | `/prd-check` | `docs/PRD.md` | 校验报告（不修改文件） |
+| 1c. PRD 校验 | `/prd-check` | `docs/PRD.md` | 校验报告（`FAIL/DECISION/PASS`；不修改文件） |
 | 2. 脚手架 | `/scaffold` | `docs/PRD.md`（只读） | `docs/GLOBAL-CONTEXT.md`（全局约定/索引） |
-| 2b. GC 校验 | `/scaffold-check` | `docs/GLOBAL-CONTEXT.md` | 校验报告（不修改文件） |
+| 2b. GC 校验 | `/scaffold-check` | `docs/GLOBAL-CONTEXT.md` | 校验报告（`FAIL/DECISION/PASS`；不修改文件） |
 | 3a. 拆分规划 | `/split-plan` | PRD（索引章）+ GLOBAL-CONTEXT | `docs/split-plan.yaml` |
 | 3. Story 生成 | `/split` | split-plan + PRD + GLOBAL-CONTEXT | `docs/story-N-slug.md` |
-| 4a. 拆分校验（Core） | `/split-check1` | split-plan + 所有 story | 校验报告；`PASS` 时写入 `docs/split-check-index-pack.yaml`；可能附带 `SPLIT_REPLAN_PACK` |
-| 4b. 拆分校验（引用可追溯 + API Smoke） | `/split-check2` | `docs/split-check-index-pack.yaml` + PRD + GLOBAL-CONTEXT | 校验报告（不修改文件） |
+| 4a. 拆分校验（Core） | `/split-check1` | split-plan + 所有 story | 校验报告（`FAIL/DECISION/PASS`）；无 `FAIL` 时写入 `docs/split-check-index-pack.yaml`；可能附带 `SPLIT_REPLAN_PACK` |
+| 4b. 拆分校验（引用可追溯 + API Smoke） | `/split-check2` | `docs/split-check-index-pack.yaml` + PRD + GLOBAL-CONTEXT | 校验报告（`FAIL/PASS`；不修改文件） |
 | 5. 导出依赖图 | `/split-checkout` | 所有 story | 写入 `docs/story-mermaid.md` |
-| 6a. Story 校验 | `/story-check N` | PRD + GLOBAL-CONTEXT + story-N | 校验报告（不修改文件） |
+| 6a. Story 校验 | `/story-check N` | PRD + GLOBAL-CONTEXT + story-N | 校验报告（`FAIL/DECISION/PASS`；不修改文件） |
 | 6b. Story 执行包 | `/story-pack N` | PRD + GLOBAL-CONTEXT + story-N | 写入 `docs/story-N-exec-pack.yaml`（`STORY_EXEC_PACK`） |
 | 6. Story 执行 | `/story N` | `docs/story-N-exec-pack.yaml` | 代码实现 |
 
@@ -136,15 +136,15 @@ project/
 ## 执行要点
 
 - 每个阶段使用**新窗口**保持上下文干净
-- PRD 只读：`/prd-check` `PASS` 后，后续步骤不修改 `docs/PRD.md`；如需修改，回到 `/prd` 更新并重跑后续步骤
+- PRD 只读：`/prd-check` 输出 `PASS` 或 `DECISION` 且确认接受后，后续步骤不修改 `docs/PRD.md`；如需修改，回到 `/prd` 更新并重跑后续步骤
 - GLOBAL-CONTEXT 只放**全局约定/索引**：不得复述模块细节、逐表字段、接口详情；也不得引入 PRD 中不存在的新信息
 - 规则编号统一：`BR-###`（001 起递增且唯一）；Story 在 YAML front-matter `refs.gc_br`/`refs.prd_br` 中只记录 `BR-###`
 - 稳定ID：接口 `API-###`、表 `TBL-###`；Story 在 YAML front-matter `refs.prd_api`/`refs.prd_tbl` 中只记录 `API-###`/`TBL-###`
 - 无 API：若 PRD 小节 `### 9.2 接口清单（必填）` 满足 `N/A_STRICT`（正文仅一行 `N/A`），则所有 Story 的 `refs.prd_api=[]` 且 `## 接口` 写 `N/A`
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 的 YAML front-matter（`fp_ids/refs/artifacts`），减少通读 PRD 的噪音
-- `/split-check1`（结构/阈值）`PASS` 后运行 `/split-check2`（引用可追溯 + 有 API 时 Smoke Test）；未通过不得进入 `/split-checkout` 与 `/story N`
+- `/split-check1`（结构/阈值）无 `FAIL`（`PASS` 或接受 `DECISION`）后运行 `/split-check2`（引用可追溯 + 有 API 时 Smoke Test）；未通过不得进入 `/split-checkout` 与 `/story N`
 - FP 覆盖：PRD `8.0 功能点→落点映射` 中的每个 `FP-001` 必须至少被 1 个 Story 的「关联功能点」覆盖；否则应回到 `/split`（必要时先 `/split-plan`）调整边界
-- Story 执行顺序：`/story-check N` `PASS` → `/story-pack N` →（新窗口）`/story N`（只读取 `docs/story-N-exec-pack.yaml`；禁止再读取 `docs/PRD.md` / `docs/GLOBAL-CONTEXT.md` / `docs/story-*.md`）
+- Story 执行顺序：`/story-check N` 无 `FAIL`（`PASS` 或接受 `DECISION`）→ `/story-pack N` →（新窗口）`/story N`（只读取 `docs/story-N-exec-pack.yaml`；禁止再读取 `docs/PRD.md` / `docs/GLOBAL-CONTEXT.md` / `docs/story-*.md`）
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
 - `/story N` 执行后自动跑验证命令：命令来自 `docs/story-N-exec-pack.yaml` 的 `verification.commands`（由 `GLOBAL-CONTEXT` 第 2 节“项目验证命令”抽取）；若全部为 `N/A` 则输出 `DECISION`
 - 落点 token：Story 的 `ART:FILE:<path>` / `ART:CFG:<key>` / `ART:EXT:<system>` 必须与 PRD `8.0` 映射中的 `FILE:` / `CFG:` / `EXT:` 精确对齐（`/story-check` 与 `/story-pack` 会做兜底子集校验）
