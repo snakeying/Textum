@@ -125,6 +125,14 @@ project/
 └── src/                 ← 代码实现
 ```
 
+## 权威判定口径
+
+本节为权威定义；命令文档如需重复必须逐字一致，禁止改写。
+
+`N/A_STRICT` 判定口径（权威；逐字一致；禁止改写）：
+- 定位 PRD 小节 `### 9.2 接口清单（必填）` 的正文（标题行之后到下一同级小节标题之前）
+- 判定 `N/A_STRICT = true` 当且仅当：正文去掉空行并 Trim 后仅剩 1 行且该行严格等于 `N/A`
+
 ## 执行要点
 
 - 每个阶段使用**新窗口**保持上下文干净
@@ -132,7 +140,7 @@ project/
 - GLOBAL-CONTEXT 只放**全局约定/索引**：不得复述模块细节、逐表字段、接口详情；也不得引入 PRD 中不存在的新信息
 - 规则编号统一：`BR-###`（001 起递增且唯一）；Story 在 YAML front-matter `refs.gc_br`/`refs.prd_br` 中只记录 `BR-###`
 - 稳定ID：接口 `API-###`、表 `TBL-###`；Story 在 YAML front-matter `refs.prd_api`/`refs.prd_tbl` 中只记录 `API-###`/`TBL-###`
-- 无 API：若 PRD `### 9.2 接口清单` 满足 `N/A_STRICT`（正文仅一行 `N/A`），则所有 Story 的 `refs.prd_api=[]` 且 `## 接口` 写 `N/A`
+- 无 API：若 PRD 小节 `### 9.2 接口清单（必填）` 满足 `N/A_STRICT`（正文仅一行 `N/A`），则所有 Story 的 `refs.prd_api=[]` 且 `## 接口` 写 `N/A`
 - `/split-plan` 先做“分配与依赖”，`/split` 再补齐 Story 的 YAML front-matter（`fp_ids/refs/artifacts`），减少通读 PRD 的噪音
 - `/split-check1`（结构/阈值）`PASS` 后运行 `/split-check2`（引用可追溯 + 有 API 时 Smoke Test）；未通过不得进入 `/split-checkout` 与 `/story N`
 - FP 覆盖：PRD `8.0 功能点→落点映射` 中的每个 `FP-001` 必须至少被 1 个 Story 的「关联功能点」覆盖；否则应回到 `/split`（必要时先 `/split-plan`）调整边界

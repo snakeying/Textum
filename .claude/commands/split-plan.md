@@ -11,7 +11,9 @@
 
 ## 硬约束
 
-- `N/A_STRICT` 判定口径（必须按此判定）：定位 PRD 小节 `### 9.2 接口清单（必填）` 的正文，去掉空行并 Trim 后仅剩 1 行且该行严格等于 `N/A`
+`N/A_STRICT` 判定口径（权威；逐字一致；禁止改写）：
+- 定位 PRD 小节 `### 9.2 接口清单（必填）` 的正文（标题行之后到下一同级小节标题之前）
+- 判定 `N/A_STRICT = true` 当且仅当：正文去掉空行并 Trim 后仅剩 1 行且该行严格等于 `N/A`
 - 只做规划：不生成任何 Story 文件（不写入 `docs/story-*-*.md`）
 - 输出必须严格按 `.claude/textum/split-plan-template.yaml` 的 YAML 结构（字段齐全；不得额外加 Markdown 文本）
 - 编号必须为 `Story 1..N` 连续；`slug` 必须唯一

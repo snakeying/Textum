@@ -67,8 +67,10 @@
 
 ### 5) API 分配一致性（PRD ↔ split-plan ↔ Story）
 
-先判断 PRD 是否有接口（N/A 严格口径；必须按此判定）：
-- 定位小节 `### 9.2 接口清单（必填）` 的正文（标题行之后到下一同级小节标题之前）
+先判断 PRD 是否有接口（必须按 `N/A_STRICT` 判定）：
+
+`N/A_STRICT` 判定口径（权威；逐字一致；禁止改写）：
+- 定位 PRD 小节 `### 9.2 接口清单（必填）` 的正文（标题行之后到下一同级小节标题之前）
 - 判定 `N/A_STRICT = true` 当且仅当：正文去掉空行并 Trim 后仅剩 1 行且该行严格等于 `N/A`
 - 若 `N/A_STRICT = true`：`PRD_HAS_API = false`
 - 否则：`PRD_HAS_API = true`，并收集 PRD `9.2` 的 `API-###` 集合 `P_api`

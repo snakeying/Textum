@@ -67,9 +67,20 @@
 | `acceptance_items` | `≤ 10` | `11–15` | `≥ 16` |
 
 升级规则：
-- 命中任一 `FAIL` 阈值 → 该 Story 为 `FAIL`
-- 否则，若同一 Story 命中 **≥ 2 个** `DECISION` 阈值 → 升级为 `FAIL`
-- 否则，若命中任一 `DECISION` 阈值 → 该 Story 为 `DECISION`
+
+机械判定步骤（必须；不得跳步/改写）：
+1. 对每个 Story 先计算 4 个整数指标：`api_refs` / `tbl_refs` / `feature_points` / `acceptance_items`（计数口径见上文；必须按去重口径）
+2. 对每个指标按上表分类到 3 档之一，并记录命中列表：
+   - `fail_hits`: [{metric, value, threshold}...]（命中 FAIL 档的全部指标；可为空）
+   - `decision_hits`: [{metric, value, threshold}...]（命中 DECISION 档的全部指标；可为空）
+3. 产出该 Story 的阈值结论（按序判定）：
+   - 若 `fail_hits` 非空 → `FAIL`
+   - 否则，若 `decision_hits.length >= 2` → `FAIL`（DECISION 升级）
+   - 否则，若 `decision_hits.length == 1` → `DECISION`
+   - 否则 → `PASS`
+4. 输出一致性要求：
+   - 若阈值结论为 `FAIL`：FAIL 清单必须列出 `fail_hits` 与 `decision_hits`；并将其分别写入 `SPLIT_REPLAN_PACK.oversized_stories[].metrics.fail_hits` 与 `SPLIT_REPLAN_PACK.oversized_stories[].metrics.decision_hits`
+   - 若阈值结论为 `DECISION`：DECISION 清单必须列出 `decision_hits`（此时长度固定为 `1`）
 
 ### 触发后输出（仅阈值 FAIL 时；必须）
 
