@@ -1,6 +1,6 @@
 # 阶段4b: Story 拆分校验（引用可追溯 + API Smoke / split-check2）
 
-读取：`docs/split-check-index-pack.yaml`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`（只读） | 写入：无（只输出 `FAIL/PASS`；不修改文件） | 模板：`N/A`
+读取：`docs/split-check-index-pack.yaml`、`docs/GLOBAL-CONTEXT.md`（只读）、`docs/PRD.md`（只读） | 写入：无（只输出 `FAIL/PASS`；不修改文件） | 模板：`N/A`
 
 对齐 GC/PRD 做引用可追溯与（有 API 时）Smoke Test。
 
@@ -39,7 +39,7 @@
 
 ### 0.5) index pack 占位符门禁
 
-- `docs/split-check-index-pack.yaml` 中不得出现任何模板占位符；命中任一即 `FAIL`（并提示先回到 `/split-check1` 重写 pack）：
+- `docs/split-check-index-pack.yaml` 中不得出现任何模板占位符；命中任一即 `FAIL`：
   - `TBD`
   - `Story N`
   - `M-xx`

@@ -1,6 +1,6 @@
 # 阶段3: Story 拆分（/split）
 
-读取：`docs/split-plan.yaml`、`docs/PRD.md`（只读）、`docs/GLOBAL-CONTEXT.md` | 写入：`docs/story-*-*.md` | 模板：`.claude/textum/story-template.md`
+读取：`docs/split-plan.yaml`、`docs/PRD.md`（只读）、`docs/GLOBAL-CONTEXT.md`（只读） | 写入：`docs/story-*-*.md` | 模板：`.claude/textum/story-template.md`
 
 按 split-plan 生成 Story 文件（含 YAML front-matter）。
 

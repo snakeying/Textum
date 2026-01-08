@@ -2,7 +2,7 @@
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
-读取：`docs/story-$ARGUMENTS-*.md`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`（只读） | 写入：`docs/story-$ARGUMENTS-exec-pack.yaml`（纯 YAML；不包含 ```） | 模板：`N/A`
+读取：`docs/story-$ARGUMENTS-*.md`、`docs/GLOBAL-CONTEXT.md`（只读）、`docs/PRD.md`（只读） | 写入：`docs/story-$ARGUMENTS-exec-pack.yaml`（仅 `PASS` 时写入；纯 YAML；不包含 ```） | 模板：`N/A`
 
 生成 1 个 `STORY_EXEC_PACK`，写入 `docs/story-$ARGUMENTS-exec-pack.yaml`，作为该 Story 的最小执行输入。
 

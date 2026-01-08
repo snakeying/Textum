@@ -79,4 +79,4 @@ blockers:
 
 ## 开始
 
-我会读取 `docs/prd-plan-pack.yaml`（以及可选的 `/prd-check` 清单）。信息足够时一次性生成/修正 `docs/PRD.md`；信息不足时输出 `PRD_PLAN_CLARIFY_PACK` 并给出下一步指引。
+我会读取 `docs/prd-plan-pack.yaml`（以及可选的 `FAIL/DECISION` 清单）。信息足够时一次性生成/修正 `docs/PRD.md`；信息不足时输出 `PRD_PLAN_CLARIFY_PACK` 并给出下一步指引。

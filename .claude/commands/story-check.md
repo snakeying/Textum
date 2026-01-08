@@ -2,7 +2,7 @@
 
 - `$ARGUMENTS`: Story 编号（如: 1）
 
-读取：`docs/story-$ARGUMENTS-*.md`、`docs/GLOBAL-CONTEXT.md`、`docs/PRD.md`（只读） | 写入：无（只输出 `FAIL/DECISION/PASS`；不修改文件） | 模板：`N/A`
+读取：`docs/story-$ARGUMENTS-*.md`、`docs/GLOBAL-CONTEXT.md`（只读）、`docs/PRD.md`（只读） | 写入：无（只输出 `FAIL/DECISION/PASS`；不修改文件） | 模板：`N/A`
 
 校验单个 Story 并输出 `FAIL/DECISION/PASS` 清单；不修改任何文件。
 
