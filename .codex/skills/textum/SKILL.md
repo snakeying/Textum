@@ -39,6 +39,7 @@ description: Textum PRD→Story workflow for Codex with low-noise outputs and ga
 - Story 校验 → `references/story-check.md`
 - Story 执行包生成 → `references/story-pack.md`
 - Story 执行 → `references/story.md`
+- Story 批量执行（实验）→ `references/story-full-exec.md`
 
 ## 始终硬约束
 

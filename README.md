@@ -44,6 +44,8 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 > 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步（若输出 `DECISION`，确认接受后再继续）；`/prd-check` 输出 `PASS/DECISION` 且确认接受后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续通过 PRD 详情锚点 `<!-- PRD#... -->` 精确定位（如 `<!-- PRD#API-001 -->` / `<!-- PRD#TBL-001 -->`），避免通读 PRD 与行号漂移
 
+> 🧪 实验性（高风险，不推荐）：`/story-full-exec 1/2/3/...` 在**同一窗口**按顺序执行多个 Story 并汇总 `FAIL`；不会逐个等待人工验收，且失败也会继续执行后续 Story。仅当你明确接受风险时使用；前置是已为每个 Story 生成 `docs/story-N-exec-pack.yaml`（先跑 `/story-pack N`；缺失任一 pack 将直接 `FAIL` 并停止）。
+
 ## 🧭 执行注意事项
 
 - 按顺序执行 `/story 1`、`/story 2`、`/story 3`...（一次只跑一个）
