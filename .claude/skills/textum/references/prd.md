@@ -34,7 +34,7 @@
 - `docs/prd-plan-pack.yaml` 是唯一事实来源：PRD 只能从已确认字段映射出来（不得脑补）
 - 必须满足最小可用性：
   - `modules` 至少 1 个，且至少 1 个模块 `priority = P0`
-  - `business_rules` 至少 1 条且每条非空（否则后续 GLOBAL-CONTEXT 无法生成可用规则索引）
+  - `business_rules` 至少 1 条且每条非空
 - 对照 `.claude/skills/textum/assets/PRD-framework.md` 的必填章/表逐项校验：必须能**完整填满**且不残留任何占位符（如 `TBD`、`[...]`、`[field]`、`[METHOD]`、`[PATH]`、`[table]`、`PRD#API-###`、`PRD#TBL-###`）
 - PRD `7.3 命名规范`：
   - 仅当 plan-pack `assumptions_constraints[].assumption_or_constraint` 中存在以 `命名规范:` 开头的已确认约定时才写表格
@@ -65,7 +65,7 @@
 - 稳定ID：
   - 模块：优先使用 plan-pack `modules[].id`；缺失才生成 `M-01` 起递增且唯一
   - 规则：优先使用 plan-pack `business_rules[].id`；缺失才生成 `BR-001` 起递增且唯一
-  - 功能点：优先使用 plan-pack `modules[].feature_points[].fp`；缺失才生成 `FP-001` 起递增且唯一（3 位数字；用于 8.0 映射与后续 Story 关联）
+  - 功能点：优先使用 plan-pack `modules[].feature_points[].fp`；缺失才生成 `FP-001` 起递增且唯一（3 位数字）
   - 表：`TBL-001` 起递增且唯一（如有表）
   - 接口：`API-001` 起递增且唯一（如有 API）
 - 无 API（如适用）：若 `api.has_api=false`，则 PRD 第 9 节 `9.1/9.2/9.3` 三个小节正文必须严格为 1 行 `N/A`（不得残留表格/子标题/其它文本），且全文不得出现任何 `API-###/API-001` 与 `<!-- PRD#API-... -->`

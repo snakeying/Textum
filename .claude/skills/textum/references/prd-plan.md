@@ -36,7 +36,7 @@
 - `modules[].feature_points[0+]`：每条 `fp/desc/landing` 非空（`landing` 允许 `N/A`）
 - `modules[].scenarios[0+]`：每条 `actor/given/when/then` 非空（`fail_or_edge/note` 可为 `N/A`）
 - `business_rules[0+]`：每条 `id/desc/scope` 非空（`exception_or_note` 可为 `N/A`）
-- 稳定 ID（用于后续可追溯与低噪定位）：
+- 稳定 ID：
   - `modules[].id` 必须唯一且符合 `M-01` 格式
   - `modules[].feature_points[].fp` 必须全局唯一且符合 `FP-001` 格式
   - `business_rules[].id` 必须唯一且符合 `BR-001` 格式
@@ -50,7 +50,7 @@
 
 ## 可选记录（不主动追问）
 
-- 若用户**明确**提出命名/格式约定：写入 `assumptions_constraints[]`，并让 `assumption_or_constraint` 以 `命名规范:` 开头（便于后续映射到 PRD `7.3`）
+- 若用户**明确**提出命名/格式约定：写入 `assumptions_constraints[]`，并让 `assumption_or_constraint` 以 `命名规范:` 开头
 
 ## 输出状态
 

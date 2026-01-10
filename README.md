@@ -81,7 +81,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 │   ├── story-mermaid.md              # Story 依赖图（/split-checkout 生成）
 │   ├── story-1-slug.md               # 任务清单
 │   └── story-1-exec-pack.yaml        # 执行包（/story-pack 生成）
-└── src/              # 💻 代码会写在这
+└── src/              # 💻 代码目录（示例；以 GLOBAL-CONTEXT 第 2 节“项目结构”为准）
 ```
 
 ## 🎬 实际使用是这样的

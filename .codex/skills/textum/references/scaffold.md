@@ -2,7 +2,7 @@
 
 读取：`docs/PRD.md`（只读） | 写入：`docs/GLOBAL-CONTEXT.md` | 模板：`.codex/skills/textum/assets/GLOBAL-CONTEXT-template.md` | 可选输入：`FAIL/DECISION` 清单
 
-从 PRD 抽取生成 GLOBAL-CONTEXT：只抽取/归纳；不新增信息；用于后续 Split/Story 的低噪索引。
+从 PRD 抽取生成 GLOBAL-CONTEXT：只抽取/归纳；不新增信息。
 
 ## 输入（可选）
 
@@ -24,7 +24,7 @@
 - 禁止 fenced code blocks：输出中不得出现任何 ```
 - 禁止 PRD 锚点：`docs/GLOBAL-CONTEXT.md` 中不得出现任何 `PRD#...` 或 `<!-- PRD#... -->`
 - 技术栈（GC 第 1 节）：只允许从 PRD 显式抽取；PRD 未提供则写 `N/A`；不得猜测/推荐
-- 若提供 `FAIL/DECISION` 清单：必须逐条完成清单中的“修复方式/建议动作”，其余内容不做无关改动（最小 diff）
+- 若提供 `FAIL/DECISION` 清单：必须逐条完成清单中的“修复方式/建议动作”
 - 必须按模板输出全部一级章节：
   - 模板中为 `N/A` 的小节：保持该小节正文仅一行 `N/A`（不加额外解释）
   - 模板中为表格的小节：无信息则保留 `N/A` 行/单元格（不加额外解释）
@@ -52,4 +52,4 @@
 ## 完成后
 
 - 输出：`已写入：docs/GLOBAL-CONTEXT.md`
-- 提示在新窗口运行：`/scaffold-check`
+- 下一步：`/scaffold-check`

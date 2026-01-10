@@ -176,8 +176,6 @@ constraints:
 
 ## 生成索引交接包（必须；无 FAIL 时写入）
 
-目标：生成一个小而稳定的索引交接包，供后续对齐校验使用，避免复读所有 Story 文件。
-
 规则：
 - 严格按 `.claude/textum/split-check-index-pack-template.yaml` 的 YAML 结构写入（纯 YAML；不含 ```）
 - `modules` 解析为 `["M-01","M-02"]` 数组；`prereq_stories` 解析为 `["Story 1"]` 数组（无则空数组）

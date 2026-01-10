@@ -1,4 +1,4 @@
-# Textum - PRD → Story 开发工作流（alpha）
+# Textum - PRD → Story 开发工作流（beta）
 
 > 本版本采用“多窗口 + 低噪音 + 门禁校验”的流程：PRD/GC 内用稳定 ID（`BR-###` / `TBL-###` / `API-###`）+ PRD 详情锚点（`<!-- PRD#... -->`）；Story 在 YAML front-matter 中只记录 ID（不带前缀），并通过 `/prd-check` `/scaffold-check` `/split-check1` `/split-check2` `/story-check` 把关。
 
@@ -101,6 +101,7 @@ flowchart TB
 | 5. 导出依赖图 | `/split-checkout` | 所有 story | 写入 `docs/story-mermaid.md` |
 | 6a. Story 校验 | `/story-check N` | PRD + GLOBAL-CONTEXT + story-N | 校验报告（`FAIL/DECISION/PASS`；不修改文件） |
 | 6b. Story 执行包 | `/story-pack N` | PRD + GLOBAL-CONTEXT + story-N | 写入 `docs/story-N-exec-pack.yaml`（`STORY_EXEC_PACK`） |
+| 6c. Story 批量执行（实验，可选） | `/story-full-exec 1/2/3/...` | 多个 `docs/story-N-exec-pack.yaml`（需全部存在） | 代码实现（多个 Story） |
 | 6. Story 执行 | `/story N` | `docs/story-N-exec-pack.yaml` | 代码实现 |
 
 ## 模板文件（当前）
@@ -125,7 +126,7 @@ project/
 ├── .codex/
 │   └── skills/textum/   ← Codex skill 版本（自包含）
 ├── docs/                ← 生成的文档
-└── src/                 ← 代码实现
+└── src/                 ← 代码实现（示例；以 GLOBAL-CONTEXT 第 2 节“项目结构”为准）
 ```
 
 ## 权威判定口径
@@ -151,4 +152,4 @@ project/
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
 - `/story N` 执行后自动跑验证命令：命令来自 `docs/story-N-exec-pack.yaml` 的 `verification.commands`（由 `GLOBAL-CONTEXT` 第 2 节“项目验证命令”抽取）；若全部为 `N/A` 则输出 `DECISION`
 - 落点 token：Story 的 `ART:FILE:<path>` / `ART:CFG:<key>` / `ART:EXT:<system>` 必须与 PRD `8.0` 映射中的 `FILE:` / `CFG:` / `EXT:` 精确对齐（`/story-check` 与 `/story-pack` 会做兜底子集校验）
-- 若 Story 声明 `前置Story`/`已有资源`：先在 `src/` 下用 `rg` 定向检索已有实现，只读取关键签名，避免重复实现
+- 若 Story 声明 `前置Story`/`已有资源`：先在仓库中用 `rg` 定向检索已有实现，只读取关键签名，避免重复实现
