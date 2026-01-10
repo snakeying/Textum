@@ -24,9 +24,14 @@
 
 - 不输出任何原文（只输出清单）
 - 若存在任何 `FAIL`：
-  - 输出 `FAIL` 清单（`F-001` 起编号；每条必须包含：问题 / 影响 / 修复方式（只给 1 个动作或命令））
+  - 输出 `FAIL` 清单（`F-001` 起编号；每条必须包含以下字段）：
+    - `定位`：目标 Story 文件（`docs/story-N-<slug>.md`）+ YAML front-matter key / Markdown 章节名 / 门禁项；避免行号
+    - `问题`：1 句
+    - `期望`：可机械执行的“替换目标/格式”（能推导就写出来）
+    - `影响`：H/M/L
+    - `修复`：只给 1 个动作（通常是“按定位修正 docs/story-$ARGUMENTS-*.md”）
   - 末尾追加：
-    - `修正：按 FAIL 清单逐条执行“修复方式”（从 F-001 开始；最小修改）`
+    - `修正：按 FAIL 清单逐条修复 docs/story-$ARGUMENTS-*.md 后重跑 /story-check $ARGUMENTS`
     - `重跑：/story-check $ARGUMENTS`
   - 然后结束
 - 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`

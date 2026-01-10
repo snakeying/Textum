@@ -4,12 +4,18 @@
 
 > 约束：本命令**不做需求对话**。若信息不足以生成“可检查的 PRD”，输出 `PRD_PLAN_CLARIFY_PACK` 并停止（**不修改任何文件**）。
 
-读取：`docs/prd-plan-pack.yaml` | 写入：`docs/PRD.md`（信息不足则不写） | 模板：`.claude/textum/PRD-framework.md` | 可选输入：`FAIL/DECISION` 清单
+读取：`docs/prd-plan-pack.yaml` +（如存在）`docs/PRD.md` | 写入：`docs/PRD.md`（信息不足则不写） | 模板：`.claude/textum/PRD-framework.md` | 可选输入：`FAIL/DECISION` 清单
 
 ## 输入
 
 - plan-pack（唯一事实来源；不得向用户索要整包粘贴）
 - （可选）`FAIL/DECISION` 清单（用于精准修正）
+
+## 修正模式（当提供 `FAIL/DECISION` 清单时必须遵守）
+
+- 以现有 `docs/PRD.md` 为基线：**只修改清单命中的位置**，其余内容不做无关改动（最小 diff）
+- 稳定 ID/锚点禁止漂移：不得重排/重编号；若必须新增，只能在末尾新增并按序递增
+- 若清单需要补充事实且 plan-pack 不足以支撑：输出 `PRD_PLAN_CLARIFY_PACK` 并停止（不写文件）
 
 ## 输出
 
@@ -30,6 +36,9 @@
   - `modules` 至少 1 个，且至少 1 个模块 `priority = P0`
   - `business_rules` 至少 1 条且每条非空（否则后续 GLOBAL-CONTEXT 无法生成可用规则索引）
 - 对照 `.claude/textum/PRD-framework.md` 的必填章/表逐项校验：必须能**完整填满**且不残留任何占位符（如 `TBD`、`[...]`、`[field]`、`[METHOD]`、`[PATH]`、`[table]`、`PRD#API-###`、`PRD#TBL-###`）
+- PRD `7.3 命名规范`：
+  - 仅当 plan-pack `assumptions_constraints[].assumption_or_constraint` 中存在以 `命名规范:` 开头的已确认约定时才写表格
+  - 否则该小节正文仅一行 `N/A`（不追问、不阻断）
 - 必须可闭合“功能点→落点映射”（PRD `8.0`）：
   - pack 来源：`modules[].feature_points[].landing`（不可为空；不明确就回 `PRD_PLAN_CLARIFY_PACK`）
   - pack 中每条 `landing` 允许值：`N/A` 或逗号分隔多项集合（不改写 token 本体）：
@@ -39,7 +48,13 @@
     - `EXT:<system>`：外部依赖
   - PRD 输出规范：`DB:<table>` 必须映射为 `DB:TBL-###`（`TBL-001` 起连续）并能在 PRD `8.2` 用锚点 `<!-- PRD#TBL-### -->` 唯一定位
   - 若 `data_model.tables` 为空：PRD `8.1/8.2/8.3` 均写 `N/A`，且 PRD `8.0` 不得出现任何 `DB:` 落点
-- 只要存在任何缺失/歧义/需要确认的信息，一律输出 `PRD_PLAN_CLARIFY_PACK` 并停止（不写文件）
+- 仅当无法生成“可检查的 PRD”时才输出 `PRD_PLAN_CLARIFY_PACK` 并停止（不写文件）；阻断条件包括：
+  - plan-pack 不满足 `/prd-plan` 的 `READY` 门禁（例如：`api.has_api=null`、缺模块/缺功能点/缺落点、缺规则、缺权限矩阵等）
+  - 任何必填表格/章节只能靠猜测才能补齐
+  - 无法闭合 `8.0 功能点→落点映射`（含落点 token 不合法、或 `DB:<table>` 找不到 `data_model.tables[].table`）
+  - `api.has_api=true` 但 `api.endpoints` 无法提供最小清单（method/path/permission/summary）
+  - 需要新增 API/TBL 但缺少最小可定位信息，无法保证 ID/锚点稳定
+- 其余“非阻断缺失”（例如：第 2.3/7.1/7.2/10 细节不足、表字段不全、错误码不全）：用 `N/A`/`None` 明确落盘，不追问、不阻断
 
 ## 写作规则（必须遵守）
 
@@ -48,9 +63,9 @@
 - 禁止 fenced code blocks：PRD 中不得出现任何 ```（用表格/短句替代）
 - 全文不得出现 `TBD`
 - 稳定ID：
-  - 模块：`M-01` 起递增且唯一
-  - 规则：`BR-001` 起递增且唯一
-  - 功能点：`FP-001` 起递增且唯一（3 位数字；用于 8.0 映射与后续 Story 关联）
+  - 模块：优先使用 plan-pack `modules[].id`；缺失才生成 `M-01` 起递增且唯一
+  - 规则：优先使用 plan-pack `business_rules[].id`；缺失才生成 `BR-001` 起递增且唯一
+  - 功能点：优先使用 plan-pack `modules[].feature_points[].fp`；缺失才生成 `FP-001` 起递增且唯一（3 位数字；用于 8.0 映射与后续 Story 关联）
   - 表：`TBL-001` 起递增且唯一（如有表）
   - 接口：`API-001` 起递增且唯一（如有 API）
 - 无 API（如适用）：若 `api.has_api=false`，则 PRD 第 9 节 `9.1/9.2/9.3` 三个小节正文必须严格为 1 行 `N/A`（不得残留表格/子标题/其它文本），且全文不得出现任何 `API-###/API-001` 与 `<!-- PRD#API-... -->`

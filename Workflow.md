@@ -1,4 +1,4 @@
-# Textum - PRD → Story 开发工作流（v6.35）
+# Textum - PRD → Story 开发工作流（alpha）
 
 > 本版本采用“多窗口 + 低噪音 + 门禁校验”的流程：PRD/GC 内用稳定 ID（`BR-###` / `TBL-###` / `API-###`）+ PRD 详情锚点（`<!-- PRD#... -->`）；Story 在 YAML front-matter 中只记录 ID（不带前缀），并通过 `/prd-check` `/scaffold-check` `/split-check1` `/split-check2` `/story-check` 把关。
 
@@ -94,7 +94,7 @@ flowchart TB
 | 1c. PRD 校验 | `/prd-check` | `docs/PRD.md` | 校验报告（`FAIL/DECISION/PASS`；不修改文件） |
 | 2. 脚手架 | `/scaffold` | `docs/PRD.md`（只读） | `docs/GLOBAL-CONTEXT.md`（全局约定/索引） |
 | 2b. GC 校验 | `/scaffold-check` | `docs/GLOBAL-CONTEXT.md` | 校验报告（`FAIL/DECISION/PASS`；不修改文件） |
-| 3a. 拆分规划 | `/split-plan` | PRD（索引章）+ GLOBAL-CONTEXT | `docs/split-plan.yaml` |
+| 3a. 拆分规划 | `/split-plan` | PRD（索引章） | `docs/split-plan.yaml` |
 | 3. Story 生成 | `/split` | split-plan + PRD + GLOBAL-CONTEXT | `docs/story-N-slug.md` |
 | 4a. 拆分校验（Core） | `/split-check1` | split-plan + 所有 story | 校验报告（`FAIL/DECISION/PASS`）；无 `FAIL` 时写入 `docs/split-check-index-pack.yaml`；可能附带 `SPLIT_REPLAN_PACK` |
 | 4b. 拆分校验（引用可追溯 + API Smoke） | `/split-check2` | `docs/split-check-index-pack.yaml` + PRD + GLOBAL-CONTEXT | 校验报告（`FAIL/PASS`；不修改文件） |

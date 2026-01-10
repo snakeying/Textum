@@ -6,9 +6,9 @@ source:
 stories:
   - story: "Story 1"
     n: 1
-    slug: "TBD"
+    slug: ""
     modules: ["M-01"]
-    goal: "TBD"
+    goal: ""
     prereq_stories: []
 
 api_assignments: []

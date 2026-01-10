@@ -4,41 +4,17 @@ source:
   stories_glob: "docs/story-*-*.md"
 
 split_plan:
-  stories:
-    - story: "Story N"
-      n: 1
-      slug: "TBD"
-      modules: ["M-xx"]
-      prereq_stories: [] # ["Story 2"]
-  api_assignments:
-    - api: "API-###"
-      story: "Story N"
+  stories: []
+  api_assignments: []
 
-stories:
-  - file: "docs/story-N-TBD.md"
-    story: "Story N"
-    n: 1
-    slug: "TBD"
-    modules: ["M-xx"]
-    prereq_stories: []
-    refs:
-      fp_ids: ["FP-###"]
-      gc_br_ids: ["BR-###"]
-      prd_api_ids: ["API-###"]
-      prd_tbl_ids: ["TBL-###"]
-      prd_br_ids: ["BR-###"]
-    metrics:
-      api_refs: 0
-      tbl_refs: 0
-      feature_points: 0
-      acceptance_items: 0
+stories: []
 
 summary:
-  story_count: 1
-  api_assignment_count: 1
+  story_count: 0
+  api_assignment_count: 0
   refs:
-    fp_ids: ["FP-###"]
-    gc_br_ids: ["BR-###"]
-    prd_api_ids: ["API-###"]
-    prd_tbl_ids: ["TBL-###"]
-    prd_br_ids: ["BR-###"]
+    fp_ids: []
+    gc_br_ids: []
+    prd_api_ids: []
+    prd_tbl_ids: []
+    prd_br_ids: []

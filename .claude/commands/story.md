@@ -10,7 +10,7 @@
 
 - 只做本 Story；严格按 pack 内容实现；不发明 pack 外的新规则/新接口/新字段
 - `docs/story-$ARGUMENTS-exec-pack.yaml` 是唯一事实来源：禁止再读取/通读 `docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`、`docs/story-*.md`
-- pack 缺失/矛盾/不可执行：停止并输出清单（每条必须包含：问题 / 影响 / 修复方式（只给 1 个动作或命令）；通常为“修正来源文档后重跑 `/story-pack $ARGUMENTS`”）
+- pack 缺失/矛盾/不可执行：停止并输出清单（每条必须包含：定位 / 问题 / 期望 / 影响 / 修复；只给 1 个动作；通常为“修正来源文档后重跑 `/story-pack $ARGUMENTS`”）
 
 ## 执行步骤（必须按序）
 

@@ -1,14 +1,12 @@
 ---
 STORY: v1
-story: "Story N"
-n: 1
-slug: "TBD"
-title: "TBD"
-modules:
-  - "M-01"
+story: ""
+n: 0
+slug: ""
+title: ""
+modules: []
 prereq_stories: []
-fp_ids:
-  - "FP-###"
+fp_ids: []
 refs:
   gc_br: []
   prd_br: []
@@ -20,10 +18,10 @@ artifacts:
   ext: []
 ---
 
-# Story N: TBD
+# Story
 
 ## 功能点（必填）
-- FP-###: TBD
+N/A
 
 ## 依赖（必填）
 已有资源: N/A
@@ -38,8 +36,8 @@ N/A
 N/A
 
 ## 验收标准（必填）
-- [ ] 技术验收: TBD
-- [ ] 用户验收: N/A
+- [ ] 技术验收:
+- [ ] 用户验收:
 
 ## 测试要求（必填；涉及 API 时不得为 N/A；否则无则写 N/A）
 - [ ] 单元测试: N/A

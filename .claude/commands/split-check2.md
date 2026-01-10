@@ -21,7 +21,12 @@
 ## 输出（只读）
 
 - 若存在任何 `FAIL`：
-  - 输出 `FAIL` 清单（`F-001` 起编号；每条必须包含：问题 / 影响 / 修复方式（只给 1 个动作或命令））
+  - 输出 `FAIL` 清单（`F-001` 起编号；每条必须包含以下字段）：
+    - `定位`：目标文件（`docs/split-check-index-pack.yaml` / `docs/GLOBAL-CONTEXT.md` / `docs/PRD.md`）+ 章节路径或稳定ID（`BR-###`/`FP-###`/`TBL-###`/`API-###` 或 `<!-- PRD#... -->`）；避免行号
+    - `问题`：1 句
+    - `期望`：可机械执行的“替换目标/格式”（能推导就写出来）
+    - `影响`：H/M/L
+    - `修复`：只给 1 个动作（必要时先重跑 `/split-check1` 以重写 `docs/split-check-index-pack.yaml`）
   - 末尾追加：
     - `修正：按 FAIL 清单逐条修复（必要时重跑 /split-check1 重新写入 docs/split-check-index-pack.yaml）`
     - `重跑：/split-check2`
