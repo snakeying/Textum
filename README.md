@@ -129,6 +129,8 @@ AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
 
 [V6版本模拟测试报告](/simulate-test-reports/v6simulate-test-report-opus.md)
 
+[beta版本模拟测试报告](/simulate-test-reports/beta-simulate-test-report-opus.md)
+
 以上模拟均采用 Claude opus 4.5 模型。
 
 **⚠️ 模拟测试不代表实际项目运行时的效果，仅供参考。**
