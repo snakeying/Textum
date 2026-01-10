@@ -120,7 +120,10 @@ flowchart TB
 project/
 ├── .claude/
 │   ├── commands/        ← 命令定义
-│   └── textum/          ← 模板文件
+│   ├── textum/          ← 模板文件
+│   └── skills/textum/   ← Claude skill 版本（可选；自包含）
+├── .codex/
+│   └── skills/textum/   ← Codex skill 版本（自包含）
 ├── docs/                ← 生成的文档
 └── src/                 ← 代码实现
 ```

@@ -1,6 +1,6 @@
 ---
 name: textum
-description: Textum PRD→Story workflow for Codex with low-noise outputs and gate checks. Use when users want to start requirement planning, generate/validate a PRD, extract GLOBAL-CONTEXT, split into Stories, validate splits, build Story exec packs, or execute a Story.
+description: Textum PRD→Story workflow for Claude with low-noise outputs and gate checks. Use when users want to start requirement planning, generate/validate a PRD, extract GLOBAL-CONTEXT, split into Stories, validate splits, build Story exec packs, or execute a Story.
 ---
 
 # PRD→Story 工作流（低噪+门禁）

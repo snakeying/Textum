@@ -21,9 +21,13 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 ## 📦 安装
 
-把 `.claude` 文件夹放到你的项目里就行了，就这么简单。
+- Claude Code：把 `.claude/` 放到项目根目录（提供 `/prd-plan` 等命令）
+- Codex：本仓库提供 skill 源码 `.codex/skills/textum/`；需要时复制到你的 Codex skills 目录（如 `$CODEX_HOME/skills/textum`）后使用
+- （可选）Claude skill 版本：`.claude/skills/textum/`（自包含；不影响 `.claude/commands` 与 `.claude/textum`）
 
 ## 🎯 主流程命令
+
+> 说明：下表为 Claude Code 的 `/...` 命令版；Codex 使用 `textum` skill（见 `.codex/skills/textum/SKILL.md`）按阶段路由执行。
 
 | 步骤 | 命令 | 做什么 |
 |------|------|--------|
@@ -64,7 +68,8 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 ```
 你的项目/
-├── .claude/          # 🔧 工具本身（你下载的）
+├── .claude/          # 🔧 Claude Code 命令与模板（/commands）
+├── .codex/           # 🧰 Codex skills 源码（可选）
 ├── docs/             # 📄 生成的文档都在这
 │   ├── prd-plan-pack.yaml               # 需求澄清计划包（唯一事实来源）
 │   ├── PRD.md                        # 需求文档（定稿后不要改）
