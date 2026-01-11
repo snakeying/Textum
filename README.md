@@ -21,36 +21,41 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 ## 📦 安装
 
-- Claude Code：把 `.claude/` 放到项目根目录（提供 `/prd-plan` 等命令）
-- Codex：本仓库提供 skill 源码 `.codex/skills/textum/`；需要时复制到你的 Codex skills 目录（如 `$CODEX_HOME/skills/textum`）后使用
-- （可选）Claude skill 版本：`.claude/skills/textum/`（自包含；不影响 `.claude/commands` 与 `.claude/textum`）
+前置条件：
+- 已安装 `uv`
+- Python >= 3.11（推荐 3.11；本仓库测试基于 3.11）
 
-## 🎯 主流程命令
+在项目根目录执行一次：
+- `uv sync --project .codex/skills/textum/scripts`（会创建 `.codex/skills/textum/scripts/.venv` 并安装依赖）
 
-> 说明：下表为 Claude Code 的 `/...` 命令版；Codex 使用 `textum` skill（见 `.codex/skills/textum/SKILL.md`）按阶段路由执行。
+## 🎯 当前支持：PRD bundle
 
-| 步骤 | 命令 | 做什么 |
-|------|------|--------|
-| 1️⃣ | `/prd-plan` | 需求澄清，持续写入 `docs/prd-plan-pack.yaml`（唯一事实来源） |
-| 2️⃣ | `/prd` | 读取 `docs/prd-plan-pack.yaml` 生成/修正 `docs/PRD.md`（信息不足则输出 `PRD_PLAN_CLARIFY_PACK`） |
-| 3️⃣ | `/prd-check` | 机械性校验 PRD（结构/占位符/ID一致性），输出 `FAIL/PASS` 清单；`PASS` 后 PRD 只读 |
-| 4️⃣ | `/scaffold` | 从 PRD 提取全局约定/索引（GLOBAL-CONTEXT） |
-| 5️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
-| 6️⃣ | `/split-plan` | 先做低噪音拆分规划（Story 列表 + API 分配 + 依赖） |
-| 7️⃣ | `/split` | 按规划生成 Story 文件（含 YAML front-matter：`fp_ids/refs/artifacts`） |
-| 8️⃣ | `/split-check1`（无 `FAIL`）→ `/split-check2` | 拆分校验（结构/阈值 → 引用可追溯；有 API 时 Smoke Test） |
-| 9️⃣ | `/split-checkout` | 导出 Story 依赖图（写入 `docs/story-mermaid.md`） |
-| 🔟 | `/story-check 1`（无 `FAIL`）→ `/story-pack 1` → `/story 1` | 开始做第一个任务，然后按顺序继续 `/story-check 2` → `/story-pack 2` → `/story 2`... |
+文件：
+- 真源：`docs/prd-pack.json`
+- 阅读视图：`docs/PRD.md`（生成后不手改；要改请改 `docs/prd-pack.json` 并重跑）
 
-> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步（若输出 `DECISION`，确认接受后再继续）；`/prd-check` 输出 `PASS` 后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续通过 PRD 详情锚点 `<!-- PRD#... -->` 精确定位（如 `<!-- PRD#API-001 -->` / `<!-- PRD#TBL-001 -->`），避免通读 PRD 与行号漂移
+命令（在项目根目录）：
+- `uv run --project .codex/skills/textum/scripts textum prd init`（首次初始化）
+- `uv run --project .codex/skills/textum/scripts textum prd check`（门禁校验 + 自动分配 ID）
+- `uv run --project .codex/skills/textum/scripts textum prd render`（生成 `docs/PRD.md`）
 
-> 🧪 实验性（高风险，不推荐）：`/story-full-exec 1/2/3/...` 在**同一窗口**按顺序执行多个 Story 并汇总 `FAIL`；不会逐个等待人工验收，且失败也会继续执行后续 Story。仅当你明确接受风险时使用；前置是已为每个 Story 生成 `docs/story-N-exec-pack.yaml`（先跑 `/story-pack N`；缺失任一 pack 将直接 `FAIL` 并停止）。
+交互（Codex）：
+- 使用 `textum` skill（见 `.codex/skills/textum/SKILL.md`），在 `PRD Plan` 阶段用中文对话澄清并写入 `docs/prd-pack.json`
+
+> 旧的命令版与旧 templates 已废弃并移动到 `outdated/`。
 
 ## 🧭 执行注意事项
 
-- 按顺序执行 `/story 1`、`/story 2`、`/story 3`...（一次只跑一个）
-- Story 有"前置 Story"时，先完成前置再做后续
-- 实现阶段发现缺口？停下来确认是否要回到 `/prd` 修正（改了 PRD 需重跑后续步骤）
+- 建议每个阶段开新窗口，减少上下文污染
+- `docs/PRD.md` 为生成视图：不要手改；要改请改 `docs/prd-pack.json` 并重跑 `uv run --project .codex/skills/textum/scripts textum prd render`
+- 若 PRD 不符合用户预期：后续步骤都应视为作废，先把 PRD 改对再继续
+
+## 🧪 关于 Python 环境冲突（重要）
+
+Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .codex/skills/textum/scripts`：
+
+- ✅ 推荐：`uv sync --project .codex/skills/textum/scripts`、`uv run --project .codex/skills/textum/scripts ...`（`.venv` 在 `.codex/skills/textum/scripts/.venv`，与业务项目环境隔离）
+- ⚠️ 避免：在项目根目录直接 `uv sync` / `uv run`（不带 `--project`），否则可能把 Textum 依赖装进你的业务项目虚拟环境
 
 ## 💡 为什么这么设计
 
@@ -70,46 +75,19 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 
 ```
 你的项目/
-├── .claude/          # 🔧 Claude Code 命令与模板（/commands）
 ├── .codex/           # 🧰 Codex skills 源码（可选）
 ├── docs/             # 📄 生成的文档都在这
-│   ├── prd-plan-pack.yaml               # 需求澄清计划包（唯一事实来源）
-│   ├── PRD.md                        # 需求文档（定稿后不要改）
-│   ├── GLOBAL-CONTEXT.md             # 全局约定/索引（/scaffold 生成；定稿后不改）
-│   ├── split-plan.yaml               # 拆分规划（/split-plan 生成）
-│   ├── split-check-index-pack.yaml   # 索引交接包（/split-check1 生成）
-│   ├── story-mermaid.md              # Story 依赖图（/split-checkout 生成）
-│   ├── story-1-slug.md               # 任务清单
-│   └── story-1-exec-pack.yaml        # 执行包（/story-pack 生成）
-└── src/              # 💻 代码目录（示例；以 GLOBAL-CONTEXT 第 2 节“项目结构”为准）
+│   ├── prd-pack.json                 # PRD 真源（JSON）
+│   └── PRD.md                        # PRD 阅读视图（生成；不手改）
+└── src/              # 💻 你的代码目录
 ```
 
-## 🎬 实际使用是这样的
+## 🎬 实际使用（PRD bundle）
 
-**第一步：聊需求**
-```
-你：/prd-plan
-AI：你好！告诉我你想做一个什么样的应用？
-你：我想做一个记账的小程序
-AI：好的！这个记账应用是给谁用的呢？...
-AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
-```
-
-**后面的步骤**
-```
-你：/prd              → 读取 docs/prd-plan-pack.yaml，生成/修正 docs/PRD.md（或返回 PRD_PLAN_CLARIFY_PACK）
-你：/prd-check         → 输出 FAIL/PASS 清单；PASS 后 PRD 只读
-你：/scaffold         → 生成全局上下文
-你：/scaffold-check   → 校验全局上下文
-你：/split-plan       → 生成拆分规划（Story列表 + API分配）
-你：/split            → 生成 Story 文件（含 YAML front-matter：`fp_ids/refs/artifacts`）
-你：/split-check1     → 拆分校验（Core：结构/一致性/阈值）
-你：/split-check2     → 拆分校验（引用可追溯 + 有 API 时 Smoke Test）
-你：/split-checkout   → 导出 Story 依赖图（docs/story-mermaid.md）
-你：/story-check 1    → 单 Story 门禁校验
-你：/story-pack 1     → 写入 `docs/story-1-exec-pack.yaml`（`STORY_EXEC_PACK`）
-你：/story 1          → 开始第一个任务！
-```
+1) `uv run --project .codex/skills/textum/scripts textum prd init`
+2) 用 `textum` skill 的 `PRD Plan` 把事实写进 `docs/prd-pack.json`
+3) `uv run --project .codex/skills/textum/scripts textum prd check` 直到 `PASS`
+4) `uv run --project .codex/skills/textum/scripts textum prd render` 生成 `docs/PRD.md` 并人工验收
 
 ## 📏 适合多大的项目？
 

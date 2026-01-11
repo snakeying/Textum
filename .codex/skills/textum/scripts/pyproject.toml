@@ -1,0 +1,32 @@
+[project]
+name = "textum"
+version = "0.0.0"
+description = "Textum workflow runtime (skills-first)"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+textum = "textum_cli:main"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = [
+  "textum_cli",
+  "prd_pack",
+  "prd_pack_ids",
+  "prd_pack_io",
+  "prd_pack_paths",
+  "prd_pack_placeholders",
+  "prd_pack_types",
+  "prd_slices",
+  "prd_pack_validate",
+  "prd_pack_validate_utils",
+  "prd_render",
+  "prd_render_sections_1_4",
+  "prd_render_sections_5_7",
+  "prd_render_sections_8_10",
+  "prd_render_utils",
+]
