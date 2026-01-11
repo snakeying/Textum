@@ -11,7 +11,7 @@
 ## 修正模式（当提供 `FAIL/DECISION` 清单时必须遵守）
 
 - 以现有 `docs/GLOBAL-CONTEXT.md` 为基线：**只修改清单命中的位置**，其余内容不做无关改动（最小 diff）
-- 若清单需要补充事实但 PRD 无法支撑：不要新增信息；保持 `N/A` 并输出 `DECISION` 提示用户回到 `/prd` 更新 PRD 后重跑 `/scaffold`
+- 若清单需要补充事实但 PRD 无法支撑：不要新增信息；保持 `N/A` 并输出 `DECISION` 提示用户先更新 PRD 后重跑本阶段
 
 ## 硬约束（必须遵守）
 
@@ -52,4 +52,4 @@
 ## 完成后
 
 - 输出：`已写入：docs/GLOBAL-CONTEXT.md`
-- 下一步：`/scaffold-check`
+- 下一步：GLOBAL-CONTEXT 校验

@@ -1,4 +1,4 @@
-# 阶段3a: Story 拆分规划（/split-plan）
+# 阶段3a: Story 拆分规划
 
 读取：`docs/PRD.md`（只读） | 写入：`docs/split-plan.yaml`（纯 YAML；不包含 ```） | 模板：`.codex/skills/textum/assets/split-plan-template.yaml` | 可选输入：`SPLIT_REPLAN_PACK`
 
@@ -74,9 +74,9 @@
   - 输出 `DECISION` 清单（`D-001` 起编号；每条包含：Story + `api_assigned` + 建议动作）
   - 末尾追加：
     - `已写入：docs/split-plan.yaml`
-    - `接受 DECISION：/split`
-    - `不接受 DECISION：先调整 split-plan 后重跑 /split-plan`
+    - `接受 DECISION：Split 生成 Story`
+    - `不接受 DECISION：先调整 split-plan 后重跑 Split 规划`
 - 否则输出：
   - `PASS`
   - `已写入：docs/split-plan.yaml`
-  - `下一步：/split`
+  - `下一步：Split 生成 Story`

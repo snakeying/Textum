@@ -1,4 +1,4 @@
-# 阶段4a: Story 拆分校验（Core / split-check1）
+# 阶段4a: Story 拆分校验（结构/阈值）
 
 读取：`docs/split-plan.yaml`、`docs/story-*-*.md` | 写入：`docs/split-check-index-pack.yaml`（仅无 `FAIL`；`PASS/DECISION` 都写） | 模板：`.codex/skills/textum/assets/split-check-index-pack-template.yaml`
 
@@ -12,22 +12,22 @@
     - `问题`：1 句
     - `期望`：可机械执行的“替换目标/格式”（能推导就写出来）
     - `影响`：H/M/L
-    - `修复`：只给 1 个动作（通常是“按定位修正对应文件”或“将 SPLIT_REPLAN_PACK 粘贴给 /split-plan 重规划”）
+    - `修复`：只给 1 个动作（通常是“按定位修正对应文件”或“将 SPLIT_REPLAN_PACK 粘贴到 Split 规划重规划”）
   - 若包含阈值 FAIL：紧接着追加且仅追加 1 个 `SPLIT_REPLAN_PACK` 代码块
   - 末尾追加：
-    - `修正：按 FAIL 清单逐条修复（若包含 SPLIT_REPLAN_PACK：将其粘贴给 /split-plan 重规划；否则修正 docs/story-*-*.md 或 docs/split-plan.yaml）`
-    - `重跑：/split-check1`
+    - `修正：按 FAIL 清单逐条修复（若包含 SPLIT_REPLAN_PACK：将其粘贴到 Split 规划重规划；否则修正 docs/story-*-*.md 或 docs/split-plan.yaml）`
+    - `重跑：Split 校验（结构/阈值）`
   - 然后结束（不写 pack）
 - 否则（无 FAIL）：
   - 写入 `docs/split-check-index-pack.yaml`
   - 若存在任何 `DECISION`：输出 `DECISION` 清单（`D-001` 起编号；每条包含：问题 / 影响 / 建议动作），并在末尾追加：
     - `已写入：docs/split-check-index-pack.yaml`
-    - `接受 DECISION：/split-check2`
-    - `不接受 DECISION：先 /split-plan 处理 DECISION 后重跑 /split-check1`
+    - `接受 DECISION：Split 校验（引用追溯/API Smoke）`
+    - `不接受 DECISION：先处理 DECISION（Split 规划）后重跑 Split 校验（结构/阈值）`
   - 否则：输出：
     - `PASS`
     - `已写入：docs/split-check-index-pack.yaml`
-    - `下一步：/split-check2`
+    - `下一步：Split 校验（引用追溯/API Smoke）`
 
 ## 执行步骤（必须按序）
 
@@ -90,7 +90,7 @@
 ### 触发后输出（仅阈值 FAIL 时；必须）
 
 1. 输出 `FAIL` 清单（`F-001` 起编号；每条必须包含：定位 / 问题 / 期望 / 影响 / 修复；且 `定位` 必须包含：Story 文件名 + 触发指标 + 命中阈值）
-2. 紧接着追加且仅追加 1 个代码块 `SPLIT_REPLAN_PACK`（供复制到 `/split-plan`）
+2. 紧接着追加且仅追加 1 个代码块 `SPLIT_REPLAN_PACK`（供复制到 Split 规划）
 3. 立即结束（不写 pack）
 
 ### 阈值 DECISION 记录（必须；不短路）
@@ -98,7 +98,7 @@
 - 对每个命中阈值 `DECISION` 的 Story：生成 1 条 `DECISION` 项（`D-001` 起编号），必须包含：
   - `docs/story-N-<slug>.md`
   - 命中指标与阈值（`api_refs/tbl_refs/feature_points/acceptance_items`）
-  - 建议动作：`/split-plan`（收敛边界/拆分）或接受后继续 `/split-check2`
+- 建议动作：Split 规划（收敛边界/拆分），或接受后继续 Split 校验（引用追溯/API Smoke）
 
 `SPLIT_REPLAN_PACK`（必须严格输出一个代码块）：
 

@@ -155,4 +155,7 @@ AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
 
 ## 📜 License
 
-MIT
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+
+[![Star History Chart](https://api.star-history.com/svg?repos=snakeying/Textum&type=Date)](https://star-history.com/#snakeying/Textum&Date)

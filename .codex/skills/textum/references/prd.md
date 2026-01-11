@@ -24,10 +24,10 @@
 1. **成功**：创建/更新 `docs/PRD.md`（不含任何模板占位符），并输出：
    - `PASS`
    - `已写入：docs/PRD.md`
-   - `下一步：/prd-check`
+   - `下一步：PRD 校验`
 2. **信息不足**：输出 `PRD_PLAN_CLARIFY_PACK` 代码块后，追加两行纯文本指引（不修改任何文件）：
-   - `下一步：复制 PRD_PLAN_CLARIFY_PACK 粘贴给 /prd-plan`
-   - `重跑：/prd`
+   - `下一步：将 PRD_PLAN_CLARIFY_PACK 粘贴到“需求澄清（plan）”继续补齐`
+   - `重跑：PRD 生成/修正`
 
 ## PACK 完备性校验（必须）
 
@@ -49,7 +49,7 @@
   - PRD 输出规范：`DB:<table>` 必须映射为 `DB:TBL-###`（`TBL-001` 起连续）并能在 PRD `8.2` 用锚点 `<!-- PRD#TBL-### -->` 唯一定位
   - 若 `data_model.tables` 为空：PRD `8.1/8.2/8.3` 均写 `N/A`，且 PRD `8.0` 不得出现任何 `DB:` 落点
 - 仅当无法生成“可检查的 PRD”时才输出 `PRD_PLAN_CLARIFY_PACK` 并停止（不写文件）；阻断条件包括：
-  - plan-pack 不满足 `/prd-plan` 的 `READY` 门禁（例如：`api.has_api=null`、缺模块/缺功能点/缺落点、缺规则、缺权限矩阵等）
+  - plan-pack 不满足“需求澄清（plan）”的 `READY` 门禁（例如：`api.has_api=null`、缺模块/缺功能点/缺落点、缺规则、缺权限矩阵等）
   - 任何必填表格/章节只能靠猜测才能补齐
   - 无法闭合 `8.0 功能点→落点映射`（含落点 token 不合法、或 `DB:<table>` 找不到 `data_model.tables[].table`）
   - `api.has_api=true` 但 `api.endpoints` 无法提供最小清单（method/path/permission/summary）
@@ -74,7 +74,7 @@
 
 ## `PRD_PLAN_CLARIFY_PACK` 格式（必须严格按此输出）
 
-先输出 1 个代码块（YAML），便于复制回 `/prd-plan` 进行补齐；然后追加两行纯文本指引（见上文“输出/信息不足”）：
+先输出 1 个代码块（YAML），便于复制回“需求澄清（plan）”进行补齐；然后追加两行纯文本指引（见上文“输出/信息不足”）：
 
 ```yaml
 PRD_PLAN_CLARIFY_PACK: 

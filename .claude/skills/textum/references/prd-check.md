@@ -13,10 +13,10 @@
     - `问题`：1 句
     - `期望`：可机械执行的“替换目标/格式”（能推导就写出来）
     - `影响`：H/M/L
-    - `修复`：只给 1 个动作（通常是“把本 FAIL 清单粘贴给 /prd 并按定位逐条修正” + 本条的最小修改点）
+    - `修复`：只给 1 个动作（通常是“PRD 生成/修正：按定位修正 docs/PRD.md” + 本条的最小修改点）
   - 末尾追加：
-    - `修正：将 FAIL 清单作为可选输入粘贴给 /prd，逐条修正 docs/PRD.md`
-    - `重跑：/prd-check`
+    - `修正：在 PRD 生成/修正中粘贴本 FAIL 清单（可选输入）`
+    - `重跑：PRD 校验`
   - 然后结束
 - 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`
 
@@ -118,11 +118,11 @@ PRD 中不得出现 fenced code blocks（```）；出现即 `FAIL`。
 
 - `PASS`：仅提示下一步动作：
   - PRD 视为只读：不要手动修改 `docs/PRD.md`
-  - 如需修改 PRD：回到 `/prd` 更新并重跑 `/prd-check`
-  - 下一步：`/scaffold`
+  - 如需修改 PRD：先 PRD 生成/修正，再重跑 PRD 校验
+  - 下一步：GLOBAL-CONTEXT 生成
 
 ## DECISION（不阻断；需要用户确认）
 
 - 若输出 `DECISION`：
-  - 接受：继续 `/scaffold`
-  - 不接受：先修正后重跑 `/prd-check`
+  - 接受：继续 GLOBAL-CONTEXT 生成
+  - 不接受：先 PRD 生成/修正，再重跑 PRD 校验

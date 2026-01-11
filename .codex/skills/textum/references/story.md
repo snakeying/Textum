@@ -4,13 +4,13 @@
 
 读取：`docs/story-$ARGUMENTS-exec-pack.yaml`（唯一事实来源；必须存在） | 写入：仓库文件（代码/测试；仅本 Story） | 模板：`N/A`
 
-若 pack 文件不存在：停止并提示用户先运行 `/story-pack $ARGUMENTS` 写入 pack 文件。
+若 pack 文件不存在：停止并提示用户先生成 Story 执行包，写入 `docs/story-$ARGUMENTS-exec-pack.yaml`。
 
 ## 硬约束
 
 - 只做本 Story；严格按 pack 内容实现；不发明 pack 外的新规则/新接口/新字段
 - `docs/story-$ARGUMENTS-exec-pack.yaml` 是唯一事实来源：禁止再读取/通读 `docs/PRD.md`、`docs/GLOBAL-CONTEXT.md`、`docs/story-*.md`
-- pack 缺失/矛盾/不可执行：停止并输出清单（每条必须包含：定位 / 问题 / 期望 / 影响 / 修复；只给 1 个动作；通常为“修正来源文档后重跑 `/story-pack $ARGUMENTS`”）
+- pack 缺失/矛盾/不可执行：停止并输出清单（每条必须包含：定位 / 问题 / 期望 / 影响 / 修复；只给 1 个动作；通常为“修正来源文档后重跑 Story 执行包生成”）
 
 ## 执行步骤（必须按序）
 
@@ -33,4 +33,4 @@
 
 ## 开始
 
-请提供 Story 编号（例如：`/story 1`）。
+请提供 Story 编号（例如：`执行 Story 1`）。

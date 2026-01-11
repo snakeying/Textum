@@ -1,4 +1,4 @@
-# 阶段3: Story 拆分（/split）
+# 阶段3: Story 拆分
 
 读取：`docs/split-plan.yaml`、`docs/PRD.md`（只读）、`docs/GLOBAL-CONTEXT.md`（只读） | 写入：`docs/story-*-*.md` | 模板：`.codex/skills/textum/assets/story-template.md`
 
@@ -17,7 +17,7 @@
 
 ## 硬约束
 
-- 不得更改 `docs/split-plan.yaml` 的 Story 编号/边界/API 分配：若发现不合理则停止并提示回 `/split-plan`
+- 不得更改 `docs/split-plan.yaml` 的 Story 编号/边界/API 分配：若发现不合理则停止并提示回 Split 规划
 - 每个 Story 文件必须包含 **YAML front-matter**（文件首部 `--- ... ---`），且字段齐全、可解析（结构以模板为准）
 - 每个 Story 文件不得出现 fenced code blocks（```）
 - YAML front-matter 中所有 ID 必须为具体数字：
@@ -87,4 +87,4 @@
 
 ## 完成后
 
-- 下一步：`/split-check1`（`PASS` 后：`/split-check2`）
+- 下一步：Split 校验（结构/阈值）；通过后：Split 校验（引用追溯/API Smoke）

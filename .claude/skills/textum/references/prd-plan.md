@@ -55,7 +55,7 @@
 ## 输出状态
 
 - `IN_PROGRESS`：继续提问（只更新 `docs/prd-plan-pack.yaml`）
-- `READY`：输出 `READY` + `已写入：docs/prd-plan-pack.yaml` + `下一步：/prd`
+- `READY`：输出 `READY` + `已写入：docs/prd-plan-pack.yaml` + `下一步：PRD 生成/修正`
 
 ## 开始
 

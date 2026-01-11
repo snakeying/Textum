@@ -13,10 +13,10 @@
     - `问题`：1 句
     - `期望`：可机械执行的“替换目标/格式”（能推导就写出来）
     - `影响`：H/M/L
-    - `修复`：只给 1 个动作（通常是“把本 FAIL 清单粘贴给 /scaffold 并按定位逐条修正” + 本条的最小修改点）
+    - `修复`：只给 1 个动作（通常是“GLOBAL-CONTEXT 生成/修正：按定位修正 docs/GLOBAL-CONTEXT.md” + 本条的最小修改点）
   - 末尾追加：
-    - `修正：将 FAIL 清单作为可选输入粘贴给 /scaffold，逐条修正 docs/GLOBAL-CONTEXT.md`
-    - `重跑：/scaffold-check`
+    - `修正：在 GLOBAL-CONTEXT 生成/修正中粘贴本 FAIL 清单（可选输入）`
+    - `重跑：GLOBAL-CONTEXT 校验`
   - 然后结束
 - 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`
 
@@ -91,10 +91,10 @@
   - 输出 `DECISION`：提示该项目暂无可自动执行的验证步骤，建议补充至少 1 条可重复执行的验证命令
   - 约定：新增命令行时 `类型` 必须为 `gate:<name>` 或 `opt:<name>`（见第 6) 门禁）
   - 末尾追加：
-    - `接受 DECISION：继续 /split-plan`
-    - `不接受 DECISION：先 /scaffold 补齐后重跑 /scaffold-check`
+    - `接受 DECISION：继续 Split 规划`
+    - `不接受 DECISION：先 GLOBAL-CONTEXT 生成/修正，再重跑 GLOBAL-CONTEXT 校验`
 
 ## PASS（通过后动作）
 
 - `PASS`：仅提示下一步动作：
-  - `/split-plan`
+  - Split 规划

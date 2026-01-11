@@ -103,10 +103,10 @@
     - `问题`：1 句
     - `期望`：可机械执行的“替换目标/格式”（能推导就写出来）
     - `影响`：H/M/L
-    - `修复`：只给 1 个动作（通常是“按定位修正来源文档后重跑 `/story-pack $ARGUMENTS`”）
+    - `修复`：只给 1 个动作（通常是“按定位修正来源文档后重跑本阶段”）
   - 末尾追加：
-    - `修正：按 FAIL 清单逐条修正来源文档后重跑 /story-pack $ARGUMENTS`
-    - `重跑：/story-pack $ARGUMENTS`
+    - `修正：按 FAIL 清单逐条修正来源文档后重跑本阶段`
+    - `重跑：Story 执行包生成（参数不变）`
 - 若 `PASS`：
   1. 写入 `docs/story-$ARGUMENTS-exec-pack.yaml`（纯 YAML；不得包含 ```；不得额外加键；多行内容必须用 YAML block scalar `|-` 逐字原文粘贴）
 
@@ -134,8 +134,8 @@
   2. 输出：
      - `PASS`
      - `已写入：docs/story-$ARGUMENTS-exec-pack.yaml`
-     - `下一步：/story $ARGUMENTS`
+     - `下一步：Story 执行（编号 $ARGUMENTS）`
 
 ## 开始
 
-请提供 Story 编号（例如：`/story-pack 1`）。我会写入 `docs/story-$ARGUMENTS-exec-pack.yaml`。
+请提供 Story 编号（例如：`生成 Story 1 执行包`）。我会写入 `docs/story-$ARGUMENTS-exec-pack.yaml`。
