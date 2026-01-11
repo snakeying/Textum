@@ -1,8 +1,8 @@
 # 阶段1c: PRD 校验
 
-读取：`docs/PRD.md` | 写入：无（只输出 `FAIL/DECISION/PASS`；不修改文件） | 模板：`N/A`
+读取：`docs/PRD.md` | 写入：无（只输出 `FAIL/PASS`；不修改文件） | 模板：`N/A`
 
-输出 `FAIL/DECISION/PASS` 清单；**不修改任何文件**。
+输出 `FAIL/PASS` 清单；**不修改任何文件**。
 
 ## 输出规则（只读）
 
@@ -18,7 +18,7 @@
     - `修正：将 FAIL 清单作为可选输入粘贴给 /prd，逐条修正 docs/PRD.md`
     - `重跑：/prd-check`
   - 然后结束
-- 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`
+- 否则（无 `FAIL`）：输出 `PASS`，并在末尾追加：`下一步：/scaffold`
 
 ## FAIL 校验项（机械性门禁）
 
@@ -113,16 +113,3 @@ PRD 中不得出现 fenced code blocks（```）；出现即 `FAIL`。
 
 - PRD 第 6 节必须包含规则表（表头包含 `| 规则ID |`）；且必须至少 1 行数据；每行 `规则ID` 必须为 `BR-001` 形式且唯一；不得出现 `BR-###`
 - `5.1 功能清单` 表中至少包含 1 个优先级为 `P0` 的模块（否则 `FAIL`）
-
-## PASS（通过后动作）
-
-- `PASS`：仅提示下一步动作：
-  - PRD 视为只读：不要手动修改 `docs/PRD.md`
-  - 如需修改 PRD：回到 `/prd` 更新并重跑 `/prd-check`
-  - 下一步：`/scaffold`
-
-## DECISION（不阻断；需要用户确认）
-
-- 若输出 `DECISION`：
-  - 接受：继续 `/scaffold`
-  - 不接受：先修正后重跑 `/prd-check`

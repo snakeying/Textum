@@ -4,7 +4,7 @@
 
 > 约束：本命令**不做需求对话**。若信息不足以生成“可检查的 PRD”，输出 `PRD_PLAN_CLARIFY_PACK` 并停止（**不修改任何文件**）。
 
-读取：`docs/prd-plan-pack.yaml` +（如存在）`docs/PRD.md` | 写入：`docs/PRD.md`（信息不足则不写） | 模板：`.codex/skills/textum/assets/PRD-framework.md` | 可选输入：`FAIL/DECISION` 清单
+读取：`docs/prd-plan-pack.yaml` +（如存在）`docs/PRD.md` | 写入：`docs/PRD.md`（信息不足则不写） | 模板：`assets/PRD-framework.md` | 可选输入：`FAIL/DECISION` 清单
 
 ## 输入
 
@@ -26,7 +26,7 @@
    - `已写入：docs/PRD.md`
    - `下一步：PRD 校验`
 2. **信息不足**：输出 `PRD_PLAN_CLARIFY_PACK` 代码块后，追加两行纯文本指引（不修改任何文件）：
-   - `下一步：将 PRD_PLAN_CLARIFY_PACK 粘贴到“需求澄清（plan）”继续补齐`
+   - `下一步：复制 PRD_PLAN_CLARIFY_PACK 粘贴给 需求澄清`
    - `重跑：PRD 生成/修正`
 
 ## PACK 完备性校验（必须）
@@ -35,7 +35,7 @@
 - 必须满足最小可用性：
   - `modules` 至少 1 个，且至少 1 个模块 `priority = P0`
   - `business_rules` 至少 1 条且每条非空
-- 对照 `.codex/skills/textum/assets/PRD-framework.md` 的必填章/表逐项校验：必须能**完整填满**且不残留任何占位符（如 `TBD`、`[...]`、`[field]`、`[METHOD]`、`[PATH]`、`[table]`、`PRD#API-###`、`PRD#TBL-###`）
+- 对照 `assets/PRD-framework.md` 的必填章/表逐项校验：必须能**完整填满**且不残留任何占位符（如 `TBD`、`[...]`、`[field]`、`[METHOD]`、`[PATH]`、`[table]`、`PRD#API-###`、`PRD#TBL-###`）
 - PRD `7.3 命名规范`：
   - 仅当 plan-pack `assumptions_constraints[].assumption_or_constraint` 中存在以 `命名规范:` 开头的已确认约定时才写表格
   - 否则该小节正文仅一行 `N/A`（不追问、不阻断）
@@ -49,7 +49,7 @@
   - PRD 输出规范：`DB:<table>` 必须映射为 `DB:TBL-###`（`TBL-001` 起连续）并能在 PRD `8.2` 用锚点 `<!-- PRD#TBL-### -->` 唯一定位
   - 若 `data_model.tables` 为空：PRD `8.1/8.2/8.3` 均写 `N/A`，且 PRD `8.0` 不得出现任何 `DB:` 落点
 - 仅当无法生成“可检查的 PRD”时才输出 `PRD_PLAN_CLARIFY_PACK` 并停止（不写文件）；阻断条件包括：
-  - plan-pack 不满足“需求澄清（plan）”的 `READY` 门禁（例如：`api.has_api=null`、缺模块/缺功能点/缺落点、缺规则、缺权限矩阵等）
+  - plan-pack 不满足最小可用门禁（例如：`api.has_api=null`、缺模块/缺功能点/缺落点、缺规则、缺权限矩阵等）
   - 任何必填表格/章节只能靠猜测才能补齐
   - 无法闭合 `8.0 功能点→落点映射`（含落点 token 不合法、或 `DB:<table>` 找不到 `data_model.tables[].table`）
   - `api.has_api=true` 但 `api.endpoints` 无法提供最小清单（method/path/permission/summary）
@@ -58,7 +58,7 @@
 
 ## 写作规则（必须遵守）
 
-- 严格按 `.codex/skills/textum/assets/PRD-framework.md` 的结构输出所有章节
+- 严格按 `assets/PRD-framework.md` 的结构输出所有章节
 - 低噪音：短句/表格优先；禁止长段散文复述；一行一条
 - 禁止 fenced code blocks：PRD 中不得出现任何 ```（用表格/短句替代）
 - 全文不得出现 `TBD`
@@ -74,7 +74,7 @@
 
 ## `PRD_PLAN_CLARIFY_PACK` 格式（必须严格按此输出）
 
-先输出 1 个代码块（YAML），便于复制回“需求澄清（plan）”进行补齐；然后追加两行纯文本指引（见上文“输出/信息不足”）：
+先输出 1 个代码块（YAML），便于复制回“需求澄清”进行补齐；然后追加两行纯文本指引（见上文“输出/信息不足”）：
 
 ```yaml
 PRD_PLAN_CLARIFY_PACK: 

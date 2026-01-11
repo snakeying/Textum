@@ -12,6 +12,7 @@ description: Textum PRD→Story workflow for Claude with low-noise outputs and g
 - 用户用自然语言表达意图即可（例如：开始计划/生成PRD/校验/拆分/执行Story）。
 - 若意图不明确：只给 3–6 个阶段选项让用户选择，再继续；不要长解释。
 - 建议每个阶段在新会话执行；仅当 `check` 输出 `FAIL` 时，把清单带回对应“生成阶段”修复后重跑。
+- 输出中的“下一步/重跑/修正”只写阶段名（例如：`PRD 生成/修正`、`PRD 校验`、`Split 规划`）。
 
 ## 阶段路由（只选一）
 

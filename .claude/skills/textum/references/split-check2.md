@@ -1,4 +1,4 @@
-# 阶段4b: Story 拆分校验（引用追溯/API Smoke）
+# 阶段4b: Story 拆分校验（引用可追溯 + API Smoke / split-check2）
 
 读取：`docs/split-check-index-pack.yaml`、`docs/GLOBAL-CONTEXT.md`（只读）、`docs/PRD.md`（只读） | 写入：无（只输出 `FAIL/PASS`；不修改文件） | 模板：`N/A`
 
@@ -31,7 +31,7 @@
     - `修正：按 FAIL 清单逐条修复（必要时重跑 Split 校验（结构/阈值）重新写入 docs/split-check-index-pack.yaml）`
     - `重跑：Split 校验（引用追溯/API Smoke）`
   - 然后结束
-- 否则：输出 `PASS`，并提示下一步：Split checkout
+- 否则：输出 `PASS`，并提示下一步：`导出 Story 依赖图`
 
 ## FAIL 校验项（机械性门禁）
 

@@ -1,6 +1,6 @@
 # 阶段1a: 需求澄清（写入 YAML plan-pack）
 
-读取：`docs/prd-plan-pack.yaml`（如存在） | 写入：`docs/prd-plan-pack.yaml`（每轮更新；纯 YAML；不包含 ```） | 模板：`.claude/skills/textum/assets/prd-plan-pack-template.yaml`
+读取：`docs/prd-plan-pack.yaml`（如存在） | 写入：`docs/prd-plan-pack.yaml`（每轮更新；纯 YAML；不包含 ```） | 模板：`assets/prd-plan-pack-template.yaml`
 
 目标：把**已确认事实**持续写入 `docs/prd-plan-pack.yaml`（唯一事实来源），直到满足 `READY` 门禁。
 

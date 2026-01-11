@@ -1,8 +1,8 @@
 # 阶段2b: GLOBAL-CONTEXT 校验
 
-读取：`docs/GLOBAL-CONTEXT.md` | 写入：无（只输出 `FAIL/DECISION/PASS`；不修改文件） | 模板：`N/A`
+读取：`docs/GLOBAL-CONTEXT.md` | 写入：无（只输出 `FAIL/PASS`；不修改文件） | 模板：`N/A`
 
-输出 `FAIL/DECISION/PASS` 清单；**不修改任何文件**。
+输出 `FAIL/PASS` 清单；**不修改任何文件**。
 
 ## 输出规则（只读）
 
@@ -18,7 +18,7 @@
     - `修正：将 FAIL 清单作为可选输入粘贴给 /scaffold，逐条修正 docs/GLOBAL-CONTEXT.md`
     - `重跑：/scaffold-check`
   - 然后结束
-- 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`
+- 否则（无 `FAIL`）：输出 `PASS`，并在末尾追加：`下一步：/split-plan`
 
 ## FAIL 校验项（机械性门禁）
 
@@ -80,21 +80,7 @@
 - 每行必须包含 3 列：`类型` / `命令` / `说明`（按 `|` 分隔）
 - `类型` 必须为以下之一：
   - `gate:<name>`（失败阻断）
-  - `opt:<name>`（失败仅记录 DECISION）
+  - `opt:<name>`（失败仅记录非阻断项）
   - `N/A`
 - 若某行 `命令 = N/A`：该行 `类型` 与 `说明` 也必须为 `N/A`
 - 若某行 `命令 != N/A`：该行 `类型` 必须以 `gate:` 或 `opt:` 开头；不得为 `N/A`
-
-## DECISION（不阻断；提示补充即可）
-
-- 若“项目验证命令”表存在，但所有数据行的 `命令` 都为 `N/A`：
-  - 输出 `DECISION`：提示该项目暂无可自动执行的验证步骤，建议补充至少 1 条可重复执行的验证命令
-  - 约定：新增命令行时 `类型` 必须为 `gate:<name>` 或 `opt:<name>`（见第 6) 门禁）
-  - 末尾追加：
-    - `接受 DECISION：继续 /split-plan`
-    - `不接受 DECISION：先 /scaffold 补齐后重跑 /scaffold-check`
-
-## PASS（通过后动作）
-
-- `PASS`：仅提示下一步动作：
-  - `/split-plan`

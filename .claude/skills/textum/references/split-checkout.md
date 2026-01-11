@@ -1,4 +1,4 @@
-# 阶段5: Split checkout（导出 Story 依赖图）
+# 阶段5: Split checkout（导出 Story 依赖图 / split-checkout）
 
 读取：`docs/story-*-*.md` | 写入：`docs/story-mermaid.md` | 模板：`N/A`
 
@@ -19,15 +19,15 @@
     - `影响`：H/M/L
     - `修复`：只给 1 个动作（通常是“按定位修正对应 Story 文件”）
   - 末尾追加：
-    - `修正：按 FAIL 清单逐条修复 docs/story-*-*.md 后重跑 Split checkout`
-    - `重跑：Split checkout`
+    - `修正：按 FAIL 清单逐条修复 docs/story-*-*.md 后重跑“导出 Story 依赖图”`
+    - `重跑：导出 Story 依赖图`
   - 然后结束（不写文件）
 - 否则：
   - 覆盖写入 `docs/story-mermaid.md`
   - 输出：
     - `PASS`
     - `已写入：docs/story-mermaid.md`
-    - `下一步：Story 校验（输入 Story 编号 N）`
+    - `下一步：Story 校验 N`
 
 ## 硬约束（必须遵守）
 

@@ -74,8 +74,7 @@
   - 输出 `DECISION` 清单（`D-001` 起编号；每条包含：Story + `api_assigned` + 建议动作）
   - 末尾追加：
     - `已写入：docs/split-plan.yaml`
-    - `接受 DECISION：/split`
-    - `不接受 DECISION：先调整 split-plan 后重跑 /split-plan`
+    - `下一步：/split`
 - 否则输出：
   - `PASS`
   - `已写入：docs/split-plan.yaml`

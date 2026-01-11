@@ -27,7 +27,7 @@
   - 输出：
     - `PASS`
     - `已写入：docs/story-mermaid.md`
-    - `下一步：选择一个可执行的 Story 运行 /story-check N（例如：/story-check 1）`
+    - `下一步：/story-check N`
 
 ## 硬约束（必须遵守）
 

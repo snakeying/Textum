@@ -34,7 +34,7 @@
     - `修正：按 FAIL 清单逐条修复 docs/story-$ARGUMENTS-*.md 后重跑 /story-check $ARGUMENTS`
     - `重跑：/story-check $ARGUMENTS`
   - 然后结束
-- 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`
+- 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`，并在末尾追加：`下一步：/story-pack $ARGUMENTS`
 
 ## FAIL 校验项（严格拦截）
 
@@ -172,15 +172,3 @@ FP→落点闭合（任一不满足即 `FAIL`）：
 ### 7) 测试要求最小可用性（涉及 API 时强制）
 
 - 若 `S_api` 非空：Story 的 `## 测试要求` 章节正文不得为 `N/A`
-
-## DECISION（不阻断；需要用户确认）
-
-- 若输出 `DECISION`：
-  - 接受：继续 `/story-pack $ARGUMENTS`
-  - 不接受：先修正后重跑 `/story-check $ARGUMENTS`
-
-## PASS
-
-- `PASS`：仅提示下一步动作（必须按序）：
-  - `/story-pack $ARGUMENTS`
-  - `/story $ARGUMENTS`

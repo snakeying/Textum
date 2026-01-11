@@ -33,7 +33,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 |------|------|--------|
 | 1️⃣ | `/prd-plan` | 需求澄清，持续写入 `docs/prd-plan-pack.yaml`（唯一事实来源） |
 | 2️⃣ | `/prd` | 读取 `docs/prd-plan-pack.yaml` 生成/修正 `docs/PRD.md`（信息不足则输出 `PRD_PLAN_CLARIFY_PACK`） |
-| 3️⃣ | `/prd-check` | 机械性校验 PRD（结构/占位符/ID一致性），输出 `FAIL/DECISION/PASS` 清单；无 `FAIL`（`PASS` 或接受 `DECISION`）后 PRD 只读 |
+| 3️⃣ | `/prd-check` | 机械性校验 PRD（结构/占位符/ID一致性），输出 `FAIL/PASS` 清单；`PASS` 后 PRD 只读 |
 | 4️⃣ | `/scaffold` | 从 PRD 提取全局约定/索引（GLOBAL-CONTEXT） |
 | 5️⃣ | `/scaffold-check` | 机械性校验 GLOBAL-CONTEXT（缺章/占位符/噪音） |
 | 6️⃣ | `/split-plan` | 先做低噪音拆分规划（Story 列表 + API 分配 + 依赖） |
@@ -42,7 +42,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 | 9️⃣ | `/split-checkout` | 导出 Story 依赖图（写入 `docs/story-mermaid.md`） |
 | 🔟 | `/story-check 1`（无 `FAIL`）→ `/story-pack 1` → `/story 1` | 开始做第一个任务，然后按顺序继续 `/story-check 2` → `/story-pack 2` → `/story 2`... |
 
-> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步（若输出 `DECISION`，确认接受后再继续）；`/prd-check` 输出 `PASS/DECISION` 且确认接受后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续通过 PRD 详情锚点 `<!-- PRD#... -->` 精确定位（如 `<!-- PRD#API-001 -->` / `<!-- PRD#TBL-001 -->`），避免通读 PRD 与行号漂移
+> 💡 小提示：每个步骤建议开一个新窗口；`*-check` 只输出清单、不自动跑下一步（若输出 `DECISION`，确认接受后再继续）；`/prd-check` 输出 `PASS` 后不要再修改 `docs/PRD.md`（要改就回到 `/prd` 并重跑后续步骤）；后续通过 PRD 详情锚点 `<!-- PRD#... -->` 精确定位（如 `<!-- PRD#API-001 -->` / `<!-- PRD#TBL-001 -->`），避免通读 PRD 与行号漂移
 
 > 🧪 实验性（高风险，不推荐）：`/story-full-exec 1/2/3/...` 在**同一窗口**按顺序执行多个 Story 并汇总 `FAIL`；不会逐个等待人工验收，且失败也会继续执行后续 Story。仅当你明确接受风险时使用；前置是已为每个 Story 生成 `docs/story-N-exec-pack.yaml`（先跑 `/story-pack N`；缺失任一 pack 将直接 `FAIL` 并停止）。
 
@@ -98,7 +98,7 @@ AI：...（多轮澄清后更新 docs/prd-plan-pack.yaml，并输出 READY）
 **后面的步骤**
 ```
 你：/prd              → 读取 docs/prd-plan-pack.yaml，生成/修正 docs/PRD.md（或返回 PRD_PLAN_CLARIFY_PACK）
-你：/prd-check         → 输出 FAIL/DECISION/PASS 清单；无 FAIL（PASS 或接受 DECISION）后 PRD 只读
+你：/prd-check         → 输出 FAIL/PASS 清单；PASS 后 PRD 只读
 你：/scaffold         → 生成全局上下文
 你：/scaffold-check   → 校验全局上下文
 你：/split-plan       → 生成拆分规划（Story列表 + API分配）

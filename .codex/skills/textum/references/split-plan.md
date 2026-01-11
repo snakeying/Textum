@@ -1,6 +1,6 @@
-# 阶段3a: Story 拆分规划
+# 阶段3a: Story 拆分规划（split-plan）
 
-读取：`docs/PRD.md`（只读） | 写入：`docs/split-plan.yaml`（纯 YAML；不包含 ```） | 模板：`.codex/skills/textum/assets/split-plan-template.yaml` | 可选输入：`SPLIT_REPLAN_PACK`
+读取：`docs/PRD.md`（只读） | 写入：`docs/split-plan.yaml`（纯 YAML；不包含 ```） | 模板：`assets/split-plan-template.yaml` | 可选输入：`SPLIT_REPLAN_PACK`
 
 生成 split-plan 规划 pack；不生成 Story 文件。
 
@@ -15,7 +15,7 @@
 - 判定 `N/A_STRICT = true` 当且仅当：正文去掉空行并 Trim 后仅剩 1 行且该行严格等于 `N/A`
 
 - 只做规划：不生成任何 Story 文件（不写入 `docs/story-*-*.md`）
-- 输出必须严格按 `.codex/skills/textum/assets/split-plan-template.yaml` 的 YAML 结构（字段齐全；不得额外加 Markdown 文本；不得额外加键）
+- 输出必须严格按 `assets/split-plan-template.yaml` 的 YAML 结构（字段齐全；不得额外加 Markdown 文本；不得额外加键）
 - `docs/split-plan.yaml` 中不得出现 `TBD`
 - 编号必须为 `Story 1..N` 连续：
   - `stories[].n` 连续，且 `stories[].story == "Story {n}"`
@@ -74,8 +74,7 @@
   - 输出 `DECISION` 清单（`D-001` 起编号；每条包含：Story + `api_assigned` + 建议动作）
   - 末尾追加：
     - `已写入：docs/split-plan.yaml`
-    - `接受 DECISION：Split 生成 Story`
-    - `不接受 DECISION：先调整 split-plan 后重跑 Split 规划`
+    - `下一步：Split 生成 Story`
 - 否则输出：
   - `PASS`
   - `已写入：docs/split-plan.yaml`

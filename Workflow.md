@@ -80,8 +80,8 @@ flowchart TB
         MR -->|否| DN
     end
 
-    C1 -->|PASS/DECISION| S1
-    C2 -->|PASS/DECISION| SP
+    C1 -->|PASS| S1
+    C2 -->|PASS| SP
     C4 -->|PASS| BF
 ```
 
@@ -91,9 +91,9 @@ flowchart TB
 |------|------|------|----------|
 | 1a. 需求澄清 | `/prd-plan` | 用户需求 / `PRD_PLAN_CLARIFY_PACK` /（可选）`docs/prd-plan-pack.yaml` | 更新 `docs/prd-plan-pack.yaml`（唯一事实来源；每轮写入） |
 | 1b. PRD 生成/修正 | `/prd` | `docs/prd-plan-pack.yaml`（可选：`/prd-check` 清单） | `docs/PRD.md`（或输出 `PRD_PLAN_CLARIFY_PACK`；不修改文件） |
-| 1c. PRD 校验 | `/prd-check` | `docs/PRD.md` | 校验报告（`FAIL/DECISION/PASS`；不修改文件） |
+| 1c. PRD 校验 | `/prd-check` | `docs/PRD.md` | 校验报告（`FAIL/PASS`；不修改文件） |
 | 2. 脚手架 | `/scaffold` | `docs/PRD.md`（只读） | `docs/GLOBAL-CONTEXT.md`（全局约定/索引） |
-| 2b. GC 校验 | `/scaffold-check` | `docs/GLOBAL-CONTEXT.md` | 校验报告（`FAIL/DECISION/PASS`；不修改文件） |
+| 2b. GC 校验 | `/scaffold-check` | `docs/GLOBAL-CONTEXT.md` | 校验报告（`FAIL/PASS`；不修改文件） |
 | 3a. 拆分规划 | `/split-plan` | PRD（索引章） | `docs/split-plan.yaml` |
 | 3. Story 生成 | `/split` | split-plan + PRD + GLOBAL-CONTEXT | `docs/story-N-slug.md` |
 | 4a. 拆分校验（Core） | `/split-check1` | split-plan + 所有 story | 校验报告（`FAIL/DECISION/PASS`）；无 `FAIL` 时写入 `docs/split-check-index-pack.yaml`；可能附带 `SPLIT_REPLAN_PACK` |
@@ -140,7 +140,7 @@ project/
 ## 执行要点
 
 - 每个阶段使用**新窗口**保持上下文干净
-- PRD 只读：`/prd-check` 输出 `PASS` 或 `DECISION` 且确认接受后，后续步骤不修改 `docs/PRD.md`；如需修改，回到 `/prd` 更新并重跑后续步骤
+- PRD 只读：`/prd-check` 输出 `PASS` 后，后续步骤不修改 `docs/PRD.md`；如需修改，回到 `/prd` 更新并重跑后续步骤
 - GLOBAL-CONTEXT 只放**全局约定/索引**：不得复述模块细节、逐表字段、接口详情；也不得引入 PRD 中不存在的新信息
 - 规则编号统一：`BR-###`（001 起递增且唯一）；Story 在 YAML front-matter `refs.gc_br`/`refs.prd_br` 中只记录 `BR-###`
 - 稳定ID：接口 `API-###`、表 `TBL-###`；Story 在 YAML front-matter `refs.prd_api`/`refs.prd_tbl` 中只记录 `API-###`/`TBL-###`
@@ -150,6 +150,6 @@ project/
 - FP 覆盖：PRD `8.0 功能点→落点映射` 中的每个 `FP-001` 必须至少被 1 个 Story 的「关联功能点」覆盖；否则应回到 `/split`（必要时先 `/split-plan`）调整边界
 - Story 执行顺序：`/story-check N` 无 `FAIL`（`PASS` 或接受 `DECISION`）→ `/story-pack N` →（新窗口）`/story N`（只读取 `docs/story-N-exec-pack.yaml`；禁止再读取 `docs/PRD.md` / `docs/GLOBAL-CONTEXT.md` / `docs/story-*.md`）
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
-- `/story N` 执行后自动跑验证命令：命令来自 `docs/story-N-exec-pack.yaml` 的 `verification.commands`（由 `GLOBAL-CONTEXT` 第 2 节“项目验证命令”抽取）；若全部为 `N/A` 则输出 `DECISION`
+- `/story N` 执行后自动跑验证命令：命令来自 `docs/story-N-exec-pack.yaml` 的 `verification.commands`（由 `GLOBAL-CONTEXT` 第 2 节“项目验证命令”抽取）；若无可执行 `gate:*`：不输出 `DECISION`，改为输出人工验收清单，并在验证结果写 `gate:*: N/A`
 - 落点 token：Story 的 `ART:FILE:<path>` / `ART:CFG:<key>` / `ART:EXT:<system>` 必须与 PRD `8.0` 映射中的 `FILE:` / `CFG:` / `EXT:` 精确对齐（`/story-check` 与 `/story-pack` 会做兜底子集校验）
 - 若 Story 声明 `前置Story`/`已有资源`：先在仓库中用 `rg` 定向检索已有实现，只读取关键签名，避免重复实现

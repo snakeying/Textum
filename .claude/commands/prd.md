@@ -49,7 +49,7 @@
   - PRD 输出规范：`DB:<table>` 必须映射为 `DB:TBL-###`（`TBL-001` 起连续）并能在 PRD `8.2` 用锚点 `<!-- PRD#TBL-### -->` 唯一定位
   - 若 `data_model.tables` 为空：PRD `8.1/8.2/8.3` 均写 `N/A`，且 PRD `8.0` 不得出现任何 `DB:` 落点
 - 仅当无法生成“可检查的 PRD”时才输出 `PRD_PLAN_CLARIFY_PACK` 并停止（不写文件）；阻断条件包括：
-  - plan-pack 不满足 `/prd-plan` 的 `READY` 门禁（例如：`api.has_api=null`、缺模块/缺功能点/缺落点、缺规则、缺权限矩阵等）
+  - plan-pack 不满足最小可用门禁（例如：`api.has_api=null`、缺模块/缺功能点/缺落点、缺规则、缺权限矩阵等）
   - 任何必填表格/章节只能靠猜测才能补齐
   - 无法闭合 `8.0 功能点→落点映射`（含落点 token 不合法、或 `DB:<table>` 找不到 `data_model.tables[].table`）
   - `api.has_api=true` 但 `api.endpoints` 无法提供最小清单（method/path/permission/summary）

@@ -22,8 +22,7 @@
   - 写入 `docs/split-check-index-pack.yaml`
   - 若存在任何 `DECISION`：输出 `DECISION` 清单（`D-001` 起编号；每条包含：问题 / 影响 / 建议动作），并在末尾追加：
     - `已写入：docs/split-check-index-pack.yaml`
-    - `接受 DECISION：/split-check2`
-    - `不接受 DECISION：先 /split-plan 处理 DECISION 后重跑 /split-check1`
+    - `下一步：/split-check2`
   - 否则：输出：
     - `PASS`
     - `已写入：docs/split-check-index-pack.yaml`
@@ -98,7 +97,7 @@
 - 对每个命中阈值 `DECISION` 的 Story：生成 1 条 `DECISION` 项（`D-001` 起编号），必须包含：
   - `docs/story-N-<slug>.md`
   - 命中指标与阈值（`api_refs/tbl_refs/feature_points/acceptance_items`）
-  - 建议动作：`/split-plan`（收敛边界/拆分）或接受后继续 `/split-check2`
+  - 建议动作：收敛边界/拆分
 
 `SPLIT_REPLAN_PACK`（必须严格输出一个代码块）：
 
@@ -151,6 +150,7 @@ constraints:
 - 每个 Story 必须包含 YAML front-matter（首部 `--- ... ---`），且必须存在键：`STORY`、`story`、`n`、`slug`、`modules`、`prereq_stories`、`fp_ids`、`refs`、`artifacts`
 - `fp_ids` 必须至少 1 个，且每个必须为 `FP-001`（3 位数字）；禁止 `FP-01`、`FP-###` 等
 - `## 功能点（必填）` 章节必须至少 1 条 `- ` 条目，且条目数必须等于 `fp_ids` 去重数量
+- `## 验收标准（必填）` 章节下每条 `- [ ]` 条目必须包含非空描述（不得整行仅为 `- [ ] 技术验收:` / `- [ ] 用户验收:`，也不得为 `N/A`）
 - Story 中不得出现 fenced code blocks（```）；出现即 `FAIL`
 - 占位符门禁：剔除 fenced code blocks 后逐行检查；不得残留占位符：`TBD`、`[...]`、`Story N`、`M-xx`、`FP-###`、`BR-###`、`TBL-###`、`API-###`、`ART:FILE:[path_glob]`、`ART:CFG:[key]`、`ART:EXT:[system]` 等
 - 方括号门禁（避免漏检）：剔除 fenced code blocks 后逐行检查；若出现 `[` 或 `]`：仅允许

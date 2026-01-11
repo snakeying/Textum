@@ -31,10 +31,10 @@
     - `影响`：H/M/L
     - `修复`：只给 1 个动作（通常是“按定位修正 docs/story-$ARGUMENTS-*.md”）
   - 末尾追加：
-    - `修正：按 FAIL 清单逐条修复 docs/story-$ARGUMENTS-*.md 后重跑 Story 校验`
-    - `重跑：Story 校验（参数不变）`
+    - `修正：按 FAIL 清单逐条修复 docs/story-$ARGUMENTS-*.md 后重跑 Story 校验 $ARGUMENTS`
+    - `重跑：Story 校验 $ARGUMENTS`
   - 然后结束
-- 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`
+- 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`，并在末尾追加：`下一步：Story 执行包生成 $ARGUMENTS`
 
 ## FAIL 校验项（严格拦截）
 
@@ -172,15 +172,3 @@ FP→落点闭合（任一不满足即 `FAIL`）：
 ### 7) 测试要求最小可用性（涉及 API 时强制）
 
 - 若 `S_api` 非空：Story 的 `## 测试要求` 章节正文不得为 `N/A`
-
-## DECISION（不阻断；需要用户确认）
-
-- 若输出 `DECISION`：
-  - 接受：继续 Story 执行包生成
-  - 不接受：先修正后重跑 Story 校验
-
-## PASS
-
-- `PASS`：仅提示下一步动作（必须按序）：
-  - Story 执行包生成（编号 $ARGUMENTS）
-  - Story 执行（编号 $ARGUMENTS）

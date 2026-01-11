@@ -1,6 +1,6 @@
-# 阶段3: Story 拆分
+# 阶段3: Story 拆分（split）
 
-读取：`docs/split-plan.yaml`、`docs/PRD.md`（只读）、`docs/GLOBAL-CONTEXT.md`（只读） | 写入：`docs/story-*-*.md` | 模板：`.codex/skills/textum/assets/story-template.md`
+读取：`docs/split-plan.yaml`、`docs/PRD.md`（只读）、`docs/GLOBAL-CONTEXT.md`（只读） | 写入：`docs/story-*-*.md` | 模板：`assets/story-template.md`
 
 按 split-plan 生成 Story 文件（含 YAML front-matter）。
 
@@ -17,7 +17,7 @@
 
 ## 硬约束
 
-- 不得更改 `docs/split-plan.yaml` 的 Story 编号/边界/API 分配：若发现不合理则停止并提示回 Split 规划
+- 不得更改 `docs/split-plan.yaml` 的 Story 编号/边界/API 分配：若发现不合理则停止并输出阻断原因（不写 Story 文件；需要先修正 split-plan）
 - 每个 Story 文件必须包含 **YAML front-matter**（文件首部 `--- ... ---`），且字段齐全、可解析（结构以模板为准）
 - 每个 Story 文件不得出现 fenced code blocks（```）
 - YAML front-matter 中所有 ID 必须为具体数字：
@@ -27,6 +27,8 @@
   - `refs.prd_tbl[]`: `TBL-001`
   - `refs.prd_api[]`: `API-001`
 - Story 模板章节不得缺失；无内容写 `N/A`；不得残留占位符（如 `TBD`、`[功能描述]`、`M-xx`、`FP-###`、`Story N`）
+- 验收标准不得留空：
+  - `## 验收标准（必填）` 章节下必须存在 `- [ ]` 条目，且每条必须包含非空描述（不得整行仅为 `- [ ] 技术验收:` / `- [ ] 用户验收:`，也不得为 `N/A`）
 - 若 `docs/split-plan.yaml` 的 `api_assignments` 为空（无 API）：
   - 每个 Story front-matter `refs.prd_api` 必须为空数组
   - 每个 Story 的 `## 接口` 章节正文必须严格为 1 行 `N/A`
@@ -87,4 +89,4 @@
 
 ## 完成后
 
-- 下一步：Split 校验（结构/阈值）；通过后：Split 校验（引用追溯/API Smoke）
+- 下一步：`Split 校验（结构/阈值）`

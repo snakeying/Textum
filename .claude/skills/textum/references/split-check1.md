@@ -1,6 +1,6 @@
-# 阶段4a: Story 拆分校验（结构/阈值）
+# 阶段4a: Story 拆分校验（Core / split-check1）
 
-读取：`docs/split-plan.yaml`、`docs/story-*-*.md` | 写入：`docs/split-check-index-pack.yaml`（仅无 `FAIL`；`PASS/DECISION` 都写） | 模板：`.claude/skills/textum/assets/split-check-index-pack-template.yaml`
+读取：`docs/split-plan.yaml`、`docs/story-*-*.md` | 写入：`docs/split-check-index-pack.yaml`（仅无 `FAIL`；`PASS/DECISION` 都写） | 模板：`assets/split-check-index-pack-template.yaml`
 
 做“结构/一致性/阈值”校验。
 
@@ -12,18 +12,17 @@
     - `问题`：1 句
     - `期望`：可机械执行的“替换目标/格式”（能推导就写出来）
     - `影响`：H/M/L
-    - `修复`：只给 1 个动作（通常是“按定位修正对应文件”或“将 SPLIT_REPLAN_PACK 粘贴到 Split 规划重规划”）
+    - `修复`：只给 1 个动作（通常是“按定位修正对应文件”或“将 SPLIT_REPLAN_PACK 粘贴给 Split 规划重规划”）
   - 若包含阈值 FAIL：紧接着追加且仅追加 1 个 `SPLIT_REPLAN_PACK` 代码块
   - 末尾追加：
-    - `修正：按 FAIL 清单逐条修复（若包含 SPLIT_REPLAN_PACK：将其粘贴到 Split 规划重规划；否则修正 docs/story-*-*.md 或 docs/split-plan.yaml）`
+    - `修正：按 FAIL 清单逐条修复（若包含 SPLIT_REPLAN_PACK：将其粘贴给 Split 规划重规划；否则修正 docs/story-*-*.md 或 docs/split-plan.yaml）`
     - `重跑：Split 校验（结构/阈值）`
   - 然后结束（不写 pack）
 - 否则（无 FAIL）：
   - 写入 `docs/split-check-index-pack.yaml`
   - 若存在任何 `DECISION`：输出 `DECISION` 清单（`D-001` 起编号；每条包含：问题 / 影响 / 建议动作），并在末尾追加：
     - `已写入：docs/split-check-index-pack.yaml`
-    - `接受 DECISION：Split 校验（引用追溯/API Smoke）`
-    - `不接受 DECISION：先处理 DECISION（Split 规划）后重跑 Split 校验（结构/阈值）`
+    - `下一步：Split 校验（引用追溯/API Smoke）`
   - 否则：输出：
     - `PASS`
     - `已写入：docs/split-check-index-pack.yaml`
@@ -90,7 +89,7 @@
 ### 触发后输出（仅阈值 FAIL 时；必须）
 
 1. 输出 `FAIL` 清单（`F-001` 起编号；每条必须包含：定位 / 问题 / 期望 / 影响 / 修复；且 `定位` 必须包含：Story 文件名 + 触发指标 + 命中阈值）
-2. 紧接着追加且仅追加 1 个代码块 `SPLIT_REPLAN_PACK`（供复制到 Split 规划）
+2. 紧接着追加且仅追加 1 个代码块 `SPLIT_REPLAN_PACK`（供粘贴给 Split 规划）
 3. 立即结束（不写 pack）
 
 ### 阈值 DECISION 记录（必须；不短路）
@@ -98,7 +97,7 @@
 - 对每个命中阈值 `DECISION` 的 Story：生成 1 条 `DECISION` 项（`D-001` 起编号），必须包含：
   - `docs/story-N-<slug>.md`
   - 命中指标与阈值（`api_refs/tbl_refs/feature_points/acceptance_items`）
-- 建议动作：Split 规划（收敛边界/拆分），或接受后继续 Split 校验（引用追溯/API Smoke）
+  - 建议动作：收敛边界/拆分
 
 `SPLIT_REPLAN_PACK`（必须严格输出一个代码块）：
 
@@ -151,6 +150,7 @@ constraints:
 - 每个 Story 必须包含 YAML front-matter（首部 `--- ... ---`），且必须存在键：`STORY`、`story`、`n`、`slug`、`modules`、`prereq_stories`、`fp_ids`、`refs`、`artifacts`
 - `fp_ids` 必须至少 1 个，且每个必须为 `FP-001`（3 位数字）；禁止 `FP-01`、`FP-###` 等
 - `## 功能点（必填）` 章节必须至少 1 条 `- ` 条目，且条目数必须等于 `fp_ids` 去重数量
+- `## 验收标准（必填）` 章节下每条 `- [ ]` 条目必须包含非空描述（不得整行仅为 `- [ ] 技术验收:` / `- [ ] 用户验收:`，也不得为 `N/A`）
 - Story 中不得出现 fenced code blocks（```）；出现即 `FAIL`
 - 占位符门禁：剔除 fenced code blocks 后逐行检查；不得残留占位符：`TBD`、`[...]`、`Story N`、`M-xx`、`FP-###`、`BR-###`、`TBL-###`、`API-###`、`ART:FILE:[path_glob]`、`ART:CFG:[key]`、`ART:EXT:[system]` 等
 - 方括号门禁（避免漏检）：剔除 fenced code blocks 后逐行检查；若出现 `[` 或 `]`：仅允许
@@ -177,7 +177,7 @@ constraints:
 ## 生成索引交接包（必须；无 FAIL 时写入）
 
 规则：
-- 严格按 `.claude/skills/textum/assets/split-check-index-pack-template.yaml` 的 YAML 结构写入（纯 YAML；不含 ```）
+- 严格按 `assets/split-check-index-pack-template.yaml` 的 YAML 结构写入（纯 YAML；不含 ```）
 - `modules` 解析为 `["M-01","M-02"]` 数组；`prereq_stories` 解析为 `["Story 1"]` 数组（无则空数组）
 - 引用只记录 ID（去掉 `GC#`/`PRD#` 前缀），并分类输出：
   - `fp_ids`: `FP-001`
