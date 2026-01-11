@@ -6,10 +6,19 @@
 
 ## 输出规则（必须遵守）
 
-- 每轮只输出两块内容（除此之外不要输出任何解释/复述）：
-  1) 本轮问题（≤4；只问 blockers）或 本轮变更摘要（YAML 路径列表）
-  2) 剩余 blockers（≤8；按优先级）
-- 不输出 YAML 正文
+输出必须二选一（除此之外不要输出任何解释/复述）：
+
+1) `IN_PROGRESS`：
+   - 只输出两块内容：
+     1) 本轮问题（≤4；只问 blockers）或 本轮变更摘要（YAML 路径列表）
+     2) 剩余 blockers（≤8；按优先级）
+2) `READY`：
+   - 只输出三行纯文本：
+     - `READY`
+     - `已写入：docs/prd-plan-pack.yaml`
+     - `下一步：PRD 生成/修正`
+
+- 不输出 YAML 正文（包括 `docs/prd-plan-pack.yaml` 与 `PRD_PLAN_CLARIFY_PACK`）
 
 ## 写入规则（必须遵守）
 
@@ -51,11 +60,6 @@
 ## 可选记录（不主动追问）
 
 - 若用户**明确**提出命名/格式约定：写入 `assumptions_constraints[]`，并让 `assumption_or_constraint` 以 `命名规范:` 开头
-
-## 输出状态
-
-- `IN_PROGRESS`：继续提问（只更新 `docs/prd-plan-pack.yaml`）
-- `READY`：输出 `READY` + `已写入：docs/prd-plan-pack.yaml` + `下一步：PRD 生成/修正`
 
 ## 开始
 

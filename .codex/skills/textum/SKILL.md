@@ -46,3 +46,4 @@ description: Textum PRD→Story workflow for Codex with low-noise outputs and ga
 
 - 低噪是硬约束：除必须的清单/交接包外，不输出复述与长文。
 - 所有 `FAIL` 清单条目必须包含：`定位/问题/期望/影响/修复`，且 `修复` 只给 1 个动作。
+- 所有 `DECISION` 清单条目必须包含：`定位/问题/影响/建议动作`，且 `建议动作` 只给 1 个动作。

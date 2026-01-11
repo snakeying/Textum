@@ -4,6 +4,8 @@
 
 ## 流程图
 
+说明：流程图为摘要；命令的读写/模板/门禁以本文下方表格与规则为准。
+
 ```mermaid
 flowchart TB
     %% 图例：蓝=命令 | 粉=校验 | 黄=文件 | 绿=交接包
@@ -115,6 +117,33 @@ flowchart TB
 | `/split` | `.claude/textum/story-template.md` |
 | `/split-check1` | `.claude/textum/split-check-index-pack-template.yaml` |
 
+## 4 个 bundle 清单（命令 + templates）
+
+1) PRD bundle（按执行顺序）：
+   - .claude/commands/prd-plan.md
+   - .claude/commands/prd.md
+   - .claude/commands/prd-check.md
+   - .claude/textum/prd-plan-pack-template.yaml
+   - .claude/textum/PRD-framework.md
+2) Scaffold bundle：
+   - .claude/commands/scaffold.md
+   - .claude/commands/scaffold-check.md
+   - .claude/textum/GLOBAL-CONTEXT-template.md
+3) Split bundle（按执行顺序）：
+   - .claude/commands/split-plan.md
+   - .claude/textum/split-plan-template.yaml
+   - .claude/commands/split.md
+   - .claude/textum/story-template.md
+   - .claude/commands/split-check1.md
+   - .claude/textum/split-check-index-pack-template.yaml
+   - .claude/commands/split-check2.md
+4) Story bundle（按执行顺序）：
+   - .claude/commands/split-checkout.md
+   - .claude/commands/story-check.md
+   - .claude/commands/story-pack.md
+   - .claude/commands/story.md
+   - （可选/实验）.claude/commands/story-full-exec.md
+
 ## 目录结构
 
 ```
@@ -152,4 +181,4 @@ project/
 - 涉及 API 的 Story：`## 测试要求` 不得为 `N/A`（`/story-check` 会 `FAIL`）
 - `/story N` 执行后自动跑验证命令：命令来自 `docs/story-N-exec-pack.yaml` 的 `verification.commands`（由 `GLOBAL-CONTEXT` 第 2 节“项目验证命令”抽取）；若无可执行 `gate:*`：不输出 `DECISION`，改为输出人工验收清单，并在验证结果写 `gate:*: N/A`
 - 落点 token：Story 的 `ART:FILE:<path>` / `ART:CFG:<key>` / `ART:EXT:<system>` 必须与 PRD `8.0` 映射中的 `FILE:` / `CFG:` / `EXT:` 精确对齐（`/story-check` 与 `/story-pack` 会做兜底子集校验）
-- 若 Story 声明 `前置Story`/`已有资源`：先在仓库中用 `rg` 定向检索已有实现，只读取关键签名，避免重复实现
+- 若 Story 声明 `前置Story`/`已有资源`：先在仓库中检索已有实现，只读取关键签名，避免重复实现

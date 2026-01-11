@@ -34,7 +34,9 @@
     - `修正：按 FAIL 清单逐条修复 docs/story-$ARGUMENTS-*.md 后重跑 /story-check $ARGUMENTS`
     - `重跑：/story-check $ARGUMENTS`
   - 然后结束
-- 仅当无 `FAIL`：输出 `DECISION`（若有）或 `PASS`，并在末尾追加：`下一步：/story-pack $ARGUMENTS`
+- 仅当无 `FAIL`：
+  - 若存在任何 `DECISION`：输出 `DECISION` 清单（`D-001` 起编号；每条必须包含：定位 / 问题 / 影响 / 建议动作），并在末尾追加：`下一步：/story-pack $ARGUMENTS`
+  - 否则：输出 `PASS`，并在末尾追加：`下一步：/story-pack $ARGUMENTS`
 
 ## FAIL 校验项（严格拦截）
 
