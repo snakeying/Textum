@@ -2,7 +2,7 @@
 
 Read: `docs/prd-pack.json` (if exists) | Write: `docs/prd-pack.json` (update each round; pure JSON; no ``` blocks) | Init: `uv run --project .codex/skills/textum/scripts textum prd init`
 
-Goal: keep writing **confirmed facts only** into `docs/prd-pack.json` (single source of truth), then hand off to `PRD Check` for gating.
+Goal: keep writing **confirmed facts only** into `docs/prd-pack.json` (single source of truth).
 
 ## Output rules (must follow)
 

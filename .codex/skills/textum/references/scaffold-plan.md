@@ -2,7 +2,7 @@
 
 Read: `docs/prd-pack.json` | Write: `docs/scaffold-pack.json` (pure JSON; no ``` blocks) | Init: `uv run --project .codex/skills/textum/scripts textum scaffold init`
 
-Goal: write **confirmed technical decisions only** into `docs/scaffold-pack.json` (single source of truth), then hand off to `Scaffold Check` for gating.
+Goal: write **confirmed technical decisions only** into `docs/scaffold-pack.json` (single source of truth).
 
 ## Output rules (must follow)
 
@@ -28,7 +28,7 @@ Output MUST be exactly one of:
 ## Writing rules (must follow)
 
 - Do not guess; if not confirmed, ask.
-- Do not manually edit `extracted` (it is auto-populated by `textum scaffold check`).
+- Do not manually edit `extracted` (it is auto-populated by scripts).
 - `$.decisions.validation_commands[].type` must start with `gate:` or `opt:` (unless the row is fully `N/A`).
 - `validation_commands` `N/A` must be either fully `N/A`, or fully concrete (no partial `N/A`).
 - Required decisions (minimum):

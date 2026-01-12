@@ -27,6 +27,61 @@ def validate_split_refs(
         )
         return failures
 
+    split_plan = index_pack.get("split_plan")
+    plan_story_count: int | None = None
+    if not isinstance(split_plan, dict):
+        failures.append(
+            Failure(
+                loc="$.split_plan",
+                problem=f"expected object, got {type(split_plan).__name__}",
+                expected="object",
+                impact="cannot validate split completeness",
+                fix="rerun: textum split check1",
+            )
+        )
+    else:
+        story_count = split_plan.get("story_count")
+        if not isinstance(story_count, int):
+            failures.append(
+                Failure(
+                    loc="$.split_plan.story_count",
+                    problem=f"expected int, got {type(story_count).__name__}",
+                    expected="integer",
+                    impact="cannot validate story file completeness",
+                    fix="rerun: textum split check1",
+                )
+            )
+        else:
+            plan_story_count = story_count
+
+    stories = index_pack.get("stories")
+    actual_story_count: int | None = None
+    if not isinstance(stories, list):
+        failures.append(
+            Failure(
+                loc="$.stories",
+                problem=f"expected array, got {type(stories).__name__}",
+                expected="array",
+                impact="cannot validate story file completeness",
+                fix="rerun: textum split check1",
+            )
+        )
+    else:
+        actual_story_count = len(stories)
+
+    if plan_story_count is not None and actual_story_count is not None and plan_story_count != actual_story_count:
+        failures.append(
+            Failure(
+                loc="docs/split-check-index-pack.json",
+                problem=(
+                    f"story_count mismatch: split_plan.story_count={plan_story_count} but indexed stories={actual_story_count}"
+                ),
+                expected="split plan story_count matches generated story files count",
+                impact="execution plan is incomplete or out of date",
+                fix="rerun: textum split generate, then textum split check1, then textum split check2",
+            )
+        )
+
     summary = index_pack.get("summary")
     if not isinstance(summary, dict):
         failures.append(
@@ -178,4 +233,3 @@ def validate_split_refs(
             )
 
     return failures
-

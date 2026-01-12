@@ -1,6 +1,6 @@
 # Stage 1d: PRD Slice (generate low-noise slices)
 
-Generate low-noise PRD slices for downstream planning.
+Generate low-noise PRD slices.
 
 Read: `docs/prd-pack.json` | Write: `docs/prd-slices/`
 
@@ -16,4 +16,3 @@ Output exactly 3 lines:
 - `PASS`
 - `wrote: docs/prd-slices/`
 - `next: Scaffold Plan`
-

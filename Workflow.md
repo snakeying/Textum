@@ -52,23 +52,27 @@
    - 写入 `docs/GLOBAL-CONTEXT.md`（人工验收；若不符合预期返回 `scaffold-plan` 修真源）  
    - next：`Split Plan`
 
-### Stage 3: Split（Plan → Generate → Check1 → Check2 → Checkout）
+### Stage 3: Split（Plan → Check(PASS/DECISION) → Generate → Check1 → Check2 → Checkout）
 
 前置：确保已完成 `PRD Slice`（存在 `docs/prd-slices/index.json`），且 `Scaffold Check` 已 `PASS`（`docs/scaffold-pack.json` 可用）。
 
-1) 初始化（首次运行才需要）  
-   - `uv run --project .codex/skills/textum/scripts textum split plan init` → 写入 `docs/split-plan-pack.json`
-2) `split-plan`（Split Plan；交互澄清 + 写拆分规划）  
+说明：
+- Split 流程通过 `textum` skill 的路由触发，不需要手动运行 CLI 命令；仅在你要调试/无 skill 环境时，才参考第 2 节（uv 命令）。
+
+1) `split-plan`（Split Plan；交互澄清 + 写拆分规划）  
+   - 首次运行：若 `docs/split-plan-pack.json` 不存在，会自动初始化并写入真源骨架  
    - 目标：写清 Story 边界/顺序、模块归属、API 归属（不输出 JSON 正文）  
-   - 每轮写入后运行：`uv run --project .codex/skills/textum/scripts textum split plan check`，直到 `PASS`（或 `DECISION` 被处理）
-3) `split`（Split Generate；生成每个 Story 真源）  
-   - `uv run --project .codex/skills/textum/scripts textum split generate` → 写入 `docs/stories/story-###-<slug>.json`
-4) `split-check1`（Split Check1；结构/阈值门禁 + 写交接索引）  
-   - `uv run --project .codex/skills/textum/scripts textum split check1` → 通过时写入 `docs/split-check-index-pack.json`
-5) `split-check2`（Split Check2；引用一致性门禁）  
-   - `uv run --project .codex/skills/textum/scripts textum split check2`
-6) `split-checkout`（Split Checkout；导出依赖图视图，便于人工检查顺序）  
-   - `uv run --project .codex/skills/textum/scripts textum split checkout` → 写入 `docs/story-mermaid.md`
+   - 直到 `PASS`（或 `DECISION` 被处理；然后继续 Split Generate）
+2) `split`（Split Generate；生成每个 Story 真源）  
+   - 写入 `docs/stories/story-###-<slug>.json`
+3) `split-check1`（Split Check1；结构/阈值门禁 + 生成交接索引）  
+   - `PASS/DECISION`：写入 `docs/split-check-index-pack.json`，进入 Split Check2  
+   - `FAIL`：返回 Split Plan；若触发“超标拆分建议”，会额外写入 `docs/split-replan-pack.json`（供你在 Split Plan 窗口参考）
+4) `split-check2`（Split Check2；引用一致性 + 完整性门禁）  
+   - 包含完整性门禁：Split Plan `story_count` 必须与实际生成的 Story 文件数一致  
+   - `FAIL`：返回 Split Plan；`PASS`：进入 Split Checkout
+5) `split-checkout`（Split Checkout；导出依赖图视图，便于人工检查顺序）  
+   - 写入 `docs/story-mermaid.md`
 
 ### Stage 4: Story（Check → Pack → Exec / Full Exec）
 
@@ -99,6 +103,13 @@
   - `uv run --project .codex/skills/textum/scripts textum scaffold init`（创建 `docs/scaffold-pack.json`；一般由 `scaffold-plan` 首次运行自动触发）  
   - `uv run --project .codex/skills/textum/scripts textum scaffold check`  
   - `uv run --project .codex/skills/textum/scripts textum scaffold render`
+- Split（手动运行/调试用；通常由各 stage 自动触发）  
+  - `uv run --project .codex/skills/textum/scripts textum split plan init`（创建 `docs/split-plan-pack.json`；一般由 `split-plan` 首次运行自动触发）  
+  - `uv run --project .codex/skills/textum/scripts textum split plan check`  
+  - `uv run --project .codex/skills/textum/scripts textum split generate`  
+  - `uv run --project .codex/skills/textum/scripts textum split check1`  
+  - `uv run --project .codex/skills/textum/scripts textum split check2`  
+  - `uv run --project .codex/skills/textum/scripts textum split checkout`
 - `uv run --project .codex/skills/textum/scripts python -m ...`  
   - 作用：调试/检查（例如 `python -m compileall`），同样使用隔离环境
 
@@ -138,5 +149,5 @@
 - PRD 真源：`docs/prd-pack.json`；阅读视图：`docs/PRD.md`；切片：`docs/prd-slices/`
 - Scaffold 真源：`docs/scaffold-pack.json`；阅读视图：`docs/GLOBAL-CONTEXT.md`
 - Split 规划真源：`docs/split-plan-pack.json`；Story 真源：`docs/stories/story-###-<slug>.json`
-- Split 交接索引：`docs/split-check-index-pack.json`；依赖图视图：`docs/story-mermaid.md`
+- Split 交接索引：`docs/split-check-index-pack.json`；拆分建议：`docs/split-replan-pack.json`；依赖图视图：`docs/story-mermaid.md`
 - Story 执行包（低噪切片）：`docs/story-exec/story-###-<slug>/index.json`（entry）

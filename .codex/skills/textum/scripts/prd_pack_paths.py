@@ -9,7 +9,13 @@ from prd_pack_types import (
     PRD_TEMPLATE_FILENAME,
 )
 from scaffold_pack_types import GLOBAL_CONTEXT_FILENAME, SCAFFOLD_PACK_FILENAME, SCAFFOLD_TEMPLATE_FILENAME
-from split_pack_types import SPLIT_PLAN_PACK_FILENAME, SPLIT_PLAN_TEMPLATE_FILENAME, SPLIT_CHECK_INDEX_PACK_FILENAME, STORIES_DIRNAME
+from split_pack_types import (
+    SPLIT_CHECK_INDEX_PACK_FILENAME,
+    SPLIT_PLAN_PACK_FILENAME,
+    SPLIT_PLAN_TEMPLATE_FILENAME,
+    SPLIT_REPLAN_PACK_FILENAME,
+    STORIES_DIRNAME,
+)
 from story_exec_types import STORY_EXEC_DIRNAME
 
 
@@ -27,6 +33,7 @@ def workspace_paths(workspace: Path) -> dict[str, Path]:
         "split_plan_pack": docs_dir / SPLIT_PLAN_PACK_FILENAME,
         "stories_dir": docs_dir / STORIES_DIRNAME,
         "split_check_index_pack": docs_dir / SPLIT_CHECK_INDEX_PACK_FILENAME,
+        "split_replan_pack": docs_dir / SPLIT_REPLAN_PACK_FILENAME,
         "story_mermaid": docs_dir / "story-mermaid.md",
         "story_exec_dir": docs_dir / STORY_EXEC_DIRNAME,
     }

@@ -11,7 +11,7 @@ STORY_FILE_PREFIX = "story-"
 STORY_SCHEMA_VERSION = "story@v1"
 
 SPLIT_CHECK_INDEX_PACK_FILENAME = "split-check-index-pack.json"
+SPLIT_REPLAN_PACK_FILENAME = "split-replan-pack.json"
 
 KEBAB_SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 STORY_NAME_RE = re.compile(r"^Story (\d+)$")
-

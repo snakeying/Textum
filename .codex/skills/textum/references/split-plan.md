@@ -4,6 +4,7 @@ Read (minimal, low-noise):
 - `docs/prd-slices/index.json`
 - `docs/prd-slices/modules.*.json`
 - `docs/prd-slices/api_endpoints.*.json` (only if `api.has_api=true`)
+- `docs/split-replan-pack.json` (only if exists)
 
 Write:
 - `docs/split-plan-pack.json` (pure JSON; no ``` blocks)
@@ -35,6 +36,7 @@ Output MUST be exactly one of:
 - Story numbering must be consecutive: `Story 1..N`.
 - `stories[].slug` must be unique kebab-case.
 - `stories[].modules` must be PRD module ids only (`M-01`), not names.
+- If a PRD module is assigned to multiple stories, feature points under that module are distributed round-robin across those stories.
 - `api_assignments[]`:
   - If PRD `api.has_api=false`: must be `[]`
   - Else: every PRD `API-###` must appear exactly once.
@@ -55,4 +57,3 @@ If `docs/split-plan-pack.json` does not exist, initialize once (workspace root):
 2) `uv run --project .codex/skills/textum/scripts textum split plan init`
 
 Then ask: how many Stories do you want initially (e.g., 6–12), and any must-have sequencing constraints?
-

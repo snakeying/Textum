@@ -491,8 +491,20 @@ def _cmd_split_check1(args: argparse.Namespace) -> int:
             if isinstance(replan.get("oversized_stories"), list) and len(replan["oversized_stories"]) > 0:
                 import json
 
-                print("SPLIT_REPLAN_PACK_JSON:")
-                print(json.dumps(replan, ensure_ascii=False, indent=2))
+                paths["split_replan_pack"].write_text(
+                    json.dumps(replan, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+                print(f"REPLAN: wrote {paths['split_replan_pack'].as_posix()}")
+                print("REPLAN_SUMMARY:")
+                for story in replan["oversized_stories"]:
+                    if not isinstance(story, dict):
+                        continue
+                    metrics = story.get("metrics") if isinstance(story.get("metrics"), dict) else {}
+                    fp = metrics.get("feature_points")
+                    api = metrics.get("api_refs")
+                    tbl = metrics.get("tbl_refs")
+                    print(f"- {story.get('story')}: fp={fp}; api={api}; tbl={tbl}")
         return 1
 
     if decisions:
