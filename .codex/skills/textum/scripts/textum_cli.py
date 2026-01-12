@@ -77,6 +77,21 @@ def _normalize_prd_pack_in_place(
     return updated, []
 
 
+def _load_prd_pack_and_normalize(
+    paths: dict[str, Path], *, fix: bool
+) -> tuple[dict[str, Any] | None, bool, list[Failure]]:
+    prd_pack, read_failures = _load_prd_pack(paths)
+    if read_failures:
+        return None, False, read_failures
+    assert prd_pack is not None
+
+    updated, id_failures = _normalize_prd_pack_in_place(prd_pack, write_back_path=paths["prd_pack"] if fix else None)
+    if id_failures:
+        return None, updated, id_failures
+
+    return prd_pack, updated, []
+
+
 def _cmd_prd_init(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
@@ -95,16 +110,11 @@ def _cmd_prd_init(args: argparse.Namespace) -> int:
 def _cmd_prd_check(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
-    prd_pack, read_failures = _load_prd_pack(paths)
-    if read_failures:
-        _print_failures(read_failures)
+    prd_pack, updated, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
+    if failures:
+        _print_failures(failures)
         return 1
     assert prd_pack is not None
-
-    updated, id_failures = _normalize_prd_pack_in_place(prd_pack, write_back_path=paths["prd_pack"] if args.fix else None)
-    if id_failures:
-        _print_failures(id_failures)
-        return 1
 
     ready, check_failures = check_prd_pack(prd_pack)
     if not ready:
@@ -120,16 +130,11 @@ def _cmd_prd_check(args: argparse.Namespace) -> int:
 def _cmd_prd_render(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
-    prd_pack, read_failures = _load_prd_pack(paths)
-    if read_failures:
-        _print_failures(read_failures)
+    prd_pack, _, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
+    if failures:
+        _print_failures(failures)
         return 1
     assert prd_pack is not None
-
-    _, id_failures = _normalize_prd_pack_in_place(prd_pack, write_back_path=paths["prd_pack"] if args.fix else None)
-    if id_failures:
-        _print_failures(id_failures)
-        return 1
 
     markdown = render_prd_markdown(prd_pack, lang=args.lang)
     paths["docs_dir"].mkdir(parents=True, exist_ok=True)
@@ -141,16 +146,11 @@ def _cmd_prd_render(args: argparse.Namespace) -> int:
 def _cmd_prd_slice(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
-    prd_pack, read_failures = _load_prd_pack(paths)
-    if read_failures:
-        _print_failures(read_failures)
+    prd_pack, _, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
+    if failures:
+        _print_failures(failures)
         return 1
     assert prd_pack is not None
-
-    _, id_failures = _normalize_prd_pack_in_place(prd_pack, write_back_path=paths["prd_pack"] if args.fix else None)
-    if id_failures:
-        _print_failures(id_failures)
-        return 1
 
     ready, check_failures = check_prd_pack(prd_pack)
     if not ready:
@@ -185,6 +185,40 @@ def _ensure_prd_ready(prd_pack: dict[str, Any], *, prd_pack_path: Path) -> list[
     return []
 
 
+def _load_prd_pack_and_ensure_ready(paths: dict[str, Path]) -> tuple[dict[str, Any] | None, list[Failure]]:
+    prd_pack, read_failures = _load_prd_pack(paths)
+    if read_failures:
+        return None, read_failures
+    assert prd_pack is not None
+
+    prd_ready_failures = _ensure_prd_ready(prd_pack, prd_pack_path=paths["prd_pack"])
+    if prd_ready_failures:
+        return None, prd_ready_failures
+
+    return prd_pack, []
+
+
+def _load_scaffold_pack_and_ensure_ready(
+    paths: dict[str, Path], *, prd_pack: dict[str, Any], fix: bool
+) -> tuple[dict[str, Any] | None, bool, list[Failure]]:
+    scaffold_pack, read_failures = read_scaffold_pack(paths["scaffold_pack"])
+    if read_failures:
+        return None, False, read_failures
+    assert scaffold_pack is not None
+
+    updated, ready_failures = _ensure_scaffold_ready(
+        scaffold_pack,  # type: ignore[arg-type]
+        prd_pack_path=paths["prd_pack"],
+        prd_pack=prd_pack,  # type: ignore[arg-type]
+        scaffold_pack_path=paths["scaffold_pack"],
+        fix=fix,
+    )
+    if ready_failures:
+        return None, updated, ready_failures
+
+    return scaffold_pack, updated, []
+
+
 def _cmd_scaffold_init(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
@@ -204,38 +238,19 @@ def _cmd_scaffold_check(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
 
-    prd_pack, read_prd_failures = read_prd_pack(paths["prd_pack"])
-    if read_prd_failures:
-        _print_failures(read_prd_failures)
+    prd_pack, prd_failures = _load_prd_pack_and_ensure_ready(paths)
+    if prd_failures:
+        _print_failures(prd_failures)
         return 1
     assert prd_pack is not None
 
-    prd_ready_failures = _ensure_prd_ready(prd_pack, prd_pack_path=paths["prd_pack"])
-    if prd_ready_failures:
-        _print_failures(prd_ready_failures)
-        return 1
-
-    scaffold_pack, read_scaffold_failures = read_scaffold_pack(paths["scaffold_pack"])
-    if read_scaffold_failures:
-        _print_failures(read_scaffold_failures)
+    scaffold_pack, updated, scaffold_failures = _load_scaffold_pack_and_ensure_ready(
+        paths, prd_pack=prd_pack, fix=args.fix
+    )
+    if scaffold_failures:
+        _print_failures(scaffold_failures)
         return 1
     assert scaffold_pack is not None
-
-    updated, norm_failures = normalize_scaffold_pack(
-        scaffold_pack,
-        prd_pack_path=paths["prd_pack"],
-        prd_pack=prd_pack,
-    )
-    if norm_failures:
-        _print_failures(norm_failures)
-        return 1
-    if updated and args.fix:
-        write_scaffold_pack(paths["scaffold_pack"], scaffold_pack)
-
-    ready, check_failures = check_scaffold_pack(scaffold_pack)
-    if not ready:
-        _print_failures(check_failures)
-        return 1
 
     print("PASS")
     if updated and args.fix:
@@ -247,38 +262,17 @@ def _cmd_scaffold_render(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
 
-    prd_pack, read_prd_failures = read_prd_pack(paths["prd_pack"])
-    if read_prd_failures:
-        _print_failures(read_prd_failures)
+    prd_pack, prd_failures = _load_prd_pack_and_ensure_ready(paths)
+    if prd_failures:
+        _print_failures(prd_failures)
         return 1
     assert prd_pack is not None
 
-    prd_ready_failures = _ensure_prd_ready(prd_pack, prd_pack_path=paths["prd_pack"])
-    if prd_ready_failures:
-        _print_failures(prd_ready_failures)
-        return 1
-
-    scaffold_pack, read_scaffold_failures = read_scaffold_pack(paths["scaffold_pack"])
-    if read_scaffold_failures:
-        _print_failures(read_scaffold_failures)
+    scaffold_pack, _, scaffold_failures = _load_scaffold_pack_and_ensure_ready(paths, prd_pack=prd_pack, fix=args.fix)
+    if scaffold_failures:
+        _print_failures(scaffold_failures)
         return 1
     assert scaffold_pack is not None
-
-    updated, norm_failures = normalize_scaffold_pack(
-        scaffold_pack,
-        prd_pack_path=paths["prd_pack"],
-        prd_pack=prd_pack,
-    )
-    if norm_failures:
-        _print_failures(norm_failures)
-        return 1
-    if updated and args.fix:
-        write_scaffold_pack(paths["scaffold_pack"], scaffold_pack)
-
-    ready, check_failures = check_scaffold_pack(scaffold_pack)
-    if not ready:
-        _print_failures(check_failures)
-        return 1
 
     markdown = render_global_context_markdown(scaffold_pack)
     paths["docs_dir"].mkdir(parents=True, exist_ok=True)
@@ -294,16 +288,16 @@ def _ensure_scaffold_ready(
     prd_pack: dict[str, object],
     scaffold_pack_path: Path,
     fix: bool,
-) -> list[Failure]:
+) -> tuple[bool, list[Failure]]:
     updated, failures = normalize_scaffold_pack(scaffold_pack, prd_pack_path=prd_pack_path, prd_pack=prd_pack)
     if failures:
-        return failures
+        return updated, failures
     if updated and fix:
         write_scaffold_pack(scaffold_pack_path, scaffold_pack)  # type: ignore[arg-type]
     ready, check_failures = check_scaffold_pack(scaffold_pack)  # type: ignore[arg-type]
     if not ready:
-        return check_failures
-    return []
+        return updated, check_failures
+    return updated, []
 
 
 def _cmd_split_plan_init(args: argparse.Namespace) -> int:
@@ -344,7 +338,7 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
         return 1
     assert scaffold_pack is not None
 
-    scaffold_ready_failures = _ensure_scaffold_ready(
+    _, scaffold_ready_failures = _ensure_scaffold_ready(
         scaffold_pack,  # type: ignore[arg-type]
         prd_pack_path=paths["prd_pack"],
         prd_pack=prd_pack,  # type: ignore[arg-type]
@@ -422,7 +416,7 @@ def _cmd_split_generate(args: argparse.Namespace) -> int:
         return 1
     assert scaffold_pack is not None
 
-    scaffold_ready_failures = _ensure_scaffold_ready(
+    _, scaffold_ready_failures = _ensure_scaffold_ready(
         scaffold_pack,  # type: ignore[arg-type]
         prd_pack_path=paths["prd_pack"],
         prd_pack=prd_pack,  # type: ignore[arg-type]
@@ -537,7 +531,7 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
         return 1
     assert scaffold_pack is not None
 
-    scaffold_ready_failures = _ensure_scaffold_ready(
+    _, scaffold_ready_failures = _ensure_scaffold_ready(
         scaffold_pack,  # type: ignore[arg-type]
         prd_pack_path=paths["prd_pack"],
         prd_pack=prd_pack,  # type: ignore[arg-type]

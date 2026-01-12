@@ -15,5 +15,4 @@ Run (workspace root):
 Output exactly 3 lines:
 - `PASS`
 - `wrote: docs/GLOBAL-CONTEXT.md`
-- `next: Scaffold Check`
-
+- `next: Split Plan`

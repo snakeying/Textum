@@ -2,7 +2,7 @@
 
 Read: `docs/prd-pack.json` | Write: `docs/scaffold-pack.json` (pure JSON; no ``` blocks) | Init: `uv run --project .codex/skills/textum/scripts textum scaffold init`
 
-Goal: write **confirmed technical decisions only** into `docs/scaffold-pack.json` until the `READY` gate passes.
+Goal: write **confirmed technical decisions only** into `docs/scaffold-pack.json` (single source of truth), then hand off to `Scaffold Check` for gating.
 
 ## Output rules (must follow)
 
@@ -29,20 +29,14 @@ Output MUST be exactly one of:
 
 - Do not guess; if not confirmed, ask.
 - Do not manually edit `extracted` (it is auto-populated by `textum scaffold check`).
+- `$.decisions.validation_commands[].type` must start with `gate:` or `opt:` (unless the row is fully `N/A`).
+- `validation_commands` `N/A` must be either fully `N/A`, or fully concrete (no partial `N/A`).
 - Required decisions (minimum):
   - `$.decisions.tech_stack.backend`
   - `$.decisions.tech_stack.frontend`
   - `$.decisions.tech_stack.database`
   - `$.decisions.repo_structure[]`
   - `$.decisions.validation_commands[]` (use a single full `N/A` row if truly not applicable)
-
-## READY gate (single source of truth)
-
-After each write, run (workspace root):
-
-`uv run --project .codex/skills/textum/scripts textum scaffold check`
-
-Only if the output is `PASS`, you may output `READY`.
 
 ## Start
 
@@ -52,4 +46,3 @@ If `docs/scaffold-pack.json` does not exist, initialize once (workspace root):
 2) `uv run --project .codex/skills/textum/scripts textum scaffold init`
 
 Then ask: confirm your preferred backend/frontend/database choices (be specific: language + framework + DB).
-

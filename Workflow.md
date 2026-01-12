@@ -35,19 +35,26 @@
    - 触发意图示例：PRD 切片 / 切片 / 低噪切片 / slice  
    - 写入 `docs/prd-slices/`
 
-### Stage 2: Scaffold（Plan → Check/Render 循环）
+### Stage 2: Scaffold（Plan → Check(PASS) → Render）
 
-1) 初始化（首次运行才需要）  
-   - `uv run --project .codex/skills/textum/scripts textum scaffold init` → 写入 `docs/scaffold-pack.json`
-2) `scaffold-plan`（Scaffold Plan；交互澄清 + 写技术决策）  
+说明：
+- Scaffold 流程通过 `textum` skill 的路由触发，不需要手动运行 CLI 命令；仅在你要调试/无 skill 环境时，才参考第 2 节（uv 命令）。
+
+1) `scaffold-plan`（Scaffold Plan；交互澄清 + 写技术决策）  
+   - 触发意图示例：上下文提取 / 全局上下文 / Scaffold 计划  
+   - 首次运行：若 `docs/scaffold-pack.json` 不存在，会自动初始化并写入真源骨架  
    - 目标：把“已确认技术决策”写进 `docs/scaffold-pack.json`（不输出 JSON 正文）  
-   - 每轮写入后运行：`uv run --project .codex/skills/textum/scripts textum scaffold check`，直到 `PASS`
+2) `scaffold-check`（Scaffold Check；门禁校验 + 自动补齐 extracted/source）  
+   - 触发意图示例：校验GLOBAL-CONTEXT / 检查GLOBAL-CONTEXT / GC 门禁  
+   - 直到 `PASS`（若 `FAIL` 返回 `scaffold-plan` 修正真源）
 3) `scaffold`（Scaffold Render；生成阅读视图）  
-   - `uv run --project .codex/skills/textum/scripts textum scaffold render` → 写入 `docs/GLOBAL-CONTEXT.md`
+   - 触发意图示例：生成GLOBAL-CONTEXT / 渲染GLOBAL-CONTEXT / 输出GLOBAL-CONTEXT  
+   - 写入 `docs/GLOBAL-CONTEXT.md`（人工验收；若不符合预期返回 `scaffold-plan` 修真源）  
+   - next：`Split Plan`
 
 ### Stage 3: Split（Plan → Generate → Check1 → Check2 → Checkout）
 
-前置：确保已完成 `PRD Slice`（存在 `docs/prd-slices/index.json`）。
+前置：确保已完成 `PRD Slice`（存在 `docs/prd-slices/index.json`），且 `Scaffold Check` 已 `PASS`（`docs/scaffold-pack.json` 可用）。
 
 1) 初始化（首次运行才需要）  
    - `uv run --project .codex/skills/textum/scripts textum split plan init` → 写入 `docs/split-plan-pack.json`
@@ -88,6 +95,10 @@
   - `uv run --project .codex/skills/textum/scripts textum prd check`  
   - `uv run --project .codex/skills/textum/scripts textum prd render`  
   - `uv run --project .codex/skills/textum/scripts textum prd slice`
+- Scaffold（手动运行/调试用；通常由各 stage 自动触发）  
+  - `uv run --project .codex/skills/textum/scripts textum scaffold init`（创建 `docs/scaffold-pack.json`；一般由 `scaffold-plan` 首次运行自动触发）  
+  - `uv run --project .codex/skills/textum/scripts textum scaffold check`  
+  - `uv run --project .codex/skills/textum/scripts textum scaffold render`
 - `uv run --project .codex/skills/textum/scripts python -m ...`  
   - 作用：调试/检查（例如 `python -m compileall`），同样使用隔离环境
 
@@ -104,7 +115,7 @@
 
 ### Scaffold
 
-- `scaffold-plan` →（prompt-only）+ `textum scaffold init/check` → `scaffold_pack.py` / `scaffold_pack_validate.py`
+- `scaffold-plan` →（prompt-only）+ `textum scaffold init` → `scaffold_pack.py`
 - `scaffold` → `textum scaffold render` → `scaffold_render.py`
 - `scaffold-check` → `textum scaffold check` → `scaffold_pack_validate.py`
 
