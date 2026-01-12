@@ -28,16 +28,22 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 在项目根目录执行一次：
 - `uv sync --project .codex/skills/textum/scripts`（会创建 `.codex/skills/textum/scripts/.venv` 并安装依赖）
 
-## 🎯 当前支持：PRD bundle
+## 🎯 当前支持：PRD bundle + Scaffold bundle
 
 文件：
 - 真源：`docs/prd-pack.json`
 - 阅读视图：`docs/PRD.md`（生成后不手改；要改请改 `docs/prd-pack.json` 并重跑）
+- 真源：`docs/scaffold-pack.json`
+- 阅读视图：`docs/GLOBAL-CONTEXT.md`（生成后不手改；要改请改 `docs/scaffold-pack.json` 并重跑）
 
 命令（在项目根目录）：
 - `uv run --project .codex/skills/textum/scripts textum prd init`（首次初始化）
 - `uv run --project .codex/skills/textum/scripts textum prd check`（门禁校验 + 自动分配 ID）
 - `uv run --project .codex/skills/textum/scripts textum prd render`（生成 `docs/PRD.md`）
+- `uv run --project .codex/skills/textum/scripts textum prd slice`（生成低噪切片到 `docs/prd-slices/`）
+- `uv run --project .codex/skills/textum/scripts textum scaffold init`（初始化 `docs/scaffold-pack.json`）
+- `uv run --project .codex/skills/textum/scripts textum scaffold check`（门禁校验 + 自动抽取 PRD 上下文）
+- `uv run --project .codex/skills/textum/scripts textum scaffold render`（生成 `docs/GLOBAL-CONTEXT.md`）
 
 交互（Codex）：
 - 使用 `textum` skill（见 `.codex/skills/textum/SKILL.md`），在 `PRD Plan` 阶段用中文对话澄清并写入 `docs/prd-pack.json`
@@ -79,6 +85,8 @@ Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .cod
 ├── docs/             # 📄 生成的文档都在这
 │   ├── prd-pack.json                 # PRD 真源（JSON）
 │   └── PRD.md                        # PRD 阅读视图（生成；不手改）
+│   ├── scaffold-pack.json            # Scaffold 真源（JSON）
+│   └── GLOBAL-CONTEXT.md             # 全局上下文（生成；不手改）
 └── src/              # 💻 你的代码目录
 ```
 
@@ -88,6 +96,14 @@ Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .cod
 2) 用 `textum` skill 的 `PRD Plan` 把事实写进 `docs/prd-pack.json`
 3) `uv run --project .codex/skills/textum/scripts textum prd check` 直到 `PASS`
 4) `uv run --project .codex/skills/textum/scripts textum prd render` 生成 `docs/PRD.md` 并人工验收
+5) （可选）`uv run --project .codex/skills/textum/scripts textum prd slice` 生成低噪切片到 `docs/prd-slices/`
+
+## 🎬 实际使用（Scaffold bundle）
+
+1) `uv run --project .codex/skills/textum/scripts textum scaffold init`
+2) 用 `textum` skill 的 `Scaffold Plan` 把技术决策写进 `docs/scaffold-pack.json`
+3) `uv run --project .codex/skills/textum/scripts textum scaffold check` 直到 `PASS`
+4) `uv run --project .codex/skills/textum/scripts textum scaffold render` 生成 `docs/GLOBAL-CONTEXT.md`
 
 ## 📏 适合多大的项目？
 

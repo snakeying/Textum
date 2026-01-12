@@ -8,6 +8,7 @@ from prd_pack_types import (
     PRD_SCHEMA_FILENAME,
     PRD_TEMPLATE_FILENAME,
 )
+from scaffold_pack_types import GLOBAL_CONTEXT_FILENAME, SCAFFOLD_PACK_FILENAME, SCAFFOLD_TEMPLATE_FILENAME
 
 
 def workspace_paths(workspace: Path) -> dict[str, Path]:
@@ -19,6 +20,8 @@ def workspace_paths(workspace: Path) -> dict[str, Path]:
         "prd_render": docs_dir / PRD_RENDER_FILENAME,
         "prd_slices_dir": prd_slices_dir,
         "prd_slices_index": prd_slices_dir / "index.json",
+        "scaffold_pack": docs_dir / SCAFFOLD_PACK_FILENAME,
+        "global_context": docs_dir / GLOBAL_CONTEXT_FILENAME,
     }
 
 
@@ -38,4 +41,5 @@ def skill_asset_paths() -> dict[str, Path]:
         "assets_dir": assets_dir,
         "prd_template": assets_dir / PRD_TEMPLATE_FILENAME,
         "prd_schema": assets_dir / PRD_SCHEMA_FILENAME,
+        "scaffold_template": assets_dir / SCAFFOLD_TEMPLATE_FILENAME,
     }

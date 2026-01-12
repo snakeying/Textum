@@ -1,7 +1,7 @@
 [project]
 name = "textum"
 version = "0.0.0"
-description = "Textum workflow runtime (skills-first)"
+description = "Textum workflow"
 requires-python = ">=3.11"
 dependencies = []
 
@@ -31,6 +31,16 @@ py-modules = [
   "prd_pack_validate_project",
   "prd_pack_validate_rules_api",
   "prd_pack_validate_utils",
+  "scaffold_pack",
+  "scaffold_pack_extract",
+  "scaffold_pack_io",
+  "scaffold_pack_placeholders",
+  "scaffold_pack_types",
+  "scaffold_pack_validate",
+  "scaffold_pack_validate_decisions",
+  "scaffold_pack_validate_extracted",
+  "scaffold_pack_validate_utils",
+  "scaffold_render",
   "prd_render",
   "prd_render_i18n",
   "prd_render_sections_1_4",
