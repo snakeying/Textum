@@ -16,8 +16,8 @@ Prereq (runtime):
 
 Supported stages:
 - PRD Plan → `references/prd-plan.md`
-- PRD Render → `references/prd.md`
 - PRD Check → `references/prd-check.md`
+- PRD Render → `references/prd-render.md`
 - PRD Slice → `references/prd-slice.md`
 - Scaffold Plan → `references/scaffold-plan.md`
 - Scaffold Render → `references/scaffold.md`
@@ -50,7 +50,7 @@ Routing:
   - `Story Pack`: Story 执行包生成 / Story Pack / 生成执行包
   - `Story Exec`: Story 执行 / Story Exec / 单 Story 执行
   - `Story Full Exec`: Story 批量执行 / Story Full Exec / 试验性全执行
-- If intent is unclear, ask the user to pick one: `PRD Plan` / `PRD Render` / `PRD Check` / `PRD Slice` / `Scaffold Plan` / `Scaffold Render` / `Scaffold Check` / `Split Plan` / `Split Generate` / `Split Check1` / `Split Check2` / `Split Checkout` / `Story Check` / `Story Pack` / `Story Exec` / `Story Full Exec`.
+- If intent is unclear, ask the user to pick one: `PRD Plan` / `PRD Check` / `PRD Render` / `PRD Slice` / `Scaffold Plan` / `Scaffold Render` / `Scaffold Check` / `Split Plan` / `Split Generate` / `Split Check1` / `Split Check2` / `Split Checkout` / `Story Check` / `Story Pack` / `Story Exec` / `Story Full Exec`.
 
 Always:
 - For every `FAIL` item: include `loc/problem/expected/impact/fix`, and `fix` must be a single action.

@@ -1,4 +1,4 @@
-# Stage 1b: PRD Render (no conversation)
+# Stage 1c: PRD Render (acceptance view; no conversation)
 
 Do one thing only: render `docs/PRD.md` from the canonical source `docs/prd-pack.json`.
 
@@ -15,4 +15,4 @@ Run (workspace root):
 Output exactly 3 lines:
 - `PASS`
 - `wrote: docs/PRD.md`
-- `next: PRD Check`
+- `next: PRD Slice`

@@ -2,7 +2,7 @@
 
 Read: `docs/prd-pack.json` (if exists) | Write: `docs/prd-pack.json` (update each round; pure JSON; no ``` blocks) | Init: `uv run --project .codex/skills/textum/scripts textum prd init`
 
-Goal: keep writing **confirmed facts only** into `docs/prd-pack.json` (single source of truth) until the `READY` gate passes.
+Goal: keep writing **confirmed facts only** into `docs/prd-pack.json` (single source of truth), then hand off to `PRD Check` for gating.
 
 ## Output rules (must follow)
 
@@ -16,14 +16,14 @@ Output MUST be exactly one of the following (no extra explanation / paraphrase):
    - Output exactly 3 plain-text lines:
      - `READY`
      - `wrote: docs/prd-pack.json`
-     - `next: PRD Render`
+     - `next: PRD Check`
 
 - Never output JSON bodies (including `docs/prd-pack.json`)
 
 ## Interaction language (must follow)
 
 - The user may speak Chinese or English.
-- Ask questions in the user's language (ZH/EN). If mixed, follow the user's last message.
+- Ask questions in the user's language (ZH/EN). 
 - Keep questions short and specific; do not add explanations.
 
 ## Writing rules (must follow)
@@ -32,14 +32,6 @@ Output MUST be exactly one of the following (no extra explanation / paraphrase):
 - Only write `N/A` when the user explicitly says “none / not applicable”
 - Do not rewrite user-provided tokens (especially `modules[].feature_points[].landing[]`)
 - **Do NOT maintain IDs**: all `*.id` may be `null`; ID continuity/uniqueness is enforced by scripts
-
-## READY gate (single source of truth)
-
-After each write, run (workspace root):
-
-`uv run --project .codex/skills/textum/scripts textum prd check`
-
-Only if the output is `PASS`, you may output `READY`.
 
 ## Start
 

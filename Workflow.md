@@ -1,8 +1,8 @@
-# Textum Workflow (skills-first)
+# Textum Workflow (1.0)
 
 > 设计原则：低噪是硬约束（约束注意力/上下文污染），最终产出符合用户预期是优化目标（在约束内尽量达成）。
 
-本仓库当前形态：仅支持 **skills-first**（旧的 commands/templates 已移动到 `outdated/`，不再维护）。
+本仓库当前形态：仅支持 **skills**（旧的 commands/templates 已移动到 `outdated/`，不再维护）。
 
 ## 0) 核心概念
 
@@ -16,18 +16,24 @@
 - 所有命令都在“项目根目录”运行。
 - 推荐每个阶段开新窗口执行（避免上下文污染）。
 
-### Stage 1: PRD（Plan → Check/Render 循环 → Slice）
+### Stage 1: PRD（Plan → Check(PASS) → Render（验收视图） → Slice）
 
-1) 初始化（首次运行才需要）  
-   - `uv sync --project .codex/skills/textum/scripts`  
-   - `uv run --project .codex/skills/textum/scripts textum prd init` → 写入 `docs/prd-pack.json`
-2) `prd-plan`（PRD Plan；交互澄清 + 写真源）  
+说明：
+- PRD 流程通过 `textum` skill 的路由触发，不需要手动运行 CLI 命令；仅在你要调试/无 skill 环境时，才参考第 2 节（uv 命令）。
+
+1) `prd-plan`（PRD Plan；交互澄清 + 写真源）  
+   - 触发意图示例：需求澄清 / 澄清需求 / PRD 计划  
+   - 首次运行：若 `docs/prd-pack.json` 不存在，会自动初始化并写入真源骨架  
    - 目标：持续把“已确认事实”写进 `docs/prd-pack.json`（不输出 JSON 正文）  
-   - 每轮写入后运行：`uv run --project .codex/skills/textum/scripts textum prd check`，直到 `PASS`
-3) `prd`（PRD Render；生成阅读视图）  
-   - `uv run --project .codex/skills/textum/scripts textum prd render` → 写入 `docs/PRD.md`
+2) `prd-check`（PRD Check；门禁校验 + 自动分配 ID）  
+   - 触发意图示例：校验PRD / 检查PRD / 门禁  
+   - 直到 `PASS`（若 `FAIL` 返回 `prd-plan` 修正真源）
+3) `prd`（PRD Render；生成验收视图）  
+   - 触发意图示例：生成PRD / 渲染PRD / 输出PRD  
+   - 写入 `docs/PRD.md`（人工验收；若不符合预期返回 `prd-plan` 修真源）
 4) `prd-slice`（PRD Slice；后续 Split Plan 必需）  
-   - `uv run --project .codex/skills/textum/scripts textum prd slice` → 写入 `docs/prd-slices/`
+   - 触发意图示例：PRD 切片 / 切片 / 低噪切片 / slice  
+   - 写入 `docs/prd-slices/`
 
 ### Stage 2: Scaffold（Plan → Check/Render 循环）
 
@@ -77,6 +83,11 @@
   - 作用：创建/更新 `.codex/skills/textum/scripts/.venv`，安装依赖（建议首次运行/依赖更新后执行一次）
 - `uv run --project .codex/skills/textum/scripts textum <...>`  
   - 作用：运行 Textum CLI（所有 bundle 的 `init/check/render/slice/generate/...` 都通过它执行）
+- PRD（手动运行/调试用；通常由各 stage 自动触发）  
+  - `uv run --project .codex/skills/textum/scripts textum prd init`（创建 `docs/prd-pack.json`；一般由 `prd-plan` 首次运行自动触发）  
+  - `uv run --project .codex/skills/textum/scripts textum prd check`  
+  - `uv run --project .codex/skills/textum/scripts textum prd render`  
+  - `uv run --project .codex/skills/textum/scripts textum prd slice`
 - `uv run --project .codex/skills/textum/scripts python -m ...`  
   - 作用：调试/检查（例如 `python -m compileall`），同样使用隔离环境
 
@@ -86,9 +97,9 @@
 
 ### PRD
 
-- `prd-plan` →（prompt-only）+ `textum prd init/check` → `prd_pack.py` / `prd_pack_validate.py`
-- `prd` → `textum prd render` → `prd_render.py`
+- `prd-plan` →（prompt-only）+ `textum prd init` → `prd_pack.py` / `prd_pack_validate.py`
 - `prd-check` → `textum prd check` → `prd_pack_validate.py`
+- `prd` → `textum prd render` → `prd_render.py`
 - `prd-slice`（command-only）→ `textum prd slice` → `prd_slices.py` / `prd_slices_generate.py`
 
 ### Scaffold

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import Any
 
 from prd_pack import (
     Failure,
@@ -57,6 +58,25 @@ def _print_failures(failures: list[Failure]) -> None:
         )
 
 
+def _load_prd_pack(paths: dict[str, Path]) -> tuple[dict[str, Any] | None, list[Failure]]:
+    prd_pack, read_failures = read_prd_pack(paths["prd_pack"])
+    if read_failures:
+        return None, read_failures
+    assert prd_pack is not None
+    return prd_pack, []
+
+
+def _normalize_prd_pack_in_place(
+    prd_pack: dict[str, Any], *, write_back_path: Path | None
+) -> tuple[bool, list[Failure]]:
+    updated, id_failures = normalize_prd_pack(prd_pack)
+    if id_failures:
+        return False, id_failures
+    if updated and write_back_path is not None:
+        write_prd_pack(write_back_path, prd_pack)
+    return updated, []
+
+
 def _cmd_prd_init(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
@@ -75,19 +95,16 @@ def _cmd_prd_init(args: argparse.Namespace) -> int:
 def _cmd_prd_check(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
-    prd_pack, read_failures = read_prd_pack(paths["prd_pack"])
+    prd_pack, read_failures = _load_prd_pack(paths)
     if read_failures:
         _print_failures(read_failures)
         return 1
     assert prd_pack is not None
 
-    updated, id_failures = normalize_prd_pack(prd_pack)
+    updated, id_failures = _normalize_prd_pack_in_place(prd_pack, write_back_path=paths["prd_pack"] if args.fix else None)
     if id_failures:
         _print_failures(id_failures)
         return 1
-
-    if updated and args.fix:
-        write_prd_pack(paths["prd_pack"], prd_pack)
 
     ready, check_failures = check_prd_pack(prd_pack)
     if not ready:
@@ -103,18 +120,16 @@ def _cmd_prd_check(args: argparse.Namespace) -> int:
 def _cmd_prd_render(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
-    prd_pack, read_failures = read_prd_pack(paths["prd_pack"])
+    prd_pack, read_failures = _load_prd_pack(paths)
     if read_failures:
         _print_failures(read_failures)
         return 1
     assert prd_pack is not None
 
-    updated, id_failures = normalize_prd_pack(prd_pack)
+    _, id_failures = _normalize_prd_pack_in_place(prd_pack, write_back_path=paths["prd_pack"] if args.fix else None)
     if id_failures:
         _print_failures(id_failures)
         return 1
-    if updated and args.fix:
-        write_prd_pack(paths["prd_pack"], prd_pack)
 
     markdown = render_prd_markdown(prd_pack, lang=args.lang)
     paths["docs_dir"].mkdir(parents=True, exist_ok=True)
@@ -126,18 +141,16 @@ def _cmd_prd_render(args: argparse.Namespace) -> int:
 def _cmd_prd_slice(args: argparse.Namespace) -> int:
     workspace = Path(args.workspace).resolve()
     paths = workspace_paths(workspace)
-    prd_pack, read_failures = read_prd_pack(paths["prd_pack"])
+    prd_pack, read_failures = _load_prd_pack(paths)
     if read_failures:
         _print_failures(read_failures)
         return 1
     assert prd_pack is not None
 
-    updated, id_failures = normalize_prd_pack(prd_pack)
+    _, id_failures = _normalize_prd_pack_in_place(prd_pack, write_back_path=paths["prd_pack"] if args.fix else None)
     if id_failures:
         _print_failures(id_failures)
         return 1
-    if updated and args.fix:
-        write_prd_pack(paths["prd_pack"], prd_pack)
 
     ready, check_failures = check_prd_pack(prd_pack)
     if not ready:
@@ -162,8 +175,8 @@ def _cmd_prd_slice(args: argparse.Namespace) -> int:
     return 0
 
 
-def _ensure_prd_ready(prd_pack: dict[str, object], *, prd_pack_path: Path) -> list[Failure]:
-    updated, id_failures = normalize_prd_pack(prd_pack)
+def _ensure_prd_ready(prd_pack: dict[str, Any], *, prd_pack_path: Path) -> list[Failure]:
+    _, id_failures = _normalize_prd_pack_in_place(prd_pack, write_back_path=None)
     if id_failures:
         return id_failures
     ready, check_failures = check_prd_pack(prd_pack)

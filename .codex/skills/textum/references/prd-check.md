@@ -1,4 +1,4 @@
-# Stage 1c: PRD Check (gate on JSON pack)
+# Stage 1b: PRD Check (gate on JSON pack)
 
 Read: `docs/prd-pack.json` | Write: none (except auto-assigning IDs when `--fix` is enabled)
 
