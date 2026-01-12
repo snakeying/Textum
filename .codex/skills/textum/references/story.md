@@ -1,0 +1,36 @@
+# Stage 4c: Story Exec (single story)
+
+- `$ARGUMENTS`: story number `n` (e.g. `1`)
+
+Read:
+- `docs/story-exec/story-###-<slug>/index.json` (entry)
+- Then read **only** the files listed in `index.json.read[]` (in order)
+
+Write:
+- Repo code/tests for this story only
+
+## Hard constraints
+
+- The exec pack is the only source of truth. Do not read PRD/Scaffold/story sources outside the exec pack.
+- Do not invent new APIs/tables/fields not present in the exec pack.
+- If the exec pack is missing/inconsistent/not executable: stop and output a `FAIL` list (each item must include `loc/problem/expected/impact/fix`; `fix` is one action).
+
+## Steps
+
+1) Ensure exec pack exists:
+   - If missing: ask the user to run `uv run --project .codex/skills/textum/scripts textum story pack --n <n>`, then stop.
+2) Load `index.json`, then load each file in `read[]`.
+3) Implement minimal changes to satisfy all `feature_points` and `api_endpoints` in `story.json`.
+4) Verification:
+   - If `context.base.json.validation_commands[]` has runnable commands (`type` startswith `gate:` or `opt:` and `command != N/A`), run all `gate:*` first (must pass), then run `opt:*` once.
+   - If no runnable `gate:*` exists: state `gate:*: N/A` and rely on acceptance/self-check only.
+
+## Output (low-noise)
+
+- `Status (FP/API)`:
+  - For each `FP-###`: `DONE` / `NOT_DONE`
+  - For each `API-###`: `DONE` / `NOT_DONE`
+- `Key Changes`: only “file path + 1-line change”
+- `Verification`: each executed command → `PASS/FAIL`
+- `DECISION`: only if needed
+- `Next`: `N/A`

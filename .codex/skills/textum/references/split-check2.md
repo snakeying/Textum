@@ -18,5 +18,4 @@ Run (workspace root):
 - If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: Split Plan`
 - If command prints `PASS`: output:
   - `PASS`
-  - `next: Story Bundle`
-
+  - `next: Split Checkout`

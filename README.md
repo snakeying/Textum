@@ -28,7 +28,7 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 在项目根目录执行一次：
 - `uv sync --project .codex/skills/textum/scripts`（会创建 `.codex/skills/textum/scripts/.venv` 并安装依赖）
 
-## 🎯 当前支持：PRD bundle + Scaffold bundle + Split bundle
+## 🎯 当前支持：PRD bundle + Scaffold bundle + Split bundle + Story bundle
 
 文件：
 - 真源：`docs/prd-pack.json`
@@ -38,6 +38,8 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 - 真源：`docs/split-plan-pack.json`
 - 真源：`docs/stories/story-###-<slug>.json`
 - 交接索引：`docs/split-check-index-pack.json`
+- 依赖图（可选视图）：`docs/story-mermaid.md`
+- 执行包（低噪切片）：`docs/story-exec/story-###-<slug>/index.json`（entry）+ `index.json.read[]` 中列出的文件
 
 命令（在项目根目录）：
 - `uv run --project .codex/skills/textum/scripts textum prd init`（首次初始化）
@@ -52,6 +54,9 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 - `uv run --project .codex/skills/textum/scripts textum split generate`（生成 `docs/stories/story-*.json`）
 - `uv run --project .codex/skills/textum/scripts textum split check1`（结构/阈值门禁 + 写入 `docs/split-check-index-pack.json`）
 - `uv run --project .codex/skills/textum/scripts textum split check2`（引用一致性门禁）
+- `uv run --project .codex/skills/textum/scripts textum split checkout`（导出 Story 依赖图到 `docs/story-mermaid.md`）
+- `uv run --project .codex/skills/textum/scripts textum story check --n <n>`（单 Story 门禁）
+- `uv run --project .codex/skills/textum/scripts textum story pack --n <n>`（生成并校验低噪执行包到 `docs/story-exec/`）
 
 交互（Codex）：
 - 使用 `textum` skill（见 `.codex/skills/textum/SKILL.md`），在 `PRD Plan` 阶段用中文对话澄清并写入 `docs/prd-pack.json`
@@ -92,13 +97,17 @@ Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .cod
 ├── .codex/           # 🧰 Codex skills 源码（可选）
 ├── docs/             # 📄 生成的文档都在这
 │   ├── prd-pack.json                 # PRD 真源（JSON）
-│   └── PRD.md                        # PRD 阅读视图（生成；不手改）
+│   ├── PRD.md                        # PRD 阅读视图（生成；不手改）
 │   ├── scaffold-pack.json            # Scaffold 真源（JSON）
-│   └── GLOBAL-CONTEXT.md             # 全局上下文（生成；不手改）
+│   ├── GLOBAL-CONTEXT.md             # 全局上下文（生成；不手改）
 │   ├── split-plan-pack.json           # Split 规划真源（JSON）
 │   ├── split-check-index-pack.json    # Split 交接索引（JSON）
-│   └── stories/                       # Story 真源（JSON；每个 story 一个文件）
-│       └── story-###-<slug>.json
+│   ├── story-mermaid.md               # Story 依赖图（可选视图）
+│   ├── stories/                       # Story 真源（JSON；每个 story 一个文件）
+│   │   └── story-###-<slug>.json
+│   └── story-exec/                    # Story 执行包（低噪切片；entry: index.json）
+│       └── story-###-<slug>/
+│           └── index.json
 └── src/              # 💻 你的代码目录
 ```
 
@@ -125,6 +134,14 @@ Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .cod
 4) `uv run --project .codex/skills/textum/scripts textum split generate` 生成 `docs/stories/`
 5) `uv run --project .codex/skills/textum/scripts textum split check1` 直到 `PASS/DECISION`
 6) `uv run --project .codex/skills/textum/scripts textum split check2` 直到 `PASS`
+7) `uv run --project .codex/skills/textum/scripts textum split checkout` 写入 `docs/story-mermaid.md`
+
+## 🎬 实际使用（Story bundle）
+
+1) `uv run --project .codex/skills/textum/scripts textum story check --n <n>`
+2) `uv run --project .codex/skills/textum/scripts textum story pack --n <n>`（生成 `docs/story-exec/`）
+3) 用 `textum` skill 的 `Story Exec` 执行该 Story（只读执行包，不通读 PRD/GC）
+4) （实验）用 `textum` skill 的 `Story Full Exec` 批量执行：`1/2/3`
 
 ## 📏 适合多大的项目？
 
