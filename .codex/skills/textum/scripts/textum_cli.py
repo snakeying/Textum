@@ -27,6 +27,7 @@ from scaffold_render import render_global_context_markdown
 from split_check_index_pack import build_split_replan_pack, generate_split_check_index_pack
 from split_check_refs import validate_split_refs
 from split_checkout import write_story_dependency_mermaid
+from split_pack_io import read_json_object
 from split_plan_pack import (
     check_split_plan_pack,
     init_split_plan_pack,
@@ -217,6 +218,51 @@ def _load_scaffold_pack_and_ensure_ready(
         return None, updated, ready_failures
 
     return scaffold_pack, updated, []
+
+
+def _require_scaffold_extracted_modules_index(
+    *, scaffold_pack: dict[str, Any], prd_pack: dict[str, Any]
+) -> list[Failure]:
+    extracted = scaffold_pack.get("extracted")
+    if not isinstance(extracted, dict):
+        return [
+            Failure(
+                loc="docs/scaffold-pack.json:$.extracted",
+                problem="missing extracted section",
+                expected="extracted populated by scaffold check",
+                impact="cannot validate story modules without high-noise failures",
+                fix="run: textum scaffold check",
+            )
+        ]
+
+    modules_index = extracted.get("modules_index")
+    if not isinstance(modules_index, list):
+        return [
+            Failure(
+                loc="docs/scaffold-pack.json:$.extracted.modules_index",
+                problem="missing extracted.modules_index",
+                expected="modules_index populated by scaffold check",
+                impact="cannot validate story modules without high-noise failures",
+                fix="run: textum scaffold check",
+            )
+        ]
+
+    prd_modules = prd_pack.get("modules")
+    prd_has_modules = isinstance(prd_modules, list) and any(
+        isinstance(m, dict) and isinstance(m.get("id"), str) and m["id"].strip() for m in prd_modules
+    )
+    index_has_ids = any(isinstance(row, dict) and isinstance(row.get("id"), str) and row["id"].strip() for row in modules_index)
+    if prd_has_modules and not index_has_ids:
+        return [
+            Failure(
+                loc="docs/scaffold-pack.json:$.extracted.modules_index",
+                problem="modules_index is empty/unusable",
+                expected="modules_index contains PRD module ids",
+                impact="cannot validate story modules without high-noise failures",
+                fix="run: textum scaffold check",
+            )
+        ]
+    return []
 
 
 def _cmd_scaffold_init(args: argparse.Namespace) -> int:
@@ -553,51 +599,11 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
     if scaffold_ready_failures:
         _print_failures(scaffold_ready_failures)
         return 1
-
-    import json
-
-    if not paths["split_check_index_pack"].exists():
-        _print_failures(
-            [
-                Failure(
-                    loc=paths["split_check_index_pack"].as_posix(),
-                    problem="file not found",
-                    expected="split-check-index-pack.json exists",
-                    impact="cannot validate refs",
-                    fix="run: textum split check1",
-                )
-            ]
-        )
+    index_pack, index_failures = read_json_object(paths["split_check_index_pack"], missing_fix="run: textum split check1")
+    if index_failures:
+        _print_failures(index_failures)
         return 1
-
-    try:
-        index_pack = json.loads(paths["split_check_index_pack"].read_text(encoding="utf-8"))
-    except json.JSONDecodeError as error:
-        _print_failures(
-            [
-                Failure(
-                    loc=paths["split_check_index_pack"].as_posix(),
-                    problem=f"invalid JSON: {error.msg} at line {error.lineno} col {error.colno}",
-                    expected="valid JSON document",
-                    impact="cannot validate refs",
-                    fix=f"fix JSON syntax in {paths['split_check_index_pack'].as_posix()}",
-                )
-            ]
-        )
-        return 1
-    if not isinstance(index_pack, dict):
-        _print_failures(
-            [
-                Failure(
-                    loc="$",
-                    problem=f"root must be object, got {type(index_pack).__name__}",
-                    expected="JSON object at root",
-                    impact="cannot validate refs",
-                    fix=f"rewrite {paths['split_check_index_pack'].as_posix()} root as an object",
-                )
-            ]
-        )
-        return 1
+    assert index_pack is not None
 
     failures = validate_split_refs(index_pack=index_pack, prd_pack=prd_pack, scaffold_pack=scaffold_pack)
     if failures:
@@ -687,6 +693,10 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
         _print_failures(scaffold_failures)
         return 1
     assert scaffold_pack is not None
+    scaffold_ready_failures = _require_scaffold_extracted_modules_index(scaffold_pack=scaffold_pack, prd_pack=prd_pack)
+    if scaffold_ready_failures:
+        _print_failures(scaffold_ready_failures)
+        return 1
 
     story_rel = story_path.relative_to(workspace).as_posix()
     failures = check_story_source(
@@ -729,6 +739,10 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
         _print_failures(scaffold_failures)
         return 1
     assert scaffold_pack is not None
+    scaffold_ready_failures = _require_scaffold_extracted_modules_index(scaffold_pack=scaffold_pack, prd_pack=prd_pack)
+    if scaffold_ready_failures:
+        _print_failures(scaffold_ready_failures)
+        return 1
 
     story_rel = story_path.relative_to(workspace).as_posix()
     failures = check_story_source(

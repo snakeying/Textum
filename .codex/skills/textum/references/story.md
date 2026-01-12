@@ -4,14 +4,15 @@
 
 Read:
 - `docs/story-exec/story-###-<slug>/index.json` (entry)
-- Then read **only** the files listed in `index.json.read[]` (in order)
+- Then read the files listed in `index.json.read[]` (context only; in order)
+- Read repo code files as needed to implement this story (keep reads minimal)
 
 Write:
 - Repo code/tests for this story only
 
 ## Hard constraints
 
-- The exec pack is the only source of truth. Do not read PRD/Scaffold/story sources outside the exec pack.
+- The exec pack is the only source of truth for requirements/context. Do not use PRD/Scaffold/story sources outside the exec pack.
 - Do not invent new APIs/tables/fields not present in the exec pack.
 - If the exec pack is missing/inconsistent/not executable: stop and output a `FAIL` list (each item must include `loc/problem/expected/impact/fix`; `fix` is one action).
 

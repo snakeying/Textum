@@ -18,6 +18,7 @@ py-modules = [
   "prd_pack",
   "prd_pack_ids",
   "prd_pack_io",
+  "prd_pack_maps",
   "prd_pack_paths",
   "prd_pack_placeholders",
   "prd_pack_types",

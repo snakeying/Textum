@@ -97,7 +97,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                         problem=f"prereq story must be < {n}, got {item}",
                         expected="only earlier stories",
                         impact="cannot execute in order",
-                        fix=f"remove or fix {item} in prereq_stories",
+                        fix=f"remove {item} from prereq_stories",
                     )
                 )
     if len(set(prereq_numbers)) != len(prereq_numbers):
@@ -297,4 +297,3 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
         )
 
     return ctx, failures
-

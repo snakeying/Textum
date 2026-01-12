@@ -16,7 +16,8 @@ from story_exec_types import (
     STORY_EXEC_INDEX_SCHEMA_VERSION,
     STORY_EXEC_STORY_SNAPSHOT_FILENAME,
 )
-from story_exec_pack_utils import build_prd_maps, scaffold_module_rows
+from prd_pack_maps import build_prd_maps
+from story_exec_pack_utils import scaffold_module_rows
 
 def write_story_exec_pack(
     *,
@@ -50,7 +51,7 @@ def write_story_exec_pack(
                     problem=f"story snapshot exceeds budget: {story_lines} lines, {story_chars} chars",
                     expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
                     impact="cannot produce low-noise story exec pack",
-                    fix="reduce story size (split into multiple stories) and regenerate",
+                    fix="revise split plan to split this story into smaller stories",
                 )
             ],
         )
@@ -59,7 +60,7 @@ def write_story_exec_pack(
     prd_tbl_ids = story_refs.get("prd_tbl") if isinstance(story_refs.get("prd_tbl"), list) else []
     prd_br_ids = story_refs.get("prd_br") if isinstance(story_refs.get("prd_br"), list) else []
 
-    _, tbl_by_id, br_by_id = build_prd_maps(prd_pack)
+    _, tbl_by_id, _, br_by_id = build_prd_maps(prd_pack)
 
     tables: list[dict[str, Any]] = []
     for idx, tbl_id in enumerate(prd_tbl_ids):
@@ -76,7 +77,7 @@ def write_story_exec_pack(
                         problem=f"unknown table id in PRD: {tbl_id}",
                         expected="table id exists in docs/prd-pack.json data_model.tables[]",
                         impact="cannot build exec context",
-                        fix="fix docs/prd-pack.json then rerun split + story generation",
+                        fix="run: textum split generate",
                     )
                 ],
             )
@@ -97,7 +98,7 @@ def write_story_exec_pack(
                         problem=f"unknown BR id in PRD: {br_id}",
                         expected="BR id exists in docs/prd-pack.json business_rules[]",
                         impact="cannot build exec context",
-                        fix="fix docs/prd-pack.json then rerun split + story generation",
+                        fix="run: textum split generate",
                     )
                 ],
             )
@@ -206,7 +207,7 @@ def write_story_exec_pack(
                         problem=f"tables context exceeds budget: {lines} lines, {chars} chars",
                         expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
                         impact="cannot produce low-noise story exec pack",
-                        fix="reduce referenced tables per story (split story) and regenerate",
+                        fix="revise split plan to reduce referenced tables per story",
                     )
                 ],
             )

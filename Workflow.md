@@ -76,12 +76,26 @@
 
 ### Stage 4: Story（Check → Pack → Exec / Full Exec）
 
+前置：`docs/stories/story-###-<slug>.json` 已存在（Split Generate 已产出），且 `Scaffold Check` 已 `PASS`（包含 `extracted.modules_index`）。
+
+说明：
+- Story 流程通过 `textum` skill 的路由触发，不需要手动运行 CLI 命令；仅在你要调试/无 skill 环境时，才参考第 2 节（uv 命令）。
+
 1) `story-check`（Story Check；单 Story 门禁）  
-   - `uv run --project .codex/skills/textum/scripts textum story check --n <n>`
+   - 触发意图示例：Story 校验 / Story Check / 单 Story 门禁  
+   - 输入：story number `n`（例如 `4`）  
+   - 读取：`docs/prd-pack.json`、`docs/scaffold-pack.json`、`docs/stories/story-###-<slug>.json`  
+   - 输出：`PASS` 或 `FAIL`（按 `FAIL.fix` 指向的“单动作”处理后重跑；不要跳过门禁直接进入执行）  
+   - next：`Story Pack`
 2) `story-pack`（Story Pack；生成低噪执行包）  
-   - `uv run --project .codex/skills/textum/scripts textum story pack --n <n>` → 入口 `docs/story-exec/story-###-<slug>/index.json`
+   - 触发意图示例：Story 执行包生成 / Story Pack / 生成执行包  
+   - 输入：story number `n`（例如 `4`）  
+   - 写入：`docs/story-exec/story-###-<slug>/`（entry：`index.json`）  
+   - 内置门禁：执行包必须自包含（`index.json.read[]` 不得越界/绝对路径）+ 预算不超标  
+   - next：`Story Exec`
 3) `story`（Story Exec；实现代码）  
-   - 只读执行包：`index.json` + `index.json.read[]` 列出的文件  
+   - 只读执行包：`docs/story-exec/story-###-<slug>/index.json` + `index.json.read[]` 列出的文件（requirements/context 真源）  
+   - 可按需最小化读取 repo 代码文件来完成实现（不要通读仓库）  
    - 只实现该 Story 的 `feature_points` 与 `api_endpoints`，不发明新接口/新表/新字段
 4) `story-full-exec`（Story Full Exec；实验：批量执行）  
    - 输入形如：`1/2/3`（按顺序执行；不回滚）
@@ -110,7 +124,10 @@
   - `uv run --project .codex/skills/textum/scripts textum split check1`  
   - `uv run --project .codex/skills/textum/scripts textum split check2`  
   - `uv run --project .codex/skills/textum/scripts textum split checkout`
-- `uv run --project .codex/skills/textum/scripts python -m ...`  
+- Story（手动运行/调试用；通常由各 stage 自动触发）  
+  - `uv run --project .codex/skills/textum/scripts textum story check --n <n>`  
+  - `uv run --project .codex/skills/textum/scripts textum story pack --n <n>`
+  - `uv run --project .codex/skills/textum/scripts python -m ...`  
   - 作用：调试/检查（例如 `python -m compileall`），同样使用隔离环境
 
 ## 3) Skill → Python 脚本对应关系（便于维护）

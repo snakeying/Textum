@@ -32,7 +32,7 @@ def check_story_source(
                 problem=f"story file exceeds budget: {lines} lines, {chars} chars",
                 expected=f"<= {max_lines} lines and <= {max_chars} chars",
                 impact="would pollute model attention/context",
-                fix="reduce story size (split into multiple stories) and regenerate",
+                fix="revise split plan to split this story into smaller stories",
             )
         )
 
@@ -54,4 +54,3 @@ def check_story_source(
         failures += validate_story_against_scaffold(modules=ctx.get("modules", []), scaffold_pack=scaffold_pack)
 
     return failures
-

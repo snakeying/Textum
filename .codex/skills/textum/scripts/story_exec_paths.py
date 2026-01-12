@@ -33,7 +33,7 @@ def find_story_source(stories_dir: Path, *, n: int) -> tuple[Path | None, list[F
                 problem=f"multiple story files found for n={n}",
                 expected=f"exactly one file matching story-{n:03d}-*.json",
                 impact="ambiguous story source",
-                fix=f"delete duplicates under {stories_dir.as_posix()} and keep only one",
+                fix=f"delete duplicate story files under {stories_dir.as_posix()} (keep exactly one)",
             )
         ]
     return matches[0], []
@@ -41,4 +41,3 @@ def find_story_source(stories_dir: Path, *, n: int) -> tuple[Path | None, list[F
 
 def story_exec_dir(docs_dir: Path, *, story_source: Path) -> Path:
     return docs_dir / STORY_EXEC_DIRNAME / story_source.stem
-

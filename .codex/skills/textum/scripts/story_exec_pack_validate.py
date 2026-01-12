@@ -1,49 +1,12 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
 from prd_pack_types import PLACEHOLDER_SENTINEL, Failure
 from prd_slices_types import SliceBudget
+from split_pack_io import read_json_object
 from story_exec_types import STORY_EXEC_INDEX_FILENAME, STORY_EXEC_INDEX_SCHEMA_VERSION
-
-
-def _read_json_object(path: Path) -> tuple[dict[str, Any] | None, list[Failure]]:
-    if not path.exists():
-        return None, [
-            Failure(
-                loc=path.as_posix(),
-                problem="file not found",
-                expected="file exists",
-                impact="cannot validate exec pack",
-                fix=f"regenerate exec pack to create {path.as_posix()}",
-            )
-        ]
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as error:
-        return None, [
-            Failure(
-                loc=path.as_posix(),
-                problem=f"invalid JSON: {error.msg} at line {error.lineno} col {error.colno}",
-                expected="valid JSON document",
-                impact="cannot validate exec pack",
-                fix=f"fix JSON syntax in {path.as_posix()}",
-            )
-        ]
-    if not isinstance(data, dict):
-        return None, [
-            Failure(
-                loc="$",
-                problem=f"root must be object, got {type(data).__name__}",
-                expected="JSON object at root",
-                impact="cannot validate exec pack",
-                fix=f"rewrite {path.as_posix()} root as an object",
-            )
-        ]
-    return data, []
-
 
 def _scan_text(text: str, *, loc: str) -> list[Failure]:
     failures: list[Failure] = []
@@ -81,15 +44,20 @@ def _check_budget(path: Path, *, text: str, budget: SliceBudget) -> list[Failure
             problem=f"file exceeds budget: {lines} lines, {chars} chars",
             expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
             impact="would pollute model attention/context",
-            fix="regenerate with a smaller story/context or increase the budget",
+            fix="split the story into smaller stories",
         )
     ]
 
 
 def check_story_exec_pack(*, workspace_root: Path, exec_dir: Path, budget: SliceBudget) -> list[Failure]:
     failures: list[Failure] = []
+    workspace_root = workspace_root.resolve()
+    exec_dir = exec_dir.resolve()
     index_path = exec_dir / STORY_EXEC_INDEX_FILENAME
-    index_obj, index_failures = _read_json_object(index_path)
+    index_obj, index_failures = read_json_object(
+        index_path,
+        missing_fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+    )
     if index_failures:
         return index_failures
     assert index_obj is not None
@@ -131,7 +99,44 @@ def check_story_exec_pack(*, workspace_root: Path, exec_dir: Path, budget: Slice
                 )
             )
             continue
-        path = (workspace_root / rel).resolve()
+        rel_path = Path(rel)
+        if rel_path.is_absolute():
+            failures.append(
+                Failure(
+                    loc=f"{index_path.as_posix()}:$.read[{idx}]",
+                    problem=f"absolute path is not allowed: {rel}",
+                    expected="relative path under the exec pack directory",
+                    impact="exec pack can escape its sandbox and pollute context",
+                    fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+                )
+            )
+            continue
+
+        path = (workspace_root / rel_path).resolve()
+        if not path.is_relative_to(workspace_root):
+            failures.append(
+                Failure(
+                    loc=f"{index_path.as_posix()}:$.read[{idx}]",
+                    problem=f"path escapes workspace: {rel}",
+                    expected="path stays under workspace root",
+                    impact="exec pack can escape its sandbox and pollute context",
+                    fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+                )
+            )
+            continue
+
+        if not path.is_relative_to(exec_dir):
+            failures.append(
+                Failure(
+                    loc=f"{index_path.as_posix()}:$.read[{idx}]",
+                    problem=f"path is outside exec pack dir: {rel}",
+                    expected=f"path stays under {exec_dir.as_posix()}",
+                    impact="exec pack is not self-contained",
+                    fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+                )
+            )
+            continue
+
         if not path.exists():
             failures.append(
                 Failure(
@@ -148,7 +153,10 @@ def check_story_exec_pack(*, workspace_root: Path, exec_dir: Path, budget: Slice
         failures += _scan_text(text, loc=rel)
         failures += _check_budget(path, text=text, budget=budget)
 
-        obj, obj_failures = _read_json_object(path)
+        obj, obj_failures = read_json_object(
+            path,
+            missing_fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+        )
         failures += obj_failures
         if obj is None:
             continue
@@ -164,4 +172,3 @@ def check_story_exec_pack(*, workspace_root: Path, exec_dir: Path, budget: Slice
             )
 
     return failures
-
