@@ -5,7 +5,12 @@ from typing import Any
 from prd_render_utils import _as_lines, _as_text, _md_table
 
 
-def render_sections_5_7(ctx: dict[str, Any]) -> list[str]:
+def render_sections_5_7(ctx: dict[str, Any], labels: dict[str, Any]) -> list[str]:
+    sections = labels["sections"]
+    tables = labels["tables"]
+    blocks = labels["blocks"]
+    none_text = labels["text"]["none"]
+
     modules: list[Any] = ctx["modules"]
     ui_routes: list[Any] = ctx["ui_routes"]
     business_rules: list[Any] = ctx["business_rules"]
@@ -13,14 +18,14 @@ def render_sections_5_7(ctx: dict[str, Any]) -> list[str]:
 
     lines: list[str] = []
 
-    lines.append("## 5. 核心功能")
+    lines.append(sections["5"])
     lines.append("")
-    lines.append("### 5.1 功能清单（必填）")
+    lines.append(sections["5.1"])
     module_rows: list[list[str]] = []
     for module in modules:
         if not isinstance(module, dict):
             continue
-        deps = ", ".join(_as_lines(module.get("dependencies"))) or "无"
+        deps = ", ".join(_as_lines(module.get("dependencies"))) or none_text
         module_rows.append(
             [
                 _as_text(module.get("id")),
@@ -30,26 +35,26 @@ def render_sections_5_7(ctx: dict[str, Any]) -> list[str]:
                 deps,
             ]
         )
-    lines.append(_md_table(["模块ID", "模块名", "一句话说明", "优先级", "依赖"], module_rows))
+    lines.append(_md_table(tables["modules"], module_rows))
     lines.append("")
 
-    lines.append("### 5.2 功能规格（按模块填写）")
+    lines.append(sections["5.2"])
     lines.append("")
     module_objects = [m for m in modules if isinstance(m, dict)]
     for index, module in enumerate(module_objects, start=1):
         module_id = _as_text(module.get("id"))
         module_name = _as_text(module.get("name"))
         lines.append(f"#### 5.2.{index} {module_id} {module_name}")
-        lines.append("**功能点（必填）**")
+        lines.append(blocks["feature_points"])
         fp_rows: list[list[str]] = []
         fps = module.get("feature_points") if isinstance(module.get("feature_points"), list) else []
         for fp in fps:
             if not isinstance(fp, dict):
                 continue
             fp_rows.append([_as_text(fp.get("id")), _as_text(fp.get("desc"))])
-        lines.append(_md_table(["FP", "描述"], fp_rows))
+        lines.append(_md_table(tables["feature_points"], fp_rows))
         lines.append("")
-        lines.append("**关键场景/验收（必填）**")
+        lines.append(blocks["scenarios"])
         sc_rows: list[list[str]] = []
         scenarios = module.get("scenarios") if isinstance(module.get("scenarios"), list) else []
         for sc in scenarios:
@@ -68,13 +73,13 @@ def render_sections_5_7(ctx: dict[str, Any]) -> list[str]:
             )
         lines.append(
             _md_table(
-                ["场景ID", "参与者", "前置条件（Given）", "用户操作（When）", "系统响应（Then）", "失败/边界", "备注"],
+                tables["scenarios"],
                 sc_rows,
             )
         )
         lines.append("")
 
-    lines.append("### 5.3 页面/路由（可选）")
+    lines.append(sections["5.3"])
     route_rows: list[list[str]] = []
     for route in ui_routes:
         if not isinstance(route, dict):
@@ -82,10 +87,10 @@ def render_sections_5_7(ctx: dict[str, Any]) -> list[str]:
         route_rows.append(
             [_as_text(route.get("route")), _as_text(route.get("description")), _as_text(route.get("module_id"))]
         )
-    lines.append(_md_table(["路由", "页面/入口说明", "关联模块"], route_rows))
+    lines.append(_md_table(tables["routes"], route_rows))
     lines.append("")
 
-    lines.append("## 6. 业务规则（必填）")
+    lines.append(sections["6"])
     lines.append("")
     rule_rows: list[list[str]] = []
     for rule in business_rules:
@@ -99,12 +104,12 @@ def render_sections_5_7(ctx: dict[str, Any]) -> list[str]:
                 _as_text(rule.get("exception_or_note")),
             ]
         )
-    lines.append(_md_table(["规则ID", "规则描述", "适用范围（模块/对象）", "例外/备注"], rule_rows))
+    lines.append(_md_table(tables["business_rules"], rule_rows))
     lines.append("")
 
-    lines.append("## 7. 状态与枚举（必填）")
+    lines.append(sections["7"])
     lines.append("")
-    lines.append("### 7.1 枚举值")
+    lines.append(sections["7.1"])
     enum_rows: list[list[str]] = []
     enums = states_enums.get("enums") if isinstance(states_enums.get("enums"), list) else []
     for enum in enums:
@@ -114,10 +119,10 @@ def render_sections_5_7(ctx: dict[str, Any]) -> list[str]:
         enum_rows.append(
             [_as_text(enum.get("field")), values, _as_text(enum.get("default")), _as_text(enum.get("note"))]
         )
-    lines.append(_md_table(["字段（表.字段/上下文）", "可选值", "默认值", "说明"], enum_rows))
+    lines.append(_md_table(tables["enums"], enum_rows))
     lines.append("")
 
-    lines.append("### 7.2 状态机（流程型实体必填；无则写 N/A）")
+    lines.append(sections["7.2"])
     sm_rows: list[list[str]] = []
     state_machines = states_enums.get("state_machines") if isinstance(states_enums.get("state_machines"), list) else []
     for machine in state_machines:
@@ -139,10 +144,10 @@ def render_sections_5_7(ctx: dict[str, Any]) -> list[str]:
                     note,
                 ]
             )
-    lines.append(_md_table(["当前状态", "触发事件", "下一状态", "权限/条件", "备注"], sm_rows))
+    lines.append(_md_table(tables["state_machines"], sm_rows))
     lines.append("")
 
-    lines.append("### 7.3 命名规范（如适用；否则写 N/A）")
+    lines.append(sections["7.3"])
     lines.append(_as_text(states_enums.get("naming_conventions")) if states_enums.get("naming_conventions") else "N/A")
     lines.append("")
 

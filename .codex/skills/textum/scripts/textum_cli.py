@@ -93,7 +93,7 @@ def _cmd_prd_render(args: argparse.Namespace) -> int:
     if updated and args.fix:
         write_prd_pack(paths["prd_pack"], prd_pack)
 
-    markdown = render_prd_markdown(prd_pack)
+    markdown = render_prd_markdown(prd_pack, lang=args.lang)
     paths["docs_dir"].mkdir(parents=True, exist_ok=True)
     paths["prd_render"].write_text(markdown, encoding="utf-8")
     print(f"OK: wrote {paths['prd_render'].as_posix()}")
@@ -168,6 +168,12 @@ def main(argv: list[str] | None = None) -> int:
         action=argparse.BooleanOptionalAction,
         default=True,
         help="Auto-fix and write back (default: true).",
+    )
+    prd_render.add_argument(
+        "--lang",
+        default="auto",
+        choices=["auto", "zh", "en"],
+        help="PRD.md language: auto/zh/en (default: auto).",
     )
     prd_render.set_defaults(func=_cmd_prd_render)
 

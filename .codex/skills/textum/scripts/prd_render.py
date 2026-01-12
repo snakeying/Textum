@@ -5,6 +5,7 @@ from typing import Any
 from prd_render_sections_1_4 import render_sections_1_4
 from prd_render_sections_5_7 import render_sections_5_7
 from prd_render_sections_8_10 import render_sections_8_10
+from prd_render_i18n import prd_render_labels, resolve_render_lang
 from prd_render_utils import _as_lines, _as_text
 
 
@@ -75,13 +76,15 @@ def _extract_context(prd_pack: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def render_prd_markdown(prd_pack: dict[str, Any]) -> str:
+def render_prd_markdown(prd_pack: dict[str, Any], *, lang: str = "auto") -> str:
+    resolved_lang = resolve_render_lang(lang, prd_pack)
+    labels = prd_render_labels(resolved_lang)
     ctx = _extract_context(prd_pack)
 
     lines: list[str] = []
     lines.append("# PRD")
     lines.append("")
-    lines.extend(render_sections_1_4(ctx))
-    lines.extend(render_sections_5_7(ctx))
-    lines.extend(render_sections_8_10(ctx))
+    lines.extend(render_sections_1_4(ctx, labels))
+    lines.extend(render_sections_5_7(ctx, labels))
+    lines.extend(render_sections_8_10(ctx, labels))
     return "\n".join(lines)
