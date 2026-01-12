@@ -1,0 +1,58 @@
+# Stage 3a: Split Plan (write JSON split-plan-pack)
+
+Read (minimal, low-noise):
+- `docs/prd-slices/index.json`
+- `docs/prd-slices/modules.*.json`
+- `docs/prd-slices/api_endpoints.*.json` (only if `api.has_api=true`)
+
+Write:
+- `docs/split-plan-pack.json` (pure JSON; no ``` blocks)
+
+Init:
+- `uv run --project .codex/skills/textum/scripts textum split plan init`
+
+Goal: write **confirmed planning decisions only** (story boundaries/order, module ownership, API ownership) until the `READY` gate passes.
+
+## Output rules (must follow)
+
+Output MUST be exactly one of:
+
+1) `IN_PROGRESS`
+   - Output exactly 2 blocks:
+     1) This-round questions (≤4; blockers only) OR This-round change summary (JSONPath list)
+     2) Remaining blockers (≤8; prioritized)
+2) `READY`
+   - Output exactly 3 plain-text lines:
+     - `READY`
+     - `wrote: docs/split-plan-pack.json`
+     - `next: Split Generate`
+
+- Never output JSON bodies (including `docs/split-plan-pack.json`)
+
+## Writing rules (must follow)
+
+- No narration; write facts/decisions only.
+- Story numbering must be consecutive: `Story 1..N`.
+- `stories[].slug` must be unique kebab-case.
+- `stories[].modules` must be PRD module ids only (`M-01`), not names.
+- `api_assignments[]`:
+  - If PRD `api.has_api=false`: must be `[]`
+  - Else: every PRD `API-###` must appear exactly once.
+
+## READY gate (single source of truth)
+
+After each write, run (workspace root):
+
+`uv run --project .codex/skills/textum/scripts textum split plan check`
+
+Only if the output is `PASS` (or `DECISION`), you may output `READY`.
+
+## Start
+
+If `docs/split-plan-pack.json` does not exist, initialize once (workspace root):
+
+1) `uv sync --project .codex/skills/textum/scripts`
+2) `uv run --project .codex/skills/textum/scripts textum split plan init`
+
+Then ask: how many Stories do you want initially (e.g., 6–12), and any must-have sequencing constraints?
+

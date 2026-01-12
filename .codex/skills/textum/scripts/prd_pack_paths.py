@@ -9,6 +9,7 @@ from prd_pack_types import (
     PRD_TEMPLATE_FILENAME,
 )
 from scaffold_pack_types import GLOBAL_CONTEXT_FILENAME, SCAFFOLD_PACK_FILENAME, SCAFFOLD_TEMPLATE_FILENAME
+from split_pack_types import SPLIT_PLAN_PACK_FILENAME, SPLIT_PLAN_TEMPLATE_FILENAME, SPLIT_CHECK_INDEX_PACK_FILENAME, STORIES_DIRNAME
 
 
 def workspace_paths(workspace: Path) -> dict[str, Path]:
@@ -22,6 +23,9 @@ def workspace_paths(workspace: Path) -> dict[str, Path]:
         "prd_slices_index": prd_slices_dir / "index.json",
         "scaffold_pack": docs_dir / SCAFFOLD_PACK_FILENAME,
         "global_context": docs_dir / GLOBAL_CONTEXT_FILENAME,
+        "split_plan_pack": docs_dir / SPLIT_PLAN_PACK_FILENAME,
+        "stories_dir": docs_dir / STORIES_DIRNAME,
+        "split_check_index_pack": docs_dir / SPLIT_CHECK_INDEX_PACK_FILENAME,
     }
 
 
@@ -42,4 +46,5 @@ def skill_asset_paths() -> dict[str, Path]:
         "prd_template": assets_dir / PRD_TEMPLATE_FILENAME,
         "prd_schema": assets_dir / PRD_SCHEMA_FILENAME,
         "scaffold_template": assets_dir / SCAFFOLD_TEMPLATE_FILENAME,
+        "split_plan_template": assets_dir / SPLIT_PLAN_TEMPLATE_FILENAME,
     }

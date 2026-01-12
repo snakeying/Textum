@@ -2,7 +2,7 @@
 
 > 设计原则：低噪是硬约束（约束注意力/上下文污染），最终产出符合用户预期是优化目标（在约束内尽量达成）。
 
-当前版本：支持 **PRD bundle** + **Scaffold bundle**（Split/Story 将在后续逐步迁移）。
+当前版本：支持 **PRD bundle** + **Scaffold bundle** + **Split bundle**（Story 将在后续逐步迁移）。
 
 ## PRD bundle（JSON 真源 → PRD.md 视图）
 
@@ -30,7 +30,7 @@
 
 ## Roadmap
 
-Split/Story bundles：暂未迁移（本版本 `textum` skill 会返回 `NOT_SUPPORTED`）。
+Story bundle：暂未迁移（本版本 `textum` skill 会返回 `NOT_SUPPORTED`）。
 
 ## Scaffold bundle（技术决策 JSON 真源 → GLOBAL-CONTEXT.md 视图）
 
@@ -43,3 +43,18 @@ Split/Story bundles：暂未迁移（本版本 `textum` skill 会返回 `NOT_SUP
 - `uv run --project .codex/skills/textum/scripts textum scaffold init`：初始化 `docs/scaffold-pack.json`
 - `uv run --project .codex/skills/textum/scripts textum scaffold check`：门禁校验 + 自动抽取 PRD 上下文到 `extracted`
 - `uv run --project .codex/skills/textum/scripts textum scaffold render`：从 `docs/scaffold-pack.json` 生成 `docs/GLOBAL-CONTEXT.md`
+
+## Split bundle（Split Plan JSON → per-story JSON → index pack → ref checks）
+
+**真源与模板**
+- 真源：`docs/split-plan-pack.json`
+- 模板：`.codex/skills/textum/assets/split-plan-pack.template.json`
+- 真源：`docs/stories/story-###-<slug>.json`
+- 交接索引：`docs/split-check-index-pack.json`
+
+**命令（在项目根目录）**
+- `uv run --project .codex/skills/textum/scripts textum split plan init`：初始化 `docs/split-plan-pack.json`
+- `uv run --project .codex/skills/textum/scripts textum split plan check`：门禁校验（模块覆盖 / API 覆盖 / 依赖可执行）
+- `uv run --project .codex/skills/textum/scripts textum split generate`：生成 `docs/stories/story-*.json`（脚本机械分配 FP 与落点 refs）
+- `uv run --project .codex/skills/textum/scripts textum split check1`：结构/阈值门禁 + 写入 `docs/split-check-index-pack.json`
+- `uv run --project .codex/skills/textum/scripts textum split check2`：对齐 PRD/Scaffold 做引用一致性校验

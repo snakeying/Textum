@@ -28,13 +28,16 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 在项目根目录执行一次：
 - `uv sync --project .codex/skills/textum/scripts`（会创建 `.codex/skills/textum/scripts/.venv` 并安装依赖）
 
-## 🎯 当前支持：PRD bundle + Scaffold bundle
+## 🎯 当前支持：PRD bundle + Scaffold bundle + Split bundle
 
 文件：
 - 真源：`docs/prd-pack.json`
 - 阅读视图：`docs/PRD.md`（生成后不手改；要改请改 `docs/prd-pack.json` 并重跑）
 - 真源：`docs/scaffold-pack.json`
 - 阅读视图：`docs/GLOBAL-CONTEXT.md`（生成后不手改；要改请改 `docs/scaffold-pack.json` 并重跑）
+- 真源：`docs/split-plan-pack.json`
+- 真源：`docs/stories/story-###-<slug>.json`
+- 交接索引：`docs/split-check-index-pack.json`
 
 命令（在项目根目录）：
 - `uv run --project .codex/skills/textum/scripts textum prd init`（首次初始化）
@@ -44,6 +47,11 @@ Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工
 - `uv run --project .codex/skills/textum/scripts textum scaffold init`（初始化 `docs/scaffold-pack.json`）
 - `uv run --project .codex/skills/textum/scripts textum scaffold check`（门禁校验 + 自动抽取 PRD 上下文）
 - `uv run --project .codex/skills/textum/scripts textum scaffold render`（生成 `docs/GLOBAL-CONTEXT.md`）
+- `uv run --project .codex/skills/textum/scripts textum split plan init`（初始化 `docs/split-plan-pack.json`）
+- `uv run --project .codex/skills/textum/scripts textum split plan check`（门禁校验）
+- `uv run --project .codex/skills/textum/scripts textum split generate`（生成 `docs/stories/story-*.json`）
+- `uv run --project .codex/skills/textum/scripts textum split check1`（结构/阈值门禁 + 写入 `docs/split-check-index-pack.json`）
+- `uv run --project .codex/skills/textum/scripts textum split check2`（引用一致性门禁）
 
 交互（Codex）：
 - 使用 `textum` skill（见 `.codex/skills/textum/SKILL.md`），在 `PRD Plan` 阶段用中文对话澄清并写入 `docs/prd-pack.json`
@@ -87,6 +95,10 @@ Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .cod
 │   └── PRD.md                        # PRD 阅读视图（生成；不手改）
 │   ├── scaffold-pack.json            # Scaffold 真源（JSON）
 │   └── GLOBAL-CONTEXT.md             # 全局上下文（生成；不手改）
+│   ├── split-plan-pack.json           # Split 规划真源（JSON）
+│   ├── split-check-index-pack.json    # Split 交接索引（JSON）
+│   └── stories/                       # Story 真源（JSON；每个 story 一个文件）
+│       └── story-###-<slug>.json
 └── src/              # 💻 你的代码目录
 ```
 
@@ -104,6 +116,15 @@ Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .cod
 2) 用 `textum` skill 的 `Scaffold Plan` 把技术决策写进 `docs/scaffold-pack.json`
 3) `uv run --project .codex/skills/textum/scripts textum scaffold check` 直到 `PASS`
 4) `uv run --project .codex/skills/textum/scripts textum scaffold render` 生成 `docs/GLOBAL-CONTEXT.md`
+
+## 🎬 实际使用（Split bundle）
+
+1) `uv run --project .codex/skills/textum/scripts textum split plan init`
+2) 用 `textum` skill 的 `Split Plan` 把规划写进 `docs/split-plan-pack.json`
+3) `uv run --project .codex/skills/textum/scripts textum split plan check` 直到 `PASS/DECISION`
+4) `uv run --project .codex/skills/textum/scripts textum split generate` 生成 `docs/stories/`
+5) `uv run --project .codex/skills/textum/scripts textum split check1` 直到 `PASS/DECISION`
+6) `uv run --project .codex/skills/textum/scripts textum split check2` 直到 `PASS`
 
 ## 📏 适合多大的项目？
 

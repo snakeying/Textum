@@ -1,0 +1,21 @@
+{
+  "schema_version": "split-plan-pack@v1",
+  "source": {
+    "prd_pack_path": "docs/prd-pack.json",
+    "scaffold_pack_path": "docs/scaffold-pack.json"
+  },
+  "stories": [
+    {
+      "story": "Story 1",
+      "n": 1,
+      "slug": "<<FILL>>",
+      "modules": [
+        "M-01"
+      ],
+      "goal": "<<FILL>>",
+      "prereq_stories": []
+    }
+  ],
+  "api_assignments": []
+}
+
