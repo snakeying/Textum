@@ -61,6 +61,31 @@ flowchart TB
 
 ---
 
+## Stage 命名映射（kebab-case ↔ Title Case）
+
+> `Workflow.md`/mermaid 图中使用 kebab-case（如 `prd-plan`）；`SKILL.md` 与 `references/*.md` 的路由与 `next:` 输出使用 Title Case（如 `PRD Plan`）。两者含义一一对应。
+
+| Workflow/Skill Key | Stage Name（路由/next） | Reference |
+|---|---|---|
+| `prd-plan` | `PRD Plan` | `.codex/skills/textum/references/prd-plan.md` |
+| `prd-check` | `PRD Check` | `.codex/skills/textum/references/prd-check.md` |
+| `prd-render` | `PRD Render` | `.codex/skills/textum/references/prd-render.md` |
+| `prd-slice` | `PRD Slice` | `.codex/skills/textum/references/prd-slice.md` |
+| `scaffold-plan` | `Scaffold Plan` | `.codex/skills/textum/references/scaffold-plan.md` |
+| `scaffold-check` | `Scaffold Check` | `.codex/skills/textum/references/scaffold-check.md` |
+| `scaffold` | `Scaffold Render` | `.codex/skills/textum/references/scaffold.md` |
+| `split-plan` | `Split Plan` | `.codex/skills/textum/references/split-plan.md` |
+| `split` | `Split Generate` | `.codex/skills/textum/references/split.md` |
+| `split-check1` | `Split Check1` | `.codex/skills/textum/references/split-check1.md` |
+| `split-check2` | `Split Check2` | `.codex/skills/textum/references/split-check2.md` |
+| `split-checkout` | `Split Checkout` | `.codex/skills/textum/references/split-checkout.md` |
+| `story-check` | `Story Check` | `.codex/skills/textum/references/story-check.md` |
+| `story-pack` | `Story Pack` | `.codex/skills/textum/references/story-pack.md` |
+| `story` | `Story Exec` | `.codex/skills/textum/references/story.md` |
+| `story-full-exec` | `Story Full Exec` | `.codex/skills/textum/references/story-full-exec.md` |
+
+---
+
 ## Stage 1: PRD
 
 **目标**：需求澄清 → 门禁校验 → 生成验收视图 → 切片
