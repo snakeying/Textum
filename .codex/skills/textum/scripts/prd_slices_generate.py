@@ -3,19 +3,12 @@ from __future__ import annotations
 import hashlib
 import shutil
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from prd_pack_types import Failure
 from prd_slices_types import SliceBudget
-from prd_slices_utils import (
-    chunk_list,
-    id_range,
-    json_text,
-    measure_json,
-    rel_posix,
-    sha256_file,
-    write_json,
-)
+from prd_slices_utils import json_text, rel_posix, sha256_file
+from prd_slices_writer import SliceWriter
 
 
 def generate_prd_slices(
@@ -43,58 +36,7 @@ def generate_prd_slices(
         "prd_pack_sha256": prd_pack_sha256,
     }
 
-    written: list[Path] = []
-    parts_index: list[dict[str, Any]] = []
-
-    def write_part(kind: str, filename: str, obj: dict[str, Any], *, count: int | None = None) -> list[Failure]:
-        path = out_dir / filename
-        lines, chars = write_json(path, obj)
-        if lines > budget.max_lines or chars > budget.max_chars:
-            return [
-                Failure(
-                    loc=f"docs/prd-slices/{filename}",
-                    problem=f"slice exceeds budget: {lines} lines, {chars} chars",
-                    expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
-                    impact="slice would pollute model attention/context",
-                    fix="increase slice budget or ensure the slice is chunked",
-                )
-            ]
-        written.append(path)
-        entry: dict[str, Any] = {
-            "kind": kind,
-            "path": rel_posix(path, workspace_root),
-            "lines": lines,
-            "chars": chars,
-        }
-        if count is not None:
-            entry["count"] = count
-        parts_index.append(entry)
-        return []
-
-    failures: list[Failure] = []
-
-    def write_chunked_parts(
-        *,
-        kind: str,
-        items: list[Any],
-        build_obj: Callable[[list[Any]], dict[str, Any]],
-        loc: str,
-        item_label: str,
-        single_filename: str,
-        part_filename: Callable[[int], str],
-        count_from_obj: Callable[[dict[str, Any]], int],
-        id_list_from_obj: Callable[[dict[str, Any]], list[str]] | None = None,
-    ) -> None:
-        parts, part_failures = chunk_list(items, build_obj, budget=budget, loc=loc, item_label=item_label)
-        failures.extend(part_failures)
-        for part_index, part_obj in enumerate(parts, start=1):
-            filename = single_filename if len(parts) == 1 else part_filename(part_index)
-            failures.extend(write_part(kind, filename, part_obj, count=count_from_obj(part_obj)))
-            if id_list_from_obj is None:
-                continue
-            first_id, last_id = id_range(id_list_from_obj(part_obj))
-            if first_id and last_id:
-                parts_index[-1]["id_range"] = f"{first_id}..{last_id}"
+    writer = SliceWriter(out_dir=out_dir, budget=budget, workspace_root=workspace_root)
 
     overview = {
         "schema_version": "prd-slice-overview@v1",
@@ -104,7 +46,7 @@ def generate_prd_slices(
         "non_goals": prd_pack.get("non_goals"),
         "scope": prd_pack.get("scope"),
     }
-    failures += write_part("overview", "overview.json", overview)
+    writer.write_part("overview", "overview.json", overview)
 
     assumptions_constraints_items = (
         prd_pack.get("assumptions_constraints") if isinstance(prd_pack.get("assumptions_constraints"), list) else []
@@ -117,7 +59,7 @@ def generate_prd_slices(
             "assumptions_constraints": part_items,
         }
 
-    write_chunked_parts(
+    writer.write_chunked_parts(
         kind="assumptions_constraints",
         items=assumptions_constraints_items,
         build_obj=build_assumptions_constraints,
@@ -139,7 +81,7 @@ def generate_prd_slices(
             "roles": part_items,
         }
 
-    write_chunked_parts(
+    writer.write_chunked_parts(
         kind="roles",
         items=roles_items,
         build_obj=build_roles,
@@ -164,7 +106,7 @@ def generate_prd_slices(
             "permission_matrix": {"operations": part_items},
         }
 
-    write_chunked_parts(
+    writer.write_chunked_parts(
         kind="permission_matrix_operations",
         items=permission_ops,
         build_obj=build_permission_ops,
@@ -186,7 +128,7 @@ def generate_prd_slices(
             "nfr": part_items,
         }
 
-    write_chunked_parts(
+    writer.write_chunked_parts(
         kind="nfr",
         items=nfr_items,
         build_obj=build_nfr,
@@ -202,7 +144,7 @@ def generate_prd_slices(
         "source": source,
         "states_enums": prd_pack.get("states_enums"),
     }
-    failures += write_part("states_enums", "states_enums.json", states)
+    writer.write_part("states_enums", "states_enums.json", states)
 
     ui_routes_items = prd_pack.get("ui_routes") if isinstance(prd_pack.get("ui_routes"), list) else []
     ui_routes_obj = {
@@ -210,7 +152,7 @@ def generate_prd_slices(
         "source": source,
         "ui_routes": ui_routes_items,
     }
-    failures += write_part("ui_routes", "ui_routes.json", ui_routes_obj, count=len(ui_routes_items))
+    writer.write_part("ui_routes", "ui_routes.json", ui_routes_obj, count=len(ui_routes_items))
 
     br_items = prd_pack.get("business_rules") if isinstance(prd_pack.get("business_rules"), list) else []
     br_obj = {
@@ -218,12 +160,12 @@ def generate_prd_slices(
         "source": source,
         "business_rules": br_items,
     }
-    failures += write_part("business_rules", "business_rules.json", br_obj, count=len(br_items))
+    writer.write_part("business_rules", "business_rules.json", br_obj, count=len(br_items))
 
     api_obj = prd_pack.get("api") if isinstance(prd_pack.get("api"), dict) else {}
     api_meta = dict(api_obj)
     api_meta["endpoints"] = []
-    failures += write_part(
+    writer.write_part(
         "api_meta",
         "api_meta.json",
         {"schema_version": "prd-slice-api-meta@v1", "source": source, "api": api_meta},
@@ -238,7 +180,7 @@ def generate_prd_slices(
             "api": {"endpoints": part_items},
         }
 
-    write_chunked_parts(
+    writer.write_chunked_parts(
         kind="api_endpoints",
         items=api_endpoints,
         build_obj=build_api_endpoints,
@@ -259,7 +201,7 @@ def generate_prd_slices(
     dm_obj = prd_pack.get("data_model") if isinstance(prd_pack.get("data_model"), dict) else {}
     dm_meta = dict(dm_obj)
     dm_meta["tables"] = []
-    failures += write_part(
+    writer.write_part(
         "data_model_meta",
         "data_model_meta.json",
         {"schema_version": "prd-slice-data-model-meta@v1", "source": source, "data_model": dm_meta},
@@ -274,7 +216,7 @@ def generate_prd_slices(
             "data_model": {"tables": part_items},
         }
 
-    write_chunked_parts(
+    writer.write_chunked_parts(
         kind="data_model_tables",
         items=dm_tables,
         build_obj=build_dm_tables,
@@ -303,7 +245,7 @@ def generate_prd_slices(
             "modules": part_items,
         }
 
-    write_chunked_parts(
+    writer.write_chunked_parts(
         kind="modules",
         items=modules,
         build_obj=build_modules,
@@ -319,24 +261,6 @@ def generate_prd_slices(
         else [],
     )
 
-    index_obj = {
-        "schema_version": "prd-slices-index@v1",
-        "source": source,
-        "budget": {"max_lines": budget.max_lines, "max_chars": budget.max_chars},
-        "parts": parts_index,
-    }
-    index_path = out_dir / "index.json"
-    index_lines, index_chars = write_json(index_path, index_obj)
-    if index_lines > budget.max_lines or index_chars > budget.max_chars:
-        failures.append(
-            Failure(
-                loc=rel_posix(index_path, workspace_root),
-                problem=f"index exceeds budget: {index_lines} lines, {index_chars} chars",
-                expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
-                impact="index would pollute model attention/context",
-                fix="reduce index metadata (e.g., remove id ranges) or increase slice budget",
-            )
-        )
-    written.append(index_path)
+    writer.write_index(source=source)
 
-    return written, failures
+    return writer.written, writer.failures
