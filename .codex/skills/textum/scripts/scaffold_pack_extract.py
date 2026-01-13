@@ -3,13 +3,15 @@ from __future__ import annotations
 from typing import Any
 
 
-def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
+def _extract_project(prd_pack: dict[str, Any]) -> dict[str, Any]:
     project_obj = prd_pack.get("project") if isinstance(prd_pack.get("project"), dict) else {}
-    project = {
+    return {
         "name": project_obj.get("name") if isinstance(project_obj.get("name"), str) else None,
         "one_liner": project_obj.get("one_liner") if isinstance(project_obj.get("one_liner"), str) else None,
     }
 
+
+def _extract_modules_index(prd_pack: dict[str, Any]) -> list[dict[str, Any]]:
     modules_index: list[dict[str, Any]] = []
     modules = prd_pack.get("modules") if isinstance(prd_pack.get("modules"), list) else []
     for module in modules:
@@ -28,12 +30,21 @@ def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
                 ),
             }
         )
+    return modules_index
 
+
+def _extract_states_enums(prd_pack: dict[str, Any]) -> dict[str, Any]:
     states_enums = prd_pack.get("states_enums") if isinstance(prd_pack.get("states_enums"), dict) else {}
-    naming_conventions = (
+    return states_enums
+
+
+def _extract_naming_conventions(states_enums: dict[str, Any]) -> str | None:
+    return (
         states_enums.get("naming_conventions") if isinstance(states_enums.get("naming_conventions"), str) else None
     )
 
+
+def _extract_enums(states_enums: dict[str, Any]) -> list[dict[str, Any]]:
     enums: list[dict[str, Any]] = []
     enum_items = states_enums.get("enums") if isinstance(states_enums.get("enums"), list) else []
     for enum in enum_items:
@@ -47,7 +58,10 @@ def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
                 "note": enum.get("note") if isinstance(enum.get("note"), str) else None,
             }
         )
+    return enums
 
+
+def _extract_business_rules(prd_pack: dict[str, Any]) -> list[dict[str, Any]]:
     business_rules: list[dict[str, Any]] = []
     rule_items = prd_pack.get("business_rules") if isinstance(prd_pack.get("business_rules"), list) else []
     for rule in rule_items:
@@ -63,7 +77,10 @@ def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
                 ),
             }
         )
+    return business_rules
 
+
+def _extract_permission_matrix_rows(prd_pack: dict[str, Any]) -> list[dict[str, Any]]:
     permission_rows: list[dict[str, Any]] = []
     permission_matrix = (
         prd_pack.get("permission_matrix") if isinstance(prd_pack.get("permission_matrix"), dict) else {}
@@ -88,7 +105,10 @@ def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
                     "note": note,
                 }
             )
+    return permission_rows
 
+
+def _extract_data_model_overview(prd_pack: dict[str, Any]) -> dict[str, Any]:
     data_model = prd_pack.get("data_model") if isinstance(prd_pack.get("data_model"), dict) else {}
     tables = data_model.get("tables") if isinstance(data_model.get("tables"), list) else []
     table_list: list[dict[str, Any]] = []
@@ -104,8 +124,10 @@ def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
             }
         )
     relations = data_model.get("relations") if isinstance(data_model.get("relations"), str) else None
-    data_model_overview = {"tables": table_list, "relations": relations}
+    return {"tables": table_list, "relations": relations}
 
+
+def _extract_api_conventions(prd_pack: dict[str, Any]) -> dict[str, Any]:
     api = prd_pack.get("api") if isinstance(prd_pack.get("api"), dict) else {}
     has_api = api.get("has_api") if isinstance(api.get("has_api"), bool) else None
     api_conventions: dict[str, Any] = {"has_api": has_api}
@@ -125,7 +147,10 @@ def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
                 ),
             }
         )
+    return api_conventions
 
+
+def _extract_nfr(prd_pack: dict[str, Any]) -> list[dict[str, Any]]:
     nfr = prd_pack.get("nfr") if isinstance(prd_pack.get("nfr"), list) else []
     nfr_items: list[dict[str, Any]] = []
     for item in nfr:
@@ -138,6 +163,22 @@ def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
                 "acceptance": item.get("acceptance") if isinstance(item.get("acceptance"), str) else None,
             }
         )
+    return nfr_items
+
+
+def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
+    project = _extract_project(prd_pack)
+    modules_index = _extract_modules_index(prd_pack)
+
+    states_enums = _extract_states_enums(prd_pack)
+    naming_conventions = _extract_naming_conventions(states_enums)
+    enums = _extract_enums(states_enums)
+
+    business_rules = _extract_business_rules(prd_pack)
+    permission_rows = _extract_permission_matrix_rows(prd_pack)
+    data_model_overview = _extract_data_model_overview(prd_pack)
+    api_conventions = _extract_api_conventions(prd_pack)
+    nfr_items = _extract_nfr(prd_pack)
 
     return {
         "project": project,
@@ -150,4 +191,3 @@ def extract_from_prd_pack(prd_pack: dict[str, Any]) -> dict[str, Any]:
         "api_conventions": api_conventions,
         "nfr": nfr_items,
     }
-

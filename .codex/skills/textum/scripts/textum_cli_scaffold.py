@@ -39,7 +39,7 @@ def _cmd_scaffold_check(args: argparse.Namespace) -> int:
         return 1
     assert prd_pack is not None
 
-    scaffold_pack, updated, scaffold_failures = _load_scaffold_pack_and_ensure_ready(
+    scaffold_pack, _, scaffold_failures = _load_scaffold_pack_and_ensure_ready(
         paths, prd_pack=prd_pack, fix=args.fix
     )
     if scaffold_failures:
@@ -48,8 +48,6 @@ def _cmd_scaffold_check(args: argparse.Namespace) -> int:
     assert scaffold_pack is not None
 
     print("PASS")
-    if updated and args.fix:
-        print(f"UPDATED: {paths['scaffold_pack'].as_posix()}")
     return 0
 
 
@@ -74,7 +72,8 @@ def _cmd_scaffold_render(args: argparse.Namespace) -> int:
     markdown = render_global_context_markdown(scaffold_pack)
     paths["docs_dir"].mkdir(parents=True, exist_ok=True)
     paths["global_context"].write_text(markdown, encoding="utf-8")
-    print(f"OK: wrote {paths['global_context'].as_posix()}")
+    print("PASS")
+    print(f"wrote: {paths['global_context'].relative_to(workspace).as_posix()}")
     return 0
 
 
@@ -110,4 +109,3 @@ def register_scaffold_commands(subparsers: Any) -> None:
         help="Auto-fix and write back scaffold-pack.json before rendering (default: true).",
     )
     scaffold_render.set_defaults(func=_cmd_scaffold_render)
-

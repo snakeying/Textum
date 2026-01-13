@@ -91,7 +91,7 @@ def validate_decisions(decisions: dict[str, Any], failures: list[Failure]) -> No
                     loc="$.decisions.validation_commands",
                     problem="validation_commands is empty",
                     expected="at least 1 row or a single N/A row",
-                    impact="cannot define gates for next bundles",
+                    impact="scaffold pack is incomplete",
                     fix="add one row to decisions.validation_commands[]",
                 )
             )
@@ -154,4 +154,3 @@ def validate_decisions(decisions: dict[str, Any], failures: list[Failure]) -> No
                 fix="set decisions.coding_conventions to a string or null",
             )
         )
-

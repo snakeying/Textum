@@ -35,10 +35,9 @@ def require_str(value: Any, loc: str, failures: list[Failure], *, allow_na: bool
                 loc=loc,
                 problem="N/A not allowed here",
                 expected="a concrete value",
-                impact="cannot proceed to code generation reliably",
+                impact="scaffold pack is incomplete",
                 fix=f"replace N/A at {loc}",
             )
         )
         return None
     return stripped
-
