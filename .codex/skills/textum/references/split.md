@@ -18,8 +18,8 @@ Run (workspace root):
 
 ## Output rule
 
-Output exactly 3 lines:
-- `PASS`
-- `wrote: docs/stories/`
-- `next: Split Check1`
-
+- If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: Split Plan`
+- If command prints `PASS`: output:
+  - `PASS`
+  - `wrote: docs/stories/`
+  - `next: Split Check1`

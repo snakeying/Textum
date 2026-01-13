@@ -12,7 +12,8 @@ Run (workspace root):
 
 ## Output rule
 
-Output exactly 3 lines:
-- `PASS`
-- `wrote: docs/PRD.md`
-- `next: PRD Slice`
+- If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: PRD Plan`
+- If command prints `PASS`: output:
+  - `PASS`
+  - `wrote: docs/PRD.md`
+  - `next: PRD Slice`
