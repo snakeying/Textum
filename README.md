@@ -6,142 +6,80 @@
 
 Textum 是一个帮助你从"我想做一个xxx"到"项目完成"的工作流工具。即使你没有编程经验，也能通过对话一步步把想法变成现实。
 
+> ⚠️ **注意**：旧的 commands 版本已废弃，不再支持。当前仅支持 skills 版本。
+
 ## ✨ 它能帮你做什么？
 
 你只需要用自己的话描述想法，Textum 会帮你：
 
 - 📝 把模糊的想法变成清晰的需求文档（PRD）
+- 🏗️ 确定技术方案，生成全局上下文（Scaffold）
 - 🧩 自动拆分成一个个可执行的小任务（Story）
-- 🔗 理清任务之间的依赖关系，告诉你先做什么、后做什么
 - 💻 一步步把每个任务变成真正能跑的代码
 
 整个过程有多个校验点，确保不会跑偏。
 
-[详细的流程说明](./Workflow.md) 
+👉 [详细流程说明](./Workflow.md)
 
 ## 📦 安装
 
-前置条件：
+**前置条件**：
 - 已安装 `uv`
-- Python >= 3.11（推荐 3.11；本仓库测试基于 3.11）
+- Python >= 3.11
 
-在项目根目录执行一次：
-- `uv sync --project .codex/skills/textum/scripts`（会创建 `.codex/skills/textum/scripts/.venv` 并安装依赖）
+**初始化**（在项目根目录执行一次）：
 
-## 🎯 当前支持：PRD bundle + Scaffold bundle + Split bundle + Story bundle
+| 环境 | 命令 |
+|------|------|
+| Codex | `uv sync --project .codex/skills/textum/scripts` |
+| Claude Code | `uv sync --project .claude/skills/textum/scripts`（🚧 待实现） |
 
-文件：
-- 真源：`docs/prd-pack.json`
-- 阅读视图：`docs/PRD.md`（生成后不手改；要改请改 `docs/prd-pack.json` 并重跑）
-- 真源：`docs/scaffold-pack.json`
-- 阅读视图：`docs/GLOBAL-CONTEXT.md`（生成后不手改；要改请改 `docs/scaffold-pack.json` 并重跑）
-- 真源：`docs/split-plan-pack.json`
-- 真源：`docs/stories/story-###-<slug>.json`
-- 交接索引：`docs/split-check-index-pack.json`
-- 依赖图（可选视图）：`docs/story-mermaid.md`
-- 执行包（低噪切片）：`docs/story-exec/story-###-<slug>/index.json`（entry）+ `index.json.read[]` 中列出的文件
+这会创建隔离的虚拟环境，不污染你的业务项目。
 
-命令（在项目根目录）：
-- `uv run --project .codex/skills/textum/scripts textum prd init`（首次初始化）
-- `uv run --project .codex/skills/textum/scripts textum prd check`（门禁校验 + 自动分配 ID）
-- `uv run --project .codex/skills/textum/scripts textum prd render`（生成 `docs/PRD.md`）
-- `uv run --project .codex/skills/textum/scripts textum prd slice`（生成低噪切片到 `docs/prd-slices/`）
-- `uv run --project .codex/skills/textum/scripts textum scaffold init`（初始化 `docs/scaffold-pack.json`）
-- `uv run --project .codex/skills/textum/scripts textum scaffold check`（门禁校验 + 自动抽取 PRD 上下文）
-- `uv run --project .codex/skills/textum/scripts textum scaffold render`（生成 `docs/GLOBAL-CONTEXT.md`）
-- `uv run --project .codex/skills/textum/scripts textum split plan init`（初始化 `docs/split-plan-pack.json`）
-- `uv run --project .codex/skills/textum/scripts textum split plan check`（门禁校验）
-- `uv run --project .codex/skills/textum/scripts textum split generate`（生成 `docs/stories/story-*.json`）
-- `uv run --project .codex/skills/textum/scripts textum split check1`（结构/阈值门禁 + 写入 `docs/split-check-index-pack.json`）
-- `uv run --project .codex/skills/textum/scripts textum split check2`（引用一致性门禁）
-- `uv run --project .codex/skills/textum/scripts textum split checkout`（导出 Story 依赖图到 `docs/story-mermaid.md`）
-- `uv run --project .codex/skills/textum/scripts textum story check --n <n>`（单 Story 门禁）
-- `uv run --project .codex/skills/textum/scripts textum story pack --n <n>`（生成并校验低噪执行包到 `docs/story-exec/`）
+## 🚀 快速开始
 
-交互（Codex）：
-- 使用 `textum` skill（见 `.codex/skills/textum/SKILL.md`），在 `PRD Plan` 阶段用中文对话澄清并写入 `docs/prd-pack.json`
+Textum 通过 `textum` skill 路由触发，4 个阶段依次进行：
 
-> 旧的命令版与旧 templates 已废弃并移动到 `outdated/`。
+| 阶段 | 做什么 | 产出 |
+|------|--------|------|
+| 🎯 PRD | 需求澄清 → 门禁 → 渲染 → 切片 | `docs/PRD.md` |
+| 🏗️ Scaffold | 技术决策 → 门禁 → 渲染 | `docs/GLOBAL-CONTEXT.md` |
+| 🧩 Split | Story 拆分 → 双重门禁 → 依赖图 | `docs/stories/*.json` |
+| 💻 Story | 单 Story 门禁 → 执行包 → 实现 | 代码！ |
 
-## 🧭 执行注意事项
+**建议**：每个阶段开新窗口，减少上下文污染。
 
-- 建议每个阶段开新窗口，减少上下文污染
-- `docs/PRD.md` 为生成视图：不要手改；要改请改 `docs/prd-pack.json` 并重跑 `uv run --project .codex/skills/textum/scripts textum prd render`
-- 若 PRD 不符合用户预期：后续步骤都应视为作废，先把 PRD 改对再继续
+👉 [完整流程与命令参考](./Workflow.md)
 
-## 🧪 关于 Python 环境冲突（重要）
-
-Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .codex/skills/textum/scripts`：
-
-- ✅ 推荐：`uv sync --project .codex/skills/textum/scripts`、`uv run --project .codex/skills/textum/scripts ...`（`.venv` 在 `.codex/skills/textum/scripts/.venv`，与业务项目环境隔离）
-- ⚠️ 避免：在项目根目录直接 `uv sync` / `uv run`（不带 `--project`），否则可能把 Textum 依赖装进你的业务项目虚拟环境
-
-## 💡 为什么这么设计
-
-试过把详细 PRD 直接丢给模型吗？结果往往是：写到模块 D 的时候，模块 A 定义的字段名已经忘得差不多了。
-
-这不是哪个工具的锅，是现阶段 LLM 的局限——上下文越长，关键信息越容易被淹没。
-
-所以这个流程的核心就俩字：**降噪**。
-
-- 每个阶段开新窗口，别让历史上下文污染当前任务
-- 引用全用稳定 ID 锚点（`<!-- PRD#API-001 -->` 这种），别指望模型记住"上面说的那个接口"
-- 执行阶段只给当前 Story 需要的上下文，不让模型通读整个 PRD
-
-技术细节见 [Workflow.md](./Workflow.md)
-
-## 📁 文件会放在哪？
+## 📁 文件结构
 
 ```
 你的项目/
-├── .codex/           # 🧰 Codex skills 源码（可选）
-├── docs/             # 📄 生成的文档都在这
-│   ├── prd-pack.json                 # PRD 真源（JSON）
-│   ├── PRD.md                        # PRD 阅读视图（生成；不手改）
-│   ├── scaffold-pack.json            # Scaffold 真源（JSON）
-│   ├── GLOBAL-CONTEXT.md             # 全局上下文（生成；不手改）
-│   ├── split-plan-pack.json           # Split 规划真源（JSON）
-│   ├── split-check-index-pack.json    # Split 交接索引（JSON）
-│   ├── story-mermaid.md               # Story 依赖图（可选视图）
-│   ├── stories/                       # Story 真源（JSON；每个 story 一个文件）
-│   │   └── story-###-<slug>.json
-│   └── story-exec/                    # Story 执行包（低噪切片；entry: index.json）
-│       └── story-###-<slug>/
-│           └── index.json
-└── src/              # 💻 你的代码目录
+├── .codex/skills/textum/    # 🧰 Codex Skill 源码
+├── .claude/skills/textum/   # 🧰 Claude Code Skill 源码（🚧 待实现）
+└── docs/                    # 📄 生成的文档
+    ├── prd-pack.json        # PRD 真源
+    ├── PRD.md               # PRD 视图（生成；不手改）
+    ├── scaffold-pack.json   # Scaffold 真源
+    ├── GLOBAL-CONTEXT.md    # 全局上下文（生成；不手改）
+    ├── split-plan-pack.json # Split 规划真源
+    ├── stories/             # Story 真源
+    └── story-exec/          # Story 执行包（低噪切片）
 ```
 
-## 🎬 实际使用（PRD bundle）
+## 💡 为什么要这样设计？
 
-1) `uv run --project .codex/skills/textum/scripts textum prd init`
-2) 用 `textum` skill 的 `PRD Plan` 把事实写进 `docs/prd-pack.json`
-3) `uv run --project .codex/skills/textum/scripts textum prd check` 直到 `PASS`
-4) `uv run --project .codex/skills/textum/scripts textum prd render` 生成 `docs/PRD.md` 并人工验收
-5) （可选）`uv run --project .codex/skills/textum/scripts textum prd slice` 生成低噪切片到 `docs/prd-slices/`
+想象一下：你写了一份 10 页的需求文档，让 AI 帮你写代码。结果呢？
 
-## 🎬 实际使用（Scaffold bundle）
+写到第 5 个功能的时候，AI 已经忘了第 1 个功能里定义的字段叫什么了。😅
 
-1) `uv run --project .codex/skills/textum/scripts textum scaffold init`
-2) 用 `textum` skill 的 `Scaffold Plan` 把技术决策写进 `docs/scaffold-pack.json`
-3) `uv run --project .codex/skills/textum/scripts textum scaffold check` 直到 `PASS`
-4) `uv run --project .codex/skills/textum/scripts textum scaffold render` 生成 `docs/GLOBAL-CONTEXT.md`
+这不是 AI 笨，是它的"记忆"有限——信息越多，越容易丢失重点。
 
-## 🎬 实际使用（Split bundle）
+所以 Textum 的核心思路就是：**少即是多**。
 
-1) `uv run --project .codex/skills/textum/scripts textum split plan init`
-2) 用 `textum` skill 的 `Split Plan` 把规划写进 `docs/split-plan-pack.json`
-3) `uv run --project .codex/skills/textum/scripts textum split plan check` 直到 `PASS/DECISION`
-4) `uv run --project .codex/skills/textum/scripts textum split generate` 生成 `docs/stories/`
-5) `uv run --project .codex/skills/textum/scripts textum split check1` 直到 `PASS/DECISION`
-6) `uv run --project .codex/skills/textum/scripts textum split check2` 直到 `PASS`
-7) `uv run --project .codex/skills/textum/scripts textum split checkout` 写入 `docs/story-mermaid.md`
-
-## 🎬 实际使用（Story bundle）
-
-1) `uv run --project .codex/skills/textum/scripts textum story check --n <n>`
-2) `uv run --project .codex/skills/textum/scripts textum story pack --n <n>`（生成 `docs/story-exec/`）
-3) 用 `textum` skill 的 `Story Exec` 执行该 Story（只读执行包，不通读 PRD/GC）
-4) （实验）用 `textum` skill 的 `Story Full Exec` 批量执行：`1/2/3`
+- 🪟 **分阶段处理** — 每个阶段只关注一件事，做完再进入下一阶段
+- 🔗 **用编号代替描述** — 不说"那个用户登录的接口"，而是说"API-001"
+- 📦 **按需提供信息** — 写代码时只给当前任务需要的上下文，不让 AI 被无关信息淹没
 
 ## 📏 适合多大的项目？
 
@@ -149,27 +87,15 @@ Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .cod
 |------|--------|----------|----------|
 | 🌱 小型 | 10-15 | ✅ 可靠完成 | 记账本、待办清单、个人笔记 |
 | 🌿 中型 | 15-25 | ✅ 可靠完成 | 简单博客、问卷系统 |
-| 🌳 较大 | 25-35 | ⚠️ 需人工校验，中等风险 | 多角色后台、预约平台 |
-
-[V2版本模拟测试报告](/simulate-test-reports/v2simulate-test-report-opus.md) 
-
-[V3版本模拟测试报告](/simulate-test-reports/v3simulate-test-report-opus.md) 
-
-[V4版本模拟测试报告](/simulate-test-reports/v4simulate-test-report-opus.md) 
-
-[V5版本模拟测试报告](/simulate-test-reports/v5simulate-test-report-opus.md)  <--V5开始的模拟任务相对V2/3/4, 更为复杂模糊。
-
-[V6版本模拟测试报告](/simulate-test-reports/v6simulate-test-report-opus.md)
-
-[beta版本模拟测试报告](/simulate-test-reports/beta-simulate-test-report-opus.md)
-
-以上模拟均采用 Claude opus 4.5 模型。
-
-**⚠️ 模拟测试不代表实际项目运行时的效果，仅供参考。**
+| 🌳 较大 | 25-35 | ⚠️ 需人工校验 | 多角色后台、预约平台 |
 
 > 更大的项目？建议拆成几个独立子项目。
 
----
+**模拟测试报告**（基于旧 commands 版本，采用 Claude Opus 4.5，仅供参考）：
+- [V2](./simulate-test-reports/v2simulate-test-report-opus.md) | [V3](./simulate-test-reports/v3simulate-test-report-opus.md) | [V4](./simulate-test-reports/v4simulate-test-report-opus.md)
+- [V5](./simulate-test-reports/v5simulate-test-report-opus.md)（任务更复杂） | [V6](./simulate-test-reports/v6simulate-test-report-opus.md) | [Beta](./simulate-test-reports/beta-simulate-test-report-opus.md)
+
+⚠️ 以上测试基于已废弃的 commands 版本，skills 版本的测试报告待更新。
 
 ## 🕸️ 为什么叫 Textum？
 
@@ -188,6 +114,5 @@ Textum 的 Python 依赖仅用于 skill 运行，建议始终用 `--project .cod
 ## 📜 License
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
 
 [![Star History Chart](https://api.star-history.com/svg?repos=snakeying/Textum&type=Date)](https://star-history.com/#snakeying/Textum&Date)

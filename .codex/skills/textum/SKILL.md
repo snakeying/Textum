@@ -3,7 +3,7 @@ name: textum
 description: Textum PRD→Scaffold→Story workflow for Codex with low-noise outputs and gate checks.
 ---
 
-# Textum (skills-first)
+# Textum
 
 Hard constraints:
 - Low-noise is non-negotiable (avoid attention/context pollution).
