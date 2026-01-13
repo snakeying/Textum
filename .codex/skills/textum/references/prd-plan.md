@@ -24,7 +24,7 @@ Output MUST be exactly one of the following (no extra explanation / paraphrase):
 
 - The user may speak Chinese or English.
 - Ask questions in the user's language (ZH/EN). 
-- Keep questions short and specific; do not add explanations.
+- Keep questions short and specific.
 
 ## Writing rules (must follow)
 

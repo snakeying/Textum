@@ -84,20 +84,49 @@ def render_sections_1_4(ctx: dict[str, Any], labels: dict[str, Any]) -> list[str
     lines.append(sections["4"])
     lines.append("")
     perm_rows: list[list[str]] = []
-    role_names = [
-        _as_text(role.get("role"))
-        for role in roles
-        if isinstance(role, dict) and isinstance(role.get("role"), str) and role.get("role").strip()
-    ]
+
+    role_names: list[str] = []
+    role_name_set: set[str] = set()
+    for role in roles:
+        if not isinstance(role, dict):
+            continue
+        role_value = role.get("role")
+        if not isinstance(role_value, str) or not role_value.strip():
+            continue
+        role_name = _as_text(role_value)
+        if role_name == "N/A" or role_name in role_name_set:
+            continue
+        role_names.append(role_name)
+        role_name_set.add(role_name)
+
     for op in permission_ops:
         if not isinstance(op, dict):
             continue
         op_name = _as_text(op.get("op"))
         note = _as_text(op.get("note"))
         per_role = op.get("per_role") if isinstance(op.get("per_role"), dict) else {}
-        for role_name in role_names:
-            perm = per_role.get(role_name) if isinstance(per_role.get(role_name), str) else "N/A"
-            perm_rows.append([op_name, role_name, perm, note])
+
+        pairs: list[str] = []
+        if role_names:
+            for role_name in role_names:
+                perm_value = per_role.get(role_name)
+                perm = perm_value.strip() if isinstance(perm_value, str) and perm_value.strip() else "N/A"
+                pairs.append(f"{role_name}={perm}")
+
+            for role_name, perm_value in per_role.items():
+                if not isinstance(role_name, str) or role_name in role_name_set:
+                    continue
+                perm = perm_value.strip() if isinstance(perm_value, str) and perm_value.strip() else "N/A"
+                pairs.append(f"{role_name}={perm}")
+        else:
+            for role_name, perm_value in per_role.items():
+                if not isinstance(role_name, str):
+                    continue
+                perm = perm_value.strip() if isinstance(perm_value, str) and perm_value.strip() else "N/A"
+                pairs.append(f"{role_name}={perm}")
+
+        perm_text = "<br>".join(pairs) if pairs else "N/A"
+        perm_rows.append([op_name, perm_text, note])
     lines.append(_md_table(tables["permission_matrix"], perm_rows))
     lines.append("")
 

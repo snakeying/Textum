@@ -56,6 +56,7 @@ Textum 通过 `textum` skill 路由触发，4 个阶段依次进行：
 | 🏗️ Scaffold | 技术决策 → 门禁 → 渲染 | `docs/GLOBAL-CONTEXT.md` |
 | 🧩 Split | Story 拆分 → 双重门禁 → 依赖图 | `docs/stories/*.json` |
 | 💻 Story | 单 Story 门禁 → 执行包 → 实现 | 代码！ |
+> 🧪 **试验性功能**：`Story 批量执行` 支持批量执行多个 Story（如 `1/2/3`），按顺序执行、不回滚。此功能仍在试验阶段，请自行评估风险后使用。
 
 **建议**：每个阶段开新窗口，减少上下文污染。
 

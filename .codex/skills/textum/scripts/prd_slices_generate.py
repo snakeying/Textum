@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import shutil
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from prd_pack_types import Failure
 from prd_slices_types import SliceBudget
@@ -73,6 +73,29 @@ def generate_prd_slices(
 
     failures: list[Failure] = []
 
+    def write_chunked_parts(
+        *,
+        kind: str,
+        items: list[Any],
+        build_obj: Callable[[list[Any]], dict[str, Any]],
+        loc: str,
+        item_label: str,
+        single_filename: str,
+        part_filename: Callable[[int], str],
+        count_from_obj: Callable[[dict[str, Any]], int],
+        id_list_from_obj: Callable[[dict[str, Any]], list[str]] | None = None,
+    ) -> None:
+        parts, part_failures = chunk_list(items, build_obj, budget=budget, loc=loc, item_label=item_label)
+        failures.extend(part_failures)
+        for part_index, part_obj in enumerate(parts, start=1):
+            filename = single_filename if len(parts) == 1 else part_filename(part_index)
+            failures.extend(write_part(kind, filename, part_obj, count=count_from_obj(part_obj)))
+            if id_list_from_obj is None:
+                continue
+            first_id, last_id = id_range(id_list_from_obj(part_obj))
+            if first_id and last_id:
+                parts_index[-1]["id_range"] = f"{first_id}..{last_id}"
+
     overview = {
         "schema_version": "prd-slice-overview@v1",
         "source": source,
@@ -80,12 +103,99 @@ def generate_prd_slices(
         "goals": prd_pack.get("goals"),
         "non_goals": prd_pack.get("non_goals"),
         "scope": prd_pack.get("scope"),
-        "assumptions_constraints": prd_pack.get("assumptions_constraints"),
-        "roles": prd_pack.get("roles"),
-        "permission_matrix": prd_pack.get("permission_matrix"),
-        "nfr": prd_pack.get("nfr"),
     }
     failures += write_part("overview", "overview.json", overview)
+
+    assumptions_constraints_items = (
+        prd_pack.get("assumptions_constraints") if isinstance(prd_pack.get("assumptions_constraints"), list) else []
+    )
+
+    def build_assumptions_constraints(part_items: list[Any]) -> dict[str, Any]:
+        return {
+            "schema_version": "prd-slice-assumptions-constraints@v1",
+            "source": source,
+            "assumptions_constraints": part_items,
+        }
+
+    write_chunked_parts(
+        kind="assumptions_constraints",
+        items=assumptions_constraints_items,
+        build_obj=build_assumptions_constraints,
+        loc="$.assumptions_constraints",
+        item_label="assumption/constraint",
+        single_filename="assumptions_constraints.json",
+        part_filename=lambda i: f"assumptions_constraints.part-{i:03d}.json",
+        count_from_obj=lambda obj: len(obj.get("assumptions_constraints", []))
+        if isinstance(obj.get("assumptions_constraints"), list)
+        else 0,
+    )
+
+    roles_items = prd_pack.get("roles") if isinstance(prd_pack.get("roles"), list) else []
+
+    def build_roles(part_items: list[Any]) -> dict[str, Any]:
+        return {
+            "schema_version": "prd-slice-roles@v1",
+            "source": source,
+            "roles": part_items,
+        }
+
+    write_chunked_parts(
+        kind="roles",
+        items=roles_items,
+        build_obj=build_roles,
+        loc="$.roles",
+        item_label="role",
+        single_filename="roles.json",
+        part_filename=lambda i: f"roles.part-{i:03d}.json",
+        count_from_obj=lambda obj: len(obj.get("roles", [])) if isinstance(obj.get("roles"), list) else 0,
+    )
+
+    permission_matrix_obj = (
+        prd_pack.get("permission_matrix") if isinstance(prd_pack.get("permission_matrix"), dict) else {}
+    )
+    permission_ops = (
+        permission_matrix_obj.get("operations") if isinstance(permission_matrix_obj.get("operations"), list) else []
+    )
+
+    def build_permission_ops(part_items: list[Any]) -> dict[str, Any]:
+        return {
+            "schema_version": "prd-slice-permission-matrix-operations@v1",
+            "source": source,
+            "permission_matrix": {"operations": part_items},
+        }
+
+    write_chunked_parts(
+        kind="permission_matrix_operations",
+        items=permission_ops,
+        build_obj=build_permission_ops,
+        loc="$.permission_matrix.operations",
+        item_label="permission operation",
+        single_filename="permission_matrix_operations.json",
+        part_filename=lambda i: f"permission_matrix_operations.part-{i:03d}.json",
+        count_from_obj=lambda obj: len(obj.get("permission_matrix", {}).get("operations", []))
+        if isinstance(obj.get("permission_matrix"), dict)
+        else 0,
+    )
+
+    nfr_items = prd_pack.get("nfr") if isinstance(prd_pack.get("nfr"), list) else []
+
+    def build_nfr(part_items: list[Any]) -> dict[str, Any]:
+        return {
+            "schema_version": "prd-slice-nfr@v1",
+            "source": source,
+            "nfr": part_items,
+        }
+
+    write_chunked_parts(
+        kind="nfr",
+        items=nfr_items,
+        build_obj=build_nfr,
+        loc="$.nfr",
+        item_label="nfr item",
+        single_filename="nfr.json",
+        part_filename=lambda i: f"nfr.part-{i:03d}.json",
+        count_from_obj=lambda obj: len(obj.get("nfr", [])) if isinstance(obj.get("nfr"), list) else 0,
+    )
 
     states = {
         "schema_version": "prd-slice-states-enums@v1",
@@ -128,22 +238,23 @@ def generate_prd_slices(
             "api": {"endpoints": part_items},
         }
 
-    api_parts, api_part_failures = chunk_list(
-        api_endpoints,
-        build_api_endpoints,
-        budget=budget,
+    write_chunked_parts(
+        kind="api_endpoints",
+        items=api_endpoints,
+        build_obj=build_api_endpoints,
         loc="$.api.endpoints",
         item_label="api endpoint",
+        single_filename="api_endpoints.json",
+        part_filename=lambda i: f"api_endpoints.part-{i:03d}.json",
+        count_from_obj=lambda obj: len(obj.get("api", {}).get("endpoints", [])) if isinstance(obj.get("api"), dict) else 0,
+        id_list_from_obj=lambda obj: [
+            e.get("id")
+            for e in obj.get("api", {}).get("endpoints", [])
+            if isinstance(e, dict) and isinstance(e.get("id"), str)
+        ]
+        if isinstance(obj.get("api"), dict)
+        else [],
     )
-    failures += api_part_failures
-    for part_index, part_obj in enumerate(api_parts, start=1):
-        endpoints = part_obj.get("api", {}).get("endpoints", [])
-        endpoint_ids = [e.get("id") for e in endpoints if isinstance(e, dict) and isinstance(e.get("id"), str)]
-        first_id, last_id = id_range(endpoint_ids)
-        filename = "api_endpoints.json" if len(api_parts) == 1 else f"api_endpoints.part-{part_index:03d}.json"
-        failures += write_part("api_endpoints", filename, part_obj, count=len(endpoints))
-        if first_id and last_id:
-            parts_index[-1]["id_range"] = f"{first_id}..{last_id}"
 
     dm_obj = prd_pack.get("data_model") if isinstance(prd_pack.get("data_model"), dict) else {}
     dm_meta = dict(dm_obj)
@@ -163,22 +274,25 @@ def generate_prd_slices(
             "data_model": {"tables": part_items},
         }
 
-    dm_parts, dm_part_failures = chunk_list(
-        dm_tables,
-        build_dm_tables,
-        budget=budget,
+    write_chunked_parts(
+        kind="data_model_tables",
+        items=dm_tables,
+        build_obj=build_dm_tables,
         loc="$.data_model.tables",
         item_label="data model table",
+        single_filename="data_model_tables.json",
+        part_filename=lambda i: f"data_model_tables.part-{i:03d}.json",
+        count_from_obj=lambda obj: len(obj.get("data_model", {}).get("tables", []))
+        if isinstance(obj.get("data_model"), dict)
+        else 0,
+        id_list_from_obj=lambda obj: [
+            t.get("id")
+            for t in obj.get("data_model", {}).get("tables", [])
+            if isinstance(t, dict) and isinstance(t.get("id"), str)
+        ]
+        if isinstance(obj.get("data_model"), dict)
+        else [],
     )
-    failures += dm_part_failures
-    for part_index, part_obj in enumerate(dm_parts, start=1):
-        tables = part_obj.get("data_model", {}).get("tables", [])
-        table_ids = [t.get("id") for t in tables if isinstance(t, dict) and isinstance(t.get("id"), str)]
-        first_id, last_id = id_range(table_ids)
-        filename = "data_model_tables.json" if len(dm_parts) == 1 else f"data_model_tables.part-{part_index:03d}.json"
-        failures += write_part("data_model_tables", filename, part_obj, count=len(tables))
-        if first_id and last_id:
-            parts_index[-1]["id_range"] = f"{first_id}..{last_id}"
 
     modules = prd_pack.get("modules") if isinstance(prd_pack.get("modules"), list) else []
 
@@ -189,22 +303,21 @@ def generate_prd_slices(
             "modules": part_items,
         }
 
-    module_parts, module_part_failures = chunk_list(
-        modules,
-        build_modules,
-        budget=budget,
+    write_chunked_parts(
+        kind="modules",
+        items=modules,
+        build_obj=build_modules,
         loc="$.modules",
         item_label="module",
+        single_filename="modules.json",
+        part_filename=lambda i: f"modules.part-{i:03d}.json",
+        count_from_obj=lambda obj: len(obj.get("modules", [])) if isinstance(obj.get("modules"), list) else 0,
+        id_list_from_obj=lambda obj: [
+            m.get("id") for m in obj.get("modules", []) if isinstance(m, dict) and isinstance(m.get("id"), str)
+        ]
+        if isinstance(obj.get("modules"), list)
+        else [],
     )
-    failures += module_part_failures
-    for part_index, part_obj in enumerate(module_parts, start=1):
-        part_modules = part_obj.get("modules", [])
-        module_ids = [m.get("id") for m in part_modules if isinstance(m, dict) and isinstance(m.get("id"), str)]
-        first_id, last_id = id_range(module_ids)
-        filename = "modules.json" if len(module_parts) == 1 else f"modules.part-{part_index:03d}.json"
-        failures += write_part("modules", filename, part_obj, count=len(part_modules))
-        if first_id and last_id:
-            parts_index[-1]["id_range"] = f"{first_id}..{last_id}"
 
     index_obj = {
         "schema_version": "prd-slices-index@v1",
@@ -227,4 +340,3 @@ def generate_prd_slices(
     written.append(index_path)
 
     return written, failures
-
