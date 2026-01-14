@@ -1,6 +1,6 @@
 # Stage 2a: Scaffold Plan (write JSON scaffold-pack)
 
-Read: `docs/prd-pack.json` | Write: `docs/scaffold-pack.json` (pure JSON; no ``` blocks) | Init: `uv run --project .codex/skills/textum/scripts textum scaffold init`
+Read: `docs/prd-pack.json` | Write: `docs/scaffold-pack.json` (pure JSON; no ``` blocks) 
 
 Goal: write **confirmed technical decisions only** into `docs/scaffold-pack.json` (single source of truth).
 

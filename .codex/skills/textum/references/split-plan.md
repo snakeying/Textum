@@ -9,9 +9,6 @@ Read (minimal, low-noise):
 Write:
 - `docs/split-plan-pack.json` (pure JSON; no ``` blocks)
 
-Init:
-- `uv run --project .codex/skills/textum/scripts textum split plan init`
-
 Goal: write **confirmed planning decisions only** (story boundaries/order, module ownership, API ownership) until the `READY` gate passes.
 
 ## Output rules (must follow)
