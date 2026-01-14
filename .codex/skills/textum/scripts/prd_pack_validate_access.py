@@ -97,7 +97,6 @@ def validate_roles_and_permission_matrix(prd_pack: dict[str, Any], failures: lis
                         problem=f"invalid permission: {perm!r}",
                         expected="A/D/O",
                         impact="permission matrix is invalid",
-                        fix=f"set {op_loc}.per_role.{role_name} to A, D, or O",
+                        fix=f"set {op_loc}.per_role.{role_name} to one of A/D/O",
                     )
                 )
-

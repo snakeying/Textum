@@ -31,7 +31,7 @@ def validate_business_rules_and_api(prd_pack: dict[str, Any], failures: list[Fai
                 problem=f"has_api must be boolean, got {type(has_api).__name__}",
                 expected="true or false",
                 impact="API rules cannot be applied",
-                fix="set api.has_api to true or false",
+                fix="set api.has_api to a boolean value",
             )
         )
 
@@ -73,4 +73,3 @@ def validate_business_rules_and_api(prd_pack: dict[str, Any], failures: list[Fai
         _require_str(endpoint_obj.get("method"), f"{endpoint_loc}.method", failures)
         _require_str(endpoint_obj.get("path"), f"{endpoint_loc}.path", failures)
         _require_str(endpoint_obj.get("permission"), f"{endpoint_loc}.permission", failures)
-

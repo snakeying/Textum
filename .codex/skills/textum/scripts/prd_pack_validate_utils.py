@@ -182,7 +182,7 @@ def _validate_landing_tokens(
                         problem=f"table id not found: {table_ref}",
                         expected="DB:TBL-### must exist in data_model.tables[].id",
                         impact="cannot resolve table",
-                        fix="add the table to data_model.tables or fix the token",
+                        fix=f"add data_model.tables[] entry with id={table_ref}",
                     )
                 )
             continue

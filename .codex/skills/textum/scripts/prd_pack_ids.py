@@ -59,7 +59,7 @@ def _assign_seq_ids(
                     problem=f"id must be string or null, got {type(raw_id).__name__}",
                     expected="null or a valid ID string",
                     impact="ID policy broken",
-                    fix=f"set {loc_prefix}[{index}].{id_field} to null or a valid ID",
+                    fix=f"set {loc_prefix}[{index}].{id_field} to null",
                 )
             )
             continue
@@ -81,7 +81,7 @@ def _assign_seq_ids(
                     problem=f"duplicate id: {raw_id}",
                     expected="unique IDs",
                     impact="anchors/refs become ambiguous",
-                    fix=f"deduplicate {prefix} IDs (keep one, set others to null)",
+                    fix=f"deduplicate {prefix} IDs by setting duplicates to null",
                 )
             )
             continue

@@ -7,6 +7,7 @@ from prd_pack_types import Failure
 from prd_pack_validate_access import validate_roles_and_permission_matrix
 from prd_pack_validate_modules import validate_data_model_and_modules
 from prd_pack_validate_project import validate_project_and_scope
+from prd_pack_validate_refs import validate_internal_refs
 from prd_pack_validate_rules_api import validate_business_rules_and_api
 
 
@@ -29,6 +30,7 @@ def validate_prd_pack(prd_pack: dict[str, Any]) -> list[Failure]:
     validate_roles_and_permission_matrix(prd_pack, failures)
     validate_data_model_and_modules(prd_pack, failures)
     validate_business_rules_and_api(prd_pack, failures)
+    validate_internal_refs(prd_pack, failures)
 
     return failures
 

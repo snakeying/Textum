@@ -28,7 +28,7 @@ class SliceWriter:
                     problem=f"slice exceeds budget: {lines} lines, {chars} chars",
                     expected=f"<= {self.budget.max_lines} lines and <= {self.budget.max_chars} chars",
                     impact="slice would pollute model attention/context",
-                    fix="increase slice budget or ensure the slice is chunked",
+                    fix="increase slice budget (max_lines/max_chars)",
                 )
             )
             return False
@@ -85,7 +85,7 @@ class SliceWriter:
                     problem=f"index exceeds budget: {index_lines} lines, {index_chars} chars",
                     expected=f"<= {self.budget.max_lines} lines and <= {self.budget.max_chars} chars",
                     impact="index would pollute model attention/context",
-                    fix="reduce index metadata (e.g., remove id ranges) or increase slice budget",
+                    fix="increase slice budget (max_lines/max_chars)",
                 )
             )
         self.written.append(index_path)
