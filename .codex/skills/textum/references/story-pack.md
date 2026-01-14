@@ -18,7 +18,7 @@ Ask the user for the story number `n` (e.g. `1`), then run (workspace root):
 
 ## Output rule
 
-- If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: Split Generate`
+- If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: <stage>` (fail-fast; computed from the `FAIL` list)
 - If command prints `PASS`: output:
   - `PASS`
   - `entry: docs/story-exec/story-###-<slug>/index.json`

@@ -19,7 +19,7 @@ Write:
 ## Steps
 
 1) Ensure exec pack exists:
-   - If missing: ask the user to run `uv run --project .codex/skills/textum/scripts textum story pack --n <n>`, then stop.
+   - If missing: stop and output a `FAIL` list (each item must include `loc/problem/expected/impact/fix`; `fix` is one action), then one line: `next: Story Pack`
 2) Load `index.json`, then load each file in `read[]`.
 3) Implement minimal changes to satisfy all `feature_points` and `api_endpoints` in `story.json`.
 4) Verification:
@@ -34,4 +34,4 @@ Write:
 - `Key Changes`: only “file path + 1-line change”
 - `Verification`: each executed command → `PASS/FAIL`
 - `DECISION`: only if needed
-- `Next`: `N/A`
+- `Next`: `N/A` (if preconditions fail: output `FAIL` list + `next:` and stop)

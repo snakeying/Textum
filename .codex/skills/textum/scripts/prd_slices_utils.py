@@ -66,7 +66,7 @@ def chunk_list(
                         problem=f"empty {item_label} slice exceeds budget",
                         expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
                         impact="cannot produce low-noise slices",
-                        fix="increase slice budget or reduce slice metadata",
+                        fix="reduce slice metadata",
                     )
                 ],
             )
@@ -94,7 +94,7 @@ def chunk_list(
                     problem=f"single {item_label} item exceeds budget: {single_lines} lines, {single_chars} chars",
                     expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
                     impact="cannot auto-chunk this item further",
-                    fix="increase slice budget or split the item content in prd-pack.json",
+                    fix="reduce this item content in docs/prd-pack.json",
                 )
             )
             return [], failures
@@ -106,4 +106,3 @@ def chunk_list(
         parts.append(build_obj(current))
 
     return parts, failures
-

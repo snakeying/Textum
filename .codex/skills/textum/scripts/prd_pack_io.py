@@ -31,7 +31,7 @@ def read_prd_pack(path: Path) -> tuple[dict[str, Any] | None, list[Failure]]:
                 problem=f"invalid JSON: {error.msg} at line {error.lineno} col {error.colno}",
                 expected="valid JSON document",
                 impact="cannot proceed",
-                fix=f"fix JSON syntax in {path.as_posix()}",
+                fix="rewrite docs/prd-pack.json as valid JSON",
             )
         ]
     if not isinstance(data, dict):

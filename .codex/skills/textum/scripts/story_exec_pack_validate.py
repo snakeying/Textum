@@ -8,7 +8,7 @@ from prd_slices_types import SliceBudget
 from split_pack_io import read_json_object
 from story_exec_types import STORY_EXEC_INDEX_FILENAME, STORY_EXEC_INDEX_SCHEMA_VERSION
 
-def _scan_text(text: str, *, loc: str) -> list[Failure]:
+def _scan_text(text: str, *, loc: str, regen_fix: str) -> list[Failure]:
     failures: list[Failure] = []
     if "```" in text:
         failures.append(
@@ -17,7 +17,7 @@ def _scan_text(text: str, *, loc: str) -> list[Failure]:
                 problem="contains fenced code block marker ```",
                 expected="no ``` in exec pack files",
                 impact="would pollute model attention/context",
-                fix=f"remove ``` from {loc}",
+                fix=regen_fix,
             )
         )
     if PLACEHOLDER_SENTINEL in text:
@@ -27,7 +27,7 @@ def _scan_text(text: str, *, loc: str) -> list[Failure]:
                 problem=f"contains placeholder sentinel {PLACEHOLDER_SENTINEL}",
                 expected="no placeholders in exec pack files",
                 impact="ambiguous execution instructions",
-                fix=f"remove {PLACEHOLDER_SENTINEL} from {loc}",
+                fix=regen_fix,
             )
         )
     return failures
@@ -44,7 +44,7 @@ def _check_budget(path: Path, *, text: str, budget: SliceBudget) -> list[Failure
             problem=f"file exceeds budget: {lines} lines, {chars} chars",
             expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
             impact="would pollute model attention/context",
-            fix="split the story into smaller stories",
+            fix="split this story into smaller stories in docs/split-plan-pack.json",
         )
     ]
 
@@ -53,10 +53,11 @@ def check_story_exec_pack(*, workspace_root: Path, exec_dir: Path, budget: Slice
     failures: list[Failure] = []
     workspace_root = workspace_root.resolve()
     exec_dir = exec_dir.resolve()
+    exec_dir_fix = f"regenerate exec pack under {exec_dir.as_posix()}"
     index_path = exec_dir / STORY_EXEC_INDEX_FILENAME
     index_obj, index_failures = read_json_object(
         index_path,
-        missing_fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+        missing_fix=exec_dir_fix,
     )
     if index_failures:
         return index_failures
@@ -107,7 +108,7 @@ def check_story_exec_pack(*, workspace_root: Path, exec_dir: Path, budget: Slice
                     problem=f"absolute path is not allowed: {rel}",
                     expected="relative path under the exec pack directory",
                     impact="exec pack can escape its sandbox and pollute context",
-                    fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+                    fix=exec_dir_fix,
                 )
             )
             continue
@@ -120,7 +121,7 @@ def check_story_exec_pack(*, workspace_root: Path, exec_dir: Path, budget: Slice
                     problem=f"path escapes workspace: {rel}",
                     expected="path stays under workspace root",
                     impact="exec pack can escape its sandbox and pollute context",
-                    fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+                    fix=exec_dir_fix,
                 )
             )
             continue
@@ -132,7 +133,7 @@ def check_story_exec_pack(*, workspace_root: Path, exec_dir: Path, budget: Slice
                     problem=f"path is outside exec pack dir: {rel}",
                     expected=f"path stays under {exec_dir.as_posix()}",
                     impact="exec pack is not self-contained",
-                    fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+                    fix=exec_dir_fix,
                 )
             )
             continue
@@ -144,18 +145,18 @@ def check_story_exec_pack(*, workspace_root: Path, exec_dir: Path, budget: Slice
                     problem=f"missing referenced file: {rel}",
                     expected="referenced file exists",
                     impact="exec pack is incomplete",
-                    fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+                    fix=exec_dir_fix,
                 )
             )
             continue
 
         text = path.read_text(encoding="utf-8")
-        failures += _scan_text(text, loc=rel)
+        failures += _scan_text(text, loc=rel, regen_fix=exec_dir_fix)
         failures += _check_budget(path, text=text, budget=budget)
 
         obj, obj_failures = read_json_object(
             path,
-            missing_fix=f"regenerate exec pack under {exec_dir.as_posix()}",
+            missing_fix=exec_dir_fix,
         )
         failures += obj_failures
         if obj is None:

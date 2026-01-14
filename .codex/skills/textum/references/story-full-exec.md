@@ -17,7 +17,7 @@ Write:
 ## Pre-check (fail-fast)
 
 For each `n` in order:
-- Ensure the exec pack exists; if missing, stop and ask the user to run: `uv run --project .codex/skills/textum/scripts textum story pack --n <n>`
+- Ensure the exec pack exists; if missing, output `FAIL` list + `next: Story Pack` and stop
 
 ## Execution rules (continue; no rollback)
 

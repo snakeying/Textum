@@ -23,7 +23,7 @@ def find_story_source(stories_dir: Path, *, n: int) -> tuple[Path | None, list[F
                 problem=f"story file not found for n={n}",
                 expected=f"one file matching story-{n:03d}-*.json under docs/stories/",
                 impact="cannot proceed",
-                fix="run: textum split generate",
+                fix=f"create docs/stories/story-{n:03d}-*.json",
             )
         ]
     if len(matches) > 1:

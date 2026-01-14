@@ -19,6 +19,8 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
         "tbl_name_by_id": {},
     }
 
+    regenerate_story_fix = f"regenerate docs/stories/story-{n:03d}-*.json"
+
     if story.get("schema_version") != STORY_SCHEMA_VERSION:
         failures.append(
             Failure(
@@ -26,7 +28,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                 problem=f"schema_version must be {STORY_SCHEMA_VERSION}",
                 expected=STORY_SCHEMA_VERSION,
                 impact="cannot trust story format",
-                fix="regenerate story via: textum split generate",
+                fix=regenerate_story_fix,
             )
         )
 
@@ -39,7 +41,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                 problem=f"story must equal {expected_story_name}",
                 expected=expected_story_name,
                 impact="ambiguous story identity",
-                fix="regenerate story via: textum split generate",
+                fix=regenerate_story_fix,
             )
         )
     if story.get("n") != n:
@@ -49,7 +51,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                 problem=f"n must equal {n}",
                 expected=str(n),
                 impact="ambiguous story identity",
-                fix="regenerate story via: textum split generate",
+                fix=regenerate_story_fix,
             )
         )
 
@@ -61,7 +63,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                 problem=f"invalid slug: {slug!r}",
                 expected="kebab-case string",
                 impact="file naming and routing break",
-                fix="regenerate story via: textum split generate",
+                fix=regenerate_story_fix,
             )
         )
 
@@ -84,7 +86,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                         problem=f"invalid prereq story ref: {item!r}",
                         expected="Story <number>",
                         impact="dependency graph invalid",
-                        fix=f"fix $.prereq_stories[{idx}]",
+                        fix=regenerate_story_fix,
                     )
                 )
                 continue
@@ -97,7 +99,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                         problem=f"prereq story must be < {n}, got {item}",
                         expected="only earlier stories",
                         impact="cannot execute in order",
-                        fix=f"remove {item} from prereq_stories",
+                        fix=regenerate_story_fix,
                     )
                 )
     if len(set(prereq_numbers)) != len(prereq_numbers):
@@ -107,7 +109,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                 problem="duplicate prereq stories",
                 expected="unique prereq story refs",
                 impact="dependency graph ambiguous",
-                fix="dedupe $.prereq_stories",
+                fix=regenerate_story_fix,
             )
         )
 
@@ -148,7 +150,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                         problem=f"expected object, got {type(fp).__name__}",
                         expected="feature point object",
                         impact="cannot execute story",
-                        fix=f"fix $.details.feature_points[{idx}]",
+                        fix=regenerate_story_fix,
                     )
                 )
                 continue
@@ -160,7 +162,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                         problem=f"invalid fp id: {fp_id!r}",
                         expected="FP-###",
                         impact="cannot map feature points",
-                        fix=f"fix $.details.feature_points[{idx}].id",
+                        fix=regenerate_story_fix,
                     )
                 )
             else:
@@ -177,7 +179,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                                 problem=f"expected landing token string, got {type(item).__name__}",
                                 expected="string landing token",
                                 impact="landing tokens invalid",
-                                fix=f"fix $.details.feature_points[{idx}].landing[{j}]",
+                                fix=regenerate_story_fix,
                             )
                         )
                         continue
@@ -190,7 +192,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                                 problem=f"invalid landing token: {item}",
                                 expected=f"'N/A' or startswith one of {', '.join(LANDING_PREFIXES)}",
                                 impact="landing tokens invalid",
-                                fix=f"fix landing token at $.details.feature_points[{idx}].landing[{j}]",
+                                fix=regenerate_story_fix,
                             )
                         )
 
@@ -201,7 +203,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                 problem="fp_ids does not match feature_points ids",
                 expected="same set of FP-### ids",
                 impact="story is internally inconsistent",
-                fix="regenerate story via: textum split generate",
+                fix=regenerate_story_fix,
             )
         )
 
@@ -217,7 +219,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                         problem=f"expected object, got {type(ep).__name__}",
                         expected="api endpoint object",
                         impact="cannot implement API",
-                        fix=f"fix $.details.api_endpoints[{idx}]",
+                        fix=regenerate_story_fix,
                     )
                 )
                 continue
@@ -229,7 +231,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                         problem=f"invalid api id: {ep_id!r}",
                         expected="API-###",
                         impact="cannot map API work",
-                        fix=f"fix $.details.api_endpoints[{idx}].id",
+                        fix=regenerate_story_fix,
                     )
                 )
             else:
@@ -245,7 +247,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                 problem="refs.prd_api does not match api_endpoints ids",
                 expected="same set of API-### ids",
                 impact="story is internally inconsistent",
-                fix="regenerate story via: textum split generate",
+                fix=regenerate_story_fix,
             )
         )
 
@@ -262,7 +264,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                         problem=f"expected object, got {type(row).__name__}",
                         expected="table overview object",
                         impact="cannot implement data model",
-                        fix=f"fix $.details.tables_overview[{idx}]",
+                        fix=regenerate_story_fix,
                     )
                 )
                 continue
@@ -274,7 +276,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                         problem=f"invalid tbl id: {row_id!r}",
                         expected="TBL-###",
                         impact="cannot map data model work",
-                        fix=f"fix $.details.tables_overview[{idx}].id",
+                        fix=regenerate_story_fix,
                     )
                 )
             else:
@@ -292,7 +294,7 @@ def validate_story_internal(*, story: dict[str, Any], n: int) -> tuple[dict[str,
                 problem="refs.prd_tbl does not match tables_overview ids",
                 expected="same set of TBL-### ids",
                 impact="story is internally inconsistent",
-                fix="regenerate story via: textum split generate",
+                fix=regenerate_story_fix,
             )
         )
 

@@ -32,7 +32,7 @@ def check_story_source(
                 problem=f"story file exceeds budget: {lines} lines, {chars} chars",
                 expected=f"<= {max_lines} lines and <= {max_chars} chars",
                 impact="would pollute model attention/context",
-                fix="revise split plan to split this story into smaller stories",
+                fix=f"split Story {n} into smaller stories in docs/split-plan-pack.json",
             )
         )
 
@@ -41,6 +41,7 @@ def check_story_source(
 
     if prd_pack is not None:
         failures += validate_story_against_prd(
+            story_n=n,
             fp_ids=ctx.get("fp_ids", []),
             prd_api=ctx.get("prd_api", []),
             prd_tbl=ctx.get("prd_tbl", []),
@@ -51,6 +52,8 @@ def check_story_source(
         )
 
     if scaffold_pack is not None:
-        failures += validate_story_against_scaffold(modules=ctx.get("modules", []), scaffold_pack=scaffold_pack)
+        failures += validate_story_against_scaffold(
+            story_n=n, modules=ctx.get("modules", []), scaffold_pack=scaffold_pack
+        )
 
     return failures

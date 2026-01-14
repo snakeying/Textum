@@ -8,6 +8,7 @@ from story_check_utils import build_prd_maps, build_scaffold_module_ids
 
 def validate_story_against_prd(
     *,
+    story_n: int,
     fp_ids: list[str],
     prd_api: list[str],
     prd_tbl: list[str],
@@ -27,7 +28,7 @@ def validate_story_against_prd(
                     problem=f"unknown FP id in PRD: {fp_id}",
                     expected="fp id exists in docs/prd-pack.json modules[].feature_points[]",
                     impact="story references missing requirement",
-                    fix="run: textum split generate",
+                    fix=f"regenerate docs/stories/story-{story_n:03d}-*.json",
                 )
             )
 
@@ -40,7 +41,7 @@ def validate_story_against_prd(
                     problem=f"unknown API id in PRD: {api_id}",
                     expected="api id exists in docs/prd-pack.json api.endpoints[]",
                     impact="story references missing API requirement",
-                    fix="run: textum split generate",
+                    fix=f"regenerate docs/stories/story-{story_n:03d}-*.json",
                 )
             )
             continue
@@ -56,7 +57,7 @@ def validate_story_against_prd(
                         problem=f"method mismatch for {api_id}: story={ep.get('method')}, prd={prd_method}",
                         expected=str(prd_method),
                         impact="API contract mismatch",
-                        fix="regenerate story via: textum split generate",
+                        fix=f"regenerate docs/stories/story-{story_n:03d}-*.json",
                     )
                 )
             if prd_path and ep.get("path") != prd_path:
@@ -66,7 +67,7 @@ def validate_story_against_prd(
                         problem=f"path mismatch for {api_id}: story={ep.get('path')}, prd={prd_path}",
                         expected=str(prd_path),
                         impact="API contract mismatch",
-                        fix="regenerate story via: textum split generate",
+                        fix=f"regenerate docs/stories/story-{story_n:03d}-*.json",
                     )
                 )
 
@@ -79,7 +80,7 @@ def validate_story_against_prd(
                     problem=f"unknown table id in PRD: {tbl_id}",
                     expected="table id exists in docs/prd-pack.json data_model.tables[]",
                     impact="story references missing data model",
-                    fix="run: textum split generate",
+                    fix=f"regenerate docs/stories/story-{story_n:03d}-*.json",
                 )
             )
             continue
@@ -92,7 +93,7 @@ def validate_story_against_prd(
                     problem=f"table name mismatch for {tbl_id}: story={story_name}, prd={prd_name}",
                     expected=str(prd_name),
                     impact="data model mismatch",
-                    fix="regenerate story via: textum split generate",
+                    fix=f"regenerate docs/stories/story-{story_n:03d}-*.json",
                 )
             )
 
@@ -104,14 +105,16 @@ def validate_story_against_prd(
                     problem=f"unknown BR id in PRD: {br_id}",
                     expected="BR id exists in docs/prd-pack.json business_rules[]",
                     impact="story references missing business rule",
-                    fix="run: textum split generate",
+                    fix=f"regenerate docs/stories/story-{story_n:03d}-*.json",
                 )
             )
 
     return failures
 
 
-def validate_story_against_scaffold(*, modules: list[str], scaffold_pack: dict[str, Any]) -> list[Failure]:
+def validate_story_against_scaffold(
+    *, story_n: int, modules: list[str], scaffold_pack: dict[str, Any]
+) -> list[Failure]:
     failures: list[Failure] = []
     scaffold_module_ids = build_scaffold_module_ids(scaffold_pack)
     for idx, module_id in enumerate(modules):
@@ -122,7 +125,7 @@ def validate_story_against_scaffold(*, modules: list[str], scaffold_pack: dict[s
                     problem=f"unknown module id in scaffold extracted.modules_index: {module_id}",
                     expected="module id exists in docs/scaffold-pack.json extracted.modules_index[]",
                     impact="story module cannot be grounded",
-                    fix="run: textum scaffold check",
+                    fix="populate docs/scaffold-pack.json:$.extracted.modules_index",
                 )
             )
     return failures

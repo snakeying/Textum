@@ -15,7 +15,7 @@ def scan_story_text(text: str, *, path: str) -> list[Failure]:
                 problem="contains fenced code block marker ```",
                 expected="no ``` anywhere in the story file",
                 impact="would pollute model attention/context",
-                fix=f"remove ``` from {path}",
+                fix=f"regenerate {path}",
             )
         )
     if PLACEHOLDER_SENTINEL in text:
@@ -39,7 +39,7 @@ def require_dict(value: Any, *, loc: str) -> tuple[dict[str, Any] | None, list[F
                 problem=f"expected object, got {type(value).__name__}",
                 expected="JSON object",
                 impact="cannot validate story",
-                fix="rewrite this value as a JSON object",
+                fix="regenerate the story source file under docs/stories/",
             )
         ]
     return value, []
@@ -53,7 +53,7 @@ def require_list(value: Any, *, loc: str) -> tuple[list[Any] | None, list[Failur
                 problem=f"expected array, got {type(value).__name__}",
                 expected="JSON array",
                 impact="cannot validate story",
-                fix="rewrite this value as a JSON array",
+                fix="regenerate the story source file under docs/stories/",
             )
         ]
     return value, []
@@ -67,7 +67,7 @@ def require_non_empty_str(value: Any, *, loc: str) -> list[Failure]:
                 problem="expected non-empty string",
                 expected="non-empty string",
                 impact="story is not actionable",
-                fix="fill this field with a non-empty string",
+                fix="regenerate the story source file under docs/stories/",
             )
         ]
     return []
@@ -88,7 +88,7 @@ def check_id_list(value: Any, *, loc: str, pattern: Any, label: str) -> tuple[li
                     problem=f"expected {label} id string, got {type(item).__name__}",
                     expected=f"{label} id string",
                     impact="invalid refs",
-                    fix="rewrite this item as a string id",
+                    fix="regenerate the story source file under docs/stories/",
                 )
             )
             continue
@@ -99,7 +99,7 @@ def check_id_list(value: Any, *, loc: str, pattern: Any, label: str) -> tuple[li
                     problem=f"invalid {label} id: {item}",
                     expected=f"match pattern {pattern.pattern}",
                     impact="invalid refs",
-                    fix=f"fix the id at {loc}[{idx}]",
+                    fix="regenerate the story source file under docs/stories/",
                 )
             )
             continue
@@ -111,7 +111,7 @@ def check_id_list(value: Any, *, loc: str, pattern: Any, label: str) -> tuple[li
                 problem=f"duplicate {label} ids",
                 expected=f"unique {label} ids",
                 impact="ambiguous ownership/refs",
-                fix=f"dedupe {loc}",
+                fix="regenerate the story source file under docs/stories/",
             )
         )
     return result, failures

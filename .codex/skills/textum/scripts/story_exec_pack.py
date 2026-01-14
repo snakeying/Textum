@@ -6,10 +6,12 @@ from typing import Any
 
 from prd_pack_types import Failure
 from prd_slices_types import SliceBudget
-from prd_slices_utils import chunk_list, rel_posix, sha256_file, write_json
+from prd_slices_utils import chunk_list, measure_json, rel_posix, sha256_file, write_json
 from story_exec_types import (
     STORY_EXEC_CONTEXT_BASE_FILENAME,
     STORY_EXEC_CONTEXT_BASE_SCHEMA_VERSION,
+    STORY_EXEC_CONTEXT_BUSINESS_RULES_FILENAME,
+    STORY_EXEC_CONTEXT_BUSINESS_RULES_SCHEMA_VERSION,
     STORY_EXEC_CONTEXT_TABLES_FILENAME,
     STORY_EXEC_CONTEXT_TABLES_SCHEMA_VERSION,
     STORY_EXEC_INDEX_FILENAME,
@@ -51,7 +53,7 @@ def write_story_exec_pack(
                     problem=f"story snapshot exceeds budget: {story_lines} lines, {story_chars} chars",
                     expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
                     impact="cannot produce low-noise story exec pack",
-                    fix="revise split plan to split this story into smaller stories",
+                    fix="split this story into smaller stories in docs/split-plan-pack.json",
                 )
             ],
         )
@@ -77,7 +79,7 @@ def write_story_exec_pack(
                         problem=f"unknown table id in PRD: {tbl_id}",
                         expected="table id exists in docs/prd-pack.json data_model.tables[]",
                         impact="cannot build exec context",
-                        fix="run: textum split generate",
+                        fix=f"regenerate {rel_posix(story_source_path, workspace_root)}",
                     )
                 ],
             )
@@ -98,7 +100,7 @@ def write_story_exec_pack(
                         problem=f"unknown BR id in PRD: {br_id}",
                         expected="BR id exists in docs/prd-pack.json business_rules[]",
                         impact="cannot build exec context",
-                        fix="run: textum split generate",
+                        fix=f"regenerate {rel_posix(story_source_path, workspace_root)}",
                     )
                 ],
             )
@@ -137,24 +139,64 @@ def write_story_exec_pack(
         "coding_conventions": decisions.get("coding_conventions"),
         "validation_commands": decisions.get("validation_commands"),
         "api_meta": api_meta,
-        "business_rules": business_rules,
     }
     base_path = out_dir / STORY_EXEC_CONTEXT_BASE_FILENAME
     base_lines, base_chars = write_json(base_path, base_obj)
     if base_lines > budget.max_lines or base_chars > budget.max_chars:
+        base_candidates = {
+            k: v for k, v in base_obj.items() if k not in {"schema_version", "source", "budget"}
+        }
+        largest_key: str | None = None
+        largest_chars: int = -1
+        for key, value in base_candidates.items():
+            _, chars = measure_json({key: value})
+            if chars > largest_chars:
+                largest_key = key
+                largest_chars = chars
+        key_loc = (
+            f"{rel_posix(base_path, workspace_root)}:$.{largest_key}"
+            if isinstance(largest_key, str) and largest_key
+            else rel_posix(base_path, workspace_root)
+        )
+        key_fix_map: dict[str, str] = {
+            "tech_stack": "reduce docs/scaffold-pack.json:$.decisions.tech_stack",
+            "repo_structure": "reduce docs/scaffold-pack.json:$.decisions.repo_structure",
+            "coding_conventions": "reduce docs/scaffold-pack.json:$.decisions.coding_conventions",
+            "validation_commands": "reduce docs/scaffold-pack.json:$.decisions.validation_commands",
+            "modules": "reduce this story's modules in docs/split-plan-pack.json",
+        }
+        key_hint = f" (largest field: {largest_key})" if isinstance(largest_key, str) and largest_key else ""
+        fix = key_fix_map.get(str(largest_key), "reduce scaffold/prd context included in the exec pack")
         return (
             None,
             [],
             [
                 Failure(
-                    loc=rel_posix(base_path, workspace_root),
-                    problem=f"context base exceeds budget: {base_lines} lines, {base_chars} chars",
+                    loc=key_loc,
+                    problem=f"context base exceeds budget: {base_lines} lines, {base_chars} chars{key_hint}",
                     expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
                     impact="cannot produce low-noise story exec pack",
-                    fix="reduce scaffold/prd context included in the exec pack",
+                    fix=fix,
                 )
             ],
         )
+
+    def build_business_rules_obj(part_items: list[Any]) -> dict[str, Any]:
+        return {
+            "schema_version": STORY_EXEC_CONTEXT_BUSINESS_RULES_SCHEMA_VERSION,
+            "source": source,
+            "business_rules": part_items,
+        }
+
+    business_rules_parts, business_rules_failures = chunk_list(
+        business_rules,
+        build_business_rules_obj,
+        budget=budget,
+        loc="$.context.business_rules",
+        item_label="business_rule",
+    )
+    if business_rules_failures:
+        return None, [], business_rules_failures
 
     def build_tables_obj(part_items: list[Any]) -> dict[str, Any]:
         return {
@@ -174,6 +216,7 @@ def write_story_exec_pack(
         return None, [], table_failures
 
     written: list[Path] = [story_snapshot_path, base_path]
+    business_rules_paths: list[Path] = []
     table_paths: list[Path] = []
     files: list[dict[str, Any]] = [
         {
@@ -189,6 +232,44 @@ def write_story_exec_pack(
             "chars": base_chars,
         },
     ]
+
+    for idx, part_obj in enumerate(business_rules_parts, start=1):
+        if len(business_rules_parts) == 1:
+            filename = STORY_EXEC_CONTEXT_BUSINESS_RULES_FILENAME
+        else:
+            filename = f"context.business_rules.part-{idx:03d}.json"
+        path = out_dir / filename
+        lines, chars = write_json(path, part_obj)
+        if lines > budget.max_lines or chars > budget.max_chars:
+            return (
+                None,
+                [],
+                [
+                    Failure(
+                        loc=rel_posix(path, workspace_root),
+                        problem=f"business rules context exceeds budget: {lines} lines, {chars} chars",
+                        expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
+                        impact="cannot produce low-noise story exec pack",
+                        fix="reduce referenced business rules per story in docs/split-plan-pack.json",
+                    )
+                ],
+            )
+        business_rules_paths.append(path)
+        written.append(path)
+        rules_in_part = (
+            part_obj.get("business_rules", []) if isinstance(part_obj.get("business_rules"), list) else []
+        )
+        rule_ids = [r.get("id") for r in rules_in_part if isinstance(r, dict)]
+        files.append(
+            {
+                "kind": "context_business_rules",
+                "path": rel_posix(path, workspace_root),
+                "lines": lines,
+                "chars": chars,
+                "count": len(rule_ids),
+                "ids": [r for r in rule_ids if isinstance(r, str)],
+            }
+        )
 
     for idx, part_obj in enumerate(table_parts, start=1):
         if len(table_parts) == 1:
@@ -207,7 +288,7 @@ def write_story_exec_pack(
                         problem=f"tables context exceeds budget: {lines} lines, {chars} chars",
                         expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
                         impact="cannot produce low-noise story exec pack",
-                        fix="revise split plan to reduce referenced tables per story",
+                        fix="reduce referenced tables per story in docs/split-plan-pack.json",
                     )
                 ],
             )
@@ -236,6 +317,7 @@ def write_story_exec_pack(
             "title": story.get("title"),
         },
         "read": [rel_posix(story_snapshot_path, workspace_root), rel_posix(base_path, workspace_root)]
+        + [rel_posix(p, workspace_root) for p in business_rules_paths]
         + [rel_posix(p, workspace_root) for p in table_paths],
         "files": files,
     }

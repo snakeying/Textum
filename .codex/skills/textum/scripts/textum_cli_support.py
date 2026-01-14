@@ -139,7 +139,7 @@ def _require_scaffold_extracted_modules_index(
                 problem="missing extracted section",
                 expected="extracted populated by scaffold check",
                 impact="cannot validate story modules without high-noise failures",
-                fix="run: textum scaffold check",
+                fix="populate docs/scaffold-pack.json:$.extracted",
             )
         ]
 
@@ -151,7 +151,7 @@ def _require_scaffold_extracted_modules_index(
                 problem="missing extracted.modules_index",
                 expected="modules_index populated by scaffold check",
                 impact="cannot validate story modules without high-noise failures",
-                fix="run: textum scaffold check",
+                fix="populate docs/scaffold-pack.json:$.extracted.modules_index",
             )
         ]
 
@@ -172,8 +172,7 @@ def _require_scaffold_extracted_modules_index(
                 problem="modules_index is empty/unusable",
                 expected="modules_index contains PRD module ids",
                 impact="cannot validate story modules without high-noise failures",
-                fix="run: textum scaffold check",
+                fix="populate docs/scaffold-pack.json:$.extracted.modules_index",
             )
         ]
     return []
-
