@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from prd_pack_types import Failure
+from split_thresholds import is_threshold_hard_fail, threshold_decision_hits
 
 
 def evaluate_story_thresholds(
@@ -16,25 +17,19 @@ def evaluate_story_thresholds(
     failures: list[Failure],
     decisions: list[dict[str, Any]],
 ) -> None:
-    if api_refs >= 6 or tbl_refs >= 11 or feature_points >= 13:
+    if is_threshold_hard_fail(api_refs=api_refs, tbl_refs=tbl_refs, feature_points=feature_points):
         failures.append(
             Failure(
                 loc=str(story_file),
                 problem=f"oversized story: api_refs={api_refs}, tbl_refs={tbl_refs}, feature_points={feature_points}",
                 expected="api_refs<=5, tbl_refs<=10, feature_points<=12 (prefer smaller)",
-                impact="split stage likely to fail downstream",
-                fix="revise split plan to split/redistribute, then rerun split generate",
+                impact="fails Split Check1 thresholds",
+                fix="revise docs/split-plan-pack.json to split/redistribute scope",
             )
         )
         return
 
-    decision_hits: list[str] = []
-    if api_refs in (4, 5):
-        decision_hits.append(f"api_refs={api_refs} (4-5)")
-    if 7 <= tbl_refs <= 10:
-        decision_hits.append(f"tbl_refs={tbl_refs} (7-10)")
-    if feature_points in (9, 10, 11, 12):
-        decision_hits.append(f"feature_points={feature_points} (9-12)")
+    decision_hits = threshold_decision_hits(api_refs=api_refs, tbl_refs=tbl_refs, feature_points=feature_points)
 
     if len(decision_hits) >= 2:
         failures.append(
@@ -42,8 +37,8 @@ def evaluate_story_thresholds(
                 loc=str(story_file),
                 problem=f"oversized story (DECISION escalation): {', '.join(decision_hits)}",
                 expected="at most 1 DECISION-range hit per story",
-                impact="split stage likely to fail downstream",
-                fix="revise split plan to split/redistribute, then rerun split generate",
+                impact="fails Split Check1 thresholds",
+                fix="revise docs/split-plan-pack.json to split/redistribute scope",
             )
         )
         return
@@ -57,4 +52,3 @@ def evaluate_story_thresholds(
                 "suggested_action": "consider splitting or redistributing scope to reduce risk",
             }
         )
-

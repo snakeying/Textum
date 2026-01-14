@@ -40,7 +40,7 @@ def generate_split_check_index_pack(
                 problem="no story files found",
                 expected="at least 1 story-###-<slug>.json",
                 impact="cannot validate split output",
-                fix="run: textum split generate",
+                fix="generate docs/stories/story-###-<slug>.json",
             )
         )
         return None, failures, decisions
@@ -119,7 +119,7 @@ def generate_split_check_index_pack(
                     problem=f"file name mismatch: {path.name}",
                     expected=story_filename(n, slug),
                     impact="cannot validate split output",
-                    fix="rename/regenerate story files to match their n/slug",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -131,7 +131,7 @@ def generate_split_check_index_pack(
                     problem=f"duplicate story: {story_name}",
                     expected="unique story files",
                     impact="cannot validate split output",
-                    fix="remove duplicate story files and regenerate",
+                    fix="regenerate docs/stories/",
                 )
             )
         seen_story_names.add(story_name)
@@ -142,7 +142,7 @@ def generate_split_check_index_pack(
                     problem=f"duplicate story number: {n}",
                     expected="unique story numbers",
                     impact="cannot validate split output",
-                    fix="remove duplicate story files and regenerate",
+                    fix="regenerate docs/stories/",
                 )
             )
         seen_n.add(n)
@@ -154,7 +154,7 @@ def generate_split_check_index_pack(
                     problem=f"story not found in split plan: {story_name}",
                     expected="story exists in split-plan-pack.json stories[]",
                     impact="stale story file",
-                    fix="delete stale story files and rerun: textum split generate",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -175,7 +175,7 @@ def generate_split_check_index_pack(
                     problem="modules mismatch vs split plan",
                     expected=f"modules == {sorted(set(plan_modules))}",
                     impact="split output diverges from plan",
-                    fix="rerun: textum split generate (do not hand-edit story modules)",
+                    fix="regenerate docs/stories/",
                 )
             )
         if set(plan_prereq) != prereq_set:
@@ -185,7 +185,7 @@ def generate_split_check_index_pack(
                     problem="prereq_stories mismatch vs split plan",
                     expected=f"prereq_stories == {sorted(set(plan_prereq))}",
                     impact="dependency graph diverges from plan",
-                    fix="rerun: textum split generate (do not hand-edit prereq_stories)",
+                    fix="regenerate docs/stories/",
                 )
             )
 
@@ -198,7 +198,7 @@ def generate_split_check_index_pack(
                     problem="fp_ids is empty",
                     expected="at least 1 FP-###",
                     impact="story has no scope",
-                    fix="fix split-plan modules mapping, then rerun: textum split generate",
+                    fix="fix docs/split-plan-pack.json stories[].modules mapping",
                 )
             )
 
@@ -235,7 +235,7 @@ def generate_split_check_index_pack(
                     problem=f"story file too large: lines={lines}, chars={chars}",
                     expected=f"lines<={max_story_lines} and chars<={max_story_chars}",
                     impact="noise budget exceeded",
-                    fix="reduce story.details verbosity (or add slicing later), then regenerate",
+                    fix="revise docs/split-plan-pack.json to split/redistribute scope",
                 )
             )
 
@@ -293,4 +293,3 @@ def generate_split_check_index_pack(
 
     write_json(out_path, index_pack)
     return index_pack, [], decisions
-

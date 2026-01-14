@@ -125,7 +125,7 @@ def generate_story_files(
                     problem=f"unknown feature points assigned: {', '.join(extra)}",
                     expected="fp ids must come from PRD",
                     impact="plan is inconsistent",
-                    fix="regenerate stories after fixing PRD ids and split-plan",
+                    fix="fix docs/prd-pack.json modules[].feature_points[].id to use valid FP-### ids",
                 )
             )
         return [], failures

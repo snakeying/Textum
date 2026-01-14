@@ -14,7 +14,6 @@ def validate_extracted(scaffold_pack: dict[str, Any], failures: list[Failure]) -
                 problem=f"expected object, got {type(extracted).__name__}",
                 expected="object",
                 impact="extracted PRD context is missing",
-                fix="run: textum scaffold check (it auto-populates extracted)",
+                fix="populate docs/scaffold-pack.json:$.extracted",
             )
         )
-

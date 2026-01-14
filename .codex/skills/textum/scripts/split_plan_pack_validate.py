@@ -68,7 +68,7 @@ def validate_split_plan_pack(split_plan_pack: dict[str, Any], *, prd_pack: dict[
                 problem="PRD modules missing or invalid",
                 expected="docs/prd-pack.json has modules[].id like M-01",
                 impact="cannot validate module coverage",
-                fix="run: textum prd check, then ensure modules[] is filled",
+                fix="fill docs/prd-pack.json modules[].id with valid M-01 ids",
             )
         )
         return failures
@@ -93,4 +93,3 @@ def validate_split_plan_pack(split_plan_pack: dict[str, Any], *, prd_pack: dict[
 def check_split_plan_pack(split_plan_pack: dict[str, Any], *, prd_pack: dict[str, Any]) -> tuple[bool, list[Failure]]:
     failures = validate_split_plan_pack(split_plan_pack, prd_pack=prd_pack)
     return (len(failures) == 0), failures
-

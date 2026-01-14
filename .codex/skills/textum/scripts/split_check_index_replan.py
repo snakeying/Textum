@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from split_thresholds import is_threshold_fail
+
 
 def build_split_replan_pack(*, index_pack: dict[str, Any]) -> dict[str, Any]:
     oversized: list[dict[str, Any]] = []
@@ -18,19 +20,7 @@ def build_split_replan_pack(*, index_pack: dict[str, Any]) -> dict[str, Any]:
         if not (isinstance(api_refs, int) and isinstance(tbl_refs, int) and isinstance(feature_points, int)):
             continue
 
-        if api_refs >= 6 or tbl_refs >= 11 or feature_points >= 13:
-            is_fail = True
-        else:
-            decision_hits = 0
-            if api_refs in (4, 5):
-                decision_hits += 1
-            if 7 <= tbl_refs <= 10:
-                decision_hits += 1
-            if feature_points in (9, 10, 11, 12):
-                decision_hits += 1
-            is_fail = decision_hits >= 2
-
-        if not is_fail:
+        if not is_threshold_fail(api_refs=api_refs, tbl_refs=tbl_refs, feature_points=feature_points):
             continue
 
         refs = story.get("refs") if isinstance(story.get("refs"), dict) else {}
@@ -57,4 +47,3 @@ def build_split_replan_pack(*, index_pack: dict[str, Any]) -> dict[str, Any]:
             "After splitting, every story must pass thresholds; otherwise split again.",
         ],
     }
-

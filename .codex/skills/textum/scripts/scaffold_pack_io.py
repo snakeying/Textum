@@ -20,7 +20,7 @@ def read_scaffold_pack(path: Path) -> tuple[dict[str, Any] | None, list[Failure]
                 problem="file not found",
                 expected="file exists",
                 impact="cannot proceed",
-                fix="run: textum scaffold init",
+                fix="create docs/scaffold-pack.json",
             )
         ]
     try:
@@ -69,4 +69,3 @@ def init_scaffold_pack(template_path: Path, out_path: Path, *, force: bool) -> t
     _ensure_dir(out_path.parent)
     out_path.write_text(template_path.read_text(encoding="utf-8"), encoding="utf-8")
     return True, []
-

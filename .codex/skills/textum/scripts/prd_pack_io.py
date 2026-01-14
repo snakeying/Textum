@@ -19,7 +19,7 @@ def read_prd_pack(path: Path) -> tuple[dict[str, Any] | None, list[Failure]]:
                 problem="file not found",
                 expected="file exists",
                 impact="cannot proceed",
-                fix="run: textum prd init",
+                fix="create docs/prd-pack.json",
             )
         ]
     try:

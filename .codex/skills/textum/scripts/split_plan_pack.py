@@ -17,7 +17,7 @@ __all__ = [
 
 
 def read_split_plan_pack(path: Path) -> tuple[dict[str, Any] | None, list[Failure]]:
-    return read_json_object(path, missing_fix="run: textum split plan init")
+    return read_json_object(path, missing_fix="create docs/split-plan-pack.json")
 
 
 def write_split_plan_pack(path: Path, split_plan_pack: dict[str, Any]) -> None:
@@ -40,4 +40,3 @@ def init_split_plan_pack(template_path: Path, out_path: Path, *, force: bool) ->
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(template_path.read_text(encoding="utf-8"), encoding="utf-8")
     return True, []
-

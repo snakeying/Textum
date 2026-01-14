@@ -22,7 +22,7 @@ def validate_split_refs(
                 problem=f"unexpected schema_version: {index_pack.get('schema_version')!r}",
                 expected="'split-check-index-pack@v1'",
                 impact="cannot validate split refs",
-                fix="rerun: textum split check1",
+                fix="regenerate docs/split-check-index-pack.json",
             )
         )
         return failures
@@ -36,7 +36,7 @@ def validate_split_refs(
                 problem=f"expected object, got {type(split_plan).__name__}",
                 expected="object",
                 impact="cannot validate split completeness",
-                fix="rerun: textum split check1",
+                fix="regenerate docs/split-check-index-pack.json",
             )
         )
     else:
@@ -48,7 +48,7 @@ def validate_split_refs(
                     problem=f"expected int, got {type(story_count).__name__}",
                     expected="integer",
                     impact="cannot validate story file completeness",
-                    fix="rerun: textum split check1",
+                    fix="regenerate docs/split-check-index-pack.json",
                 )
             )
         else:
@@ -63,7 +63,7 @@ def validate_split_refs(
                 problem=f"expected array, got {type(stories).__name__}",
                 expected="array",
                 impact="cannot validate story file completeness",
-                fix="rerun: textum split check1",
+                fix="regenerate docs/split-check-index-pack.json",
             )
         )
     else:
@@ -78,7 +78,7 @@ def validate_split_refs(
                 ),
                 expected="split plan story_count matches generated story files count",
                 impact="execution plan is incomplete or out of date",
-                fix="rerun: textum split generate, then textum split check1, then textum split check2",
+                fix="regenerate docs/stories/",
             )
         )
 
@@ -90,7 +90,7 @@ def validate_split_refs(
                 problem=f"expected object, got {type(summary).__name__}",
                 expected="object",
                 impact="cannot validate split refs",
-                fix="rerun: textum split check1",
+                fix="regenerate docs/split-check-index-pack.json",
             )
         )
         return failures
@@ -103,7 +103,7 @@ def validate_split_refs(
                 problem=f"expected object, got {type(refs).__name__}",
                 expected="object",
                 impact="cannot validate split refs",
-                fix="rerun: textum split check1",
+                fix="regenerate docs/split-check-index-pack.json",
             )
         )
         return failures
@@ -125,7 +125,7 @@ def validate_split_refs(
                 problem=f"some PRD feature points are not covered by stories: {', '.join(missing_fp)}",
                 expected="every PRD FP-### covered by at least one story",
                 impact="requirements are missing in execution plan",
-                fix="revise split plan boundaries and rerun split generate + check1",
+                fix="revise docs/split-plan-pack.json boundaries to cover missing FP-###",
             )
         )
 
@@ -137,7 +137,7 @@ def validate_split_refs(
                 problem=f"unknown fp ids referenced: {', '.join(unknown_fp)}",
                 expected="fp ids exist in PRD modules[].feature_points[].id",
                 impact="index pack is inconsistent",
-                fix="rerun: textum split generate then textum split check1",
+                fix="fix docs/split-plan-pack.json stories[].fp_ids to use existing FP-### ids",
             )
         )
 
@@ -148,7 +148,7 @@ def validate_split_refs(
                 problem=f"unknown table id referenced: {tid}",
                 expected="TBL-### exists in PRD data_model.tables[].id",
                 impact="execution plan references unknown storage",
-                fix="fix PRD tables or landing tokens, then rerun split generate + check1",
+                fix="fix docs/prd-pack.json data_model.tables[].id to include the table id",
             )
         )
 
@@ -159,7 +159,7 @@ def validate_split_refs(
                 problem=f"unknown PRD business rule id referenced: {rid}",
                 expected="BR-### exists in PRD business_rules[].id",
                 impact="execution plan references unknown rule",
-                fix="fix PRD business_rules or story refs, then rerun split generate + check1",
+                fix="fix docs/prd-pack.json business_rules[].id to include the rule id",
             )
         )
 
@@ -170,7 +170,7 @@ def validate_split_refs(
                 problem=f"unknown GC business rule id referenced: {rid}",
                 expected="BR-### exists in scaffold-pack extracted.business_rules",
                 impact="execution plan references unknown rule",
-                fix="run: textum scaffold check, then rerun split generate + check1",
+                fix="refresh docs/scaffold-pack.json extracted.business_rules",
             )
         )
 
@@ -183,7 +183,7 @@ def validate_split_refs(
                 problem=f"P0 modules not covered: {', '.join(missing_p0)}",
                 expected="every P0 module appears in at least 1 story",
                 impact="critical scope is uncovered",
-                fix="revise split plan modules mapping and rerun split generate + check1",
+                fix="fix docs/split-plan-pack.json stories[].modules to cover all P0 modules",
             )
         )
 
@@ -195,7 +195,7 @@ def validate_split_refs(
                     problem="PRD has_api=false but endpoints are present",
                     expected="endpoints empty when has_api=false",
                     impact="PRD is contradictory",
-                    fix="run: textum prd check and fix api.has_api/endpoints",
+                    fix="fix docs/prd-pack.json api.has_api/endpoints consistency",
                 )
             )
         if len(s_api) != 0:
@@ -205,7 +205,7 @@ def validate_split_refs(
                     problem="PRD has_api=false but stories reference APIs",
                     expected="no API refs when PRD has_api=false",
                     impact="execution plan is contradictory",
-                    fix="remove API assignments from split plan and regenerate stories",
+                    fix="set docs/split-plan-pack.json api_assignments to []",
                 )
             )
     else:
@@ -218,7 +218,7 @@ def validate_split_refs(
                     problem=f"some PRD APIs are not covered by stories: {', '.join(missing_api)}",
                     expected="every PRD API-### assigned to exactly 1 story",
                     impact="API work has no owning story",
-                    fix="revise split plan API assignments and regenerate stories + index pack",
+                    fix="fix docs/split-plan-pack.json api_assignments to cover every PRD API-### exactly once",
                 )
             )
         if extra_api:
@@ -228,7 +228,7 @@ def validate_split_refs(
                     problem=f"unknown API ids referenced: {', '.join(extra_api)}",
                     expected="API ids exist in PRD api.endpoints[].id",
                     impact="execution plan references unknown endpoints",
-                    fix="rerun: textum split generate then textum split check1",
+                    fix="fix docs/split-plan-pack.json api_assignments to use existing PRD API-### ids",
                 )
             )
 

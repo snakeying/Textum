@@ -47,7 +47,7 @@ def validate_api_assignments(
                 problem="PRD has_api=true but no valid endpoint ids found",
                 expected="api.endpoints[].id like API-001",
                 impact="cannot plan API coverage",
-                fix="run: textum prd check and ensure api.endpoints[] is filled",
+                fix="fill docs/prd-pack.json api.endpoints[].id with valid API-### ids",
             )
         )
         return
@@ -144,4 +144,3 @@ def validate_api_assignments(
                     fix="split the story or redistribute API assignments to reduce per-story API count",
                 )
             )
-

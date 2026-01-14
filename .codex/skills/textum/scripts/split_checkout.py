@@ -17,7 +17,7 @@ def _read_story_json(path: Path) -> tuple[dict[str, Any] | None, str | None, lis
                 problem="file not found",
                 expected="file exists",
                 impact="cannot build dependency graph",
-                fix="run: textum split generate",
+                fix="generate docs/stories/story-###-<slug>.json",
             )
         ]
     text = path.read_text(encoding="utf-8")
@@ -55,7 +55,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                 problem="no story files found",
                 expected="at least one docs/stories/story-###-<slug>.json",
                 impact="cannot build dependency graph",
-                fix="run: textum split generate",
+                fix="generate docs/stories/story-###-<slug>.json",
             )
         ]
 
@@ -81,7 +81,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                     problem=f"schema_version must be {STORY_SCHEMA_VERSION}",
                     expected=STORY_SCHEMA_VERSION,
                     impact="cannot trust story format",
-                    fix="regenerate story via: textum split generate",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -94,7 +94,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                     problem=f"n must be integer, got {type(n).__name__}",
                     expected="integer",
                     impact="cannot build dependency graph",
-                    fix="regenerate story via: textum split generate",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -105,7 +105,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                     problem=f"n mismatch: file={file_n}, json={n}",
                     expected=f"{file_n}",
                     impact="cannot build dependency graph",
-                    fix="regenerate story via: textum split generate",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -118,7 +118,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                     problem=f"slug mismatch: file={file_slug!r}, json={slug!r}",
                     expected=str(file_slug),
                     impact="cannot build dependency graph",
-                    fix="regenerate story via: textum split generate",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -132,7 +132,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                     problem=f"story must equal {expected_story_name}, got {story_name!r}",
                     expected=expected_story_name,
                     impact="cannot build dependency graph",
-                    fix="regenerate story via: textum split generate",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -144,7 +144,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                     problem=f"duplicate story number: {n}",
                     expected="unique story numbers",
                     impact="dependency graph ambiguous",
-                    fix="delete duplicate story-###-*.json files and keep only one per number",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -157,7 +157,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                     problem=f"prereq_stories must be array, got {type(prereq_raw).__name__}",
                     expected="array of 'Story <number>' strings",
                     impact="cannot build dependency graph",
-                    fix="regenerate story via: textum split generate",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -171,7 +171,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                         problem=f"invalid prereq story ref: {item!r}",
                         expected="Story <number>",
                         impact="cannot build dependency graph",
-                        fix="fix prereq_stories in split-plan-pack.json, then rerun: textum split generate",
+                        fix="regenerate docs/stories/",
                     )
                 )
                 continue
@@ -184,7 +184,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                     problem="duplicate prereq stories",
                     expected="unique prereq story refs",
                     impact="dependency graph ambiguous",
-                    fix="fix prereq_stories in split-plan-pack.json, then rerun: textum split generate",
+                    fix="regenerate docs/stories/",
                 )
             )
             continue
@@ -209,7 +209,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                         problem=f"missing prereq story: Story {prereq_n}",
                         expected="every prereq story exists as a story file",
                         impact="dependency graph invalid",
-                        fix="fix split-plan-pack.json prereq_stories, then rerun: textum split generate",
+                        fix="regenerate docs/stories/",
                     )
                 )
                 continue
@@ -220,7 +220,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
                         problem=f"prereq story must be < {n}, got Story {prereq_n}",
                         expected="only earlier stories",
                         impact="dependency graph invalid",
-                        fix="fix split-plan-pack.json prereq_stories, then rerun: textum split generate",
+                        fix="regenerate docs/stories/",
                     )
                 )
                 continue
@@ -244,4 +244,3 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return []
-

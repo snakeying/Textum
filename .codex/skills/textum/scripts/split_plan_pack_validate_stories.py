@@ -198,7 +198,7 @@ def validate_stories_and_module_coverage(
                 problem=f"non-consecutive story numbers: got {sorted(actual_ns)}",
                 expected=f"consecutive 1..{len(stories)}",
                 impact="references become ambiguous",
-                fix="renumber stories to be consecutive 1..N and update story/prereq/api references",
+                fix="rewrite stories[].n to consecutive 1..N (including references)",
             )
         )
     if duplicate_ns:
@@ -208,7 +208,7 @@ def validate_stories_and_module_coverage(
                 problem=f"duplicate story numbers found: {', '.join(str(x) for x in sorted(duplicate_ns))}",
                 expected=f"unique consecutive 1..{len(stories)}",
                 impact="references become ambiguous",
-                fix="deduplicate stories[].n and renumber to be consecutive",
+                fix="rewrite stories[].n to unique consecutive 1..N",
             )
         )
 
@@ -237,4 +237,3 @@ def validate_stories_and_module_coverage(
         )
 
     return seen_story_names, expected_ns
-

@@ -70,7 +70,7 @@ def _assign_seq_ids(
                     problem=f"invalid id format: {raw_id}",
                     expected=f"{prefix}-{'0'*width}",
                     impact="stable references become unreliable",
-                    fix=f"set {loc_prefix}[{index}].{id_field} to null and re-run: textum prd check",
+                    fix=f"set {loc_prefix}[{index}].{id_field} to null",
                 )
             )
             continue
@@ -81,7 +81,7 @@ def _assign_seq_ids(
                     problem=f"duplicate id: {raw_id}",
                     expected="unique IDs",
                     impact="anchors/refs become ambiguous",
-                    fix=f"deduplicate {prefix} IDs (keep one, set others to null) and re-run: textum prd check",
+                    fix=f"deduplicate {prefix} IDs (keep one, set others to null)",
                 )
             )
             continue
