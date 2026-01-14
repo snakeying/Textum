@@ -2,7 +2,7 @@
 
 Generate low-noise PRD slices.
 
-Read: `docs/prd-pack.json` | Write: `docs/prd-slices/`
+Read: `docs/prd-pack.json` | Write: `docs/prd-pack.json` (normalize/ID), `docs/prd-slices/`
 
 ## Command
 

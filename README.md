@@ -102,11 +102,11 @@ Textum 通过 `textum` skill 路由触发，4 个阶段依次进行：
 
 > 更大的项目？建议拆成几个独立子项目。
 
-**模拟测试报告**（基于旧 commands 版本，采用 Claude Opus 4.5，仅供参考）：
+**模拟测试报告**（以下测试基于旧 commands 版本，采用 Claude Opus 4.5，仅供参考）：
 - [V2](./simulate-test-reports/v2simulate-test-report-opus.md) | [V3](./simulate-test-reports/v3simulate-test-report-opus.md) | [V4](./simulate-test-reports/v4simulate-test-report-opus.md)
-- [V5](./simulate-test-reports/v5simulate-test-report-opus.md)（任务更复杂） | [V6](./simulate-test-reports/v6simulate-test-report-opus.md) | [Beta](./simulate-test-reports/beta-simulate-test-report-opus.md)
+- [V5](./simulate-test-reports/v5simulate-test-report-opus.md)（从 V5 开始任务更复杂） | [V6](./simulate-test-reports/v6simulate-test-report-opus.md) | [Beta](./simulate-test-reports/beta-simulate-test-report-opus.md)
 
-⚠️ 以上测试基于已废弃的 commands 版本，skills 版本的测试报告待更新。
+⚠️ skills 版本的测试报告待更新。
 
 ## 🕸️ 为什么叫 Textum？
 

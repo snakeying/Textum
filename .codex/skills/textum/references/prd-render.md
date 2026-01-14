@@ -2,7 +2,7 @@
 
 Do one thing only: render `docs/PRD.md` from the canonical source `docs/prd-pack.json`.
 
-Read: `docs/prd-pack.json` | Write: `docs/PRD.md` | Template: N/A (script renderer)
+Read: `docs/prd-pack.json` | Write: `docs/prd-pack.json` (normalize/ID), `docs/PRD.md` | Template: N/A (script renderer)
 
 ## Command
 

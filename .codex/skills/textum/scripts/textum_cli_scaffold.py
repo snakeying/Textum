@@ -21,11 +21,12 @@ def _cmd_scaffold_init(args: argparse.Namespace) -> int:
     written, failures = init_scaffold_pack(skill_paths["scaffold_template"], paths["scaffold_pack"], force=args.force)
     if failures:
         _print_failures(failures)
+        print("next: Scaffold Plan")
         return 1
+    print("PASS")
     if written:
-        print(f"OK: wrote {paths['scaffold_pack'].as_posix()}")
-    else:
-        print(f"SKIP: {paths['scaffold_pack'].as_posix()} already exists (use --force to overwrite)")
+        print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
+    print("next: Scaffold Plan")
     return 0
 
 
@@ -36,6 +37,7 @@ def _cmd_scaffold_check(args: argparse.Namespace) -> int:
     prd_pack, prd_failures = _load_prd_pack_and_ensure_ready(paths)
     if prd_failures:
         _print_failures(prd_failures)
+        print("next: Scaffold Plan")
         return 1
     assert prd_pack is not None
 
@@ -44,10 +46,12 @@ def _cmd_scaffold_check(args: argparse.Namespace) -> int:
     )
     if scaffold_failures:
         _print_failures(scaffold_failures)
+        print("next: Scaffold Plan")
         return 1
     assert scaffold_pack is not None
 
     print("PASS")
+    print("next: Scaffold Render")
     return 0
 
 
@@ -58,6 +62,7 @@ def _cmd_scaffold_render(args: argparse.Namespace) -> int:
     prd_pack, prd_failures = _load_prd_pack_and_ensure_ready(paths)
     if prd_failures:
         _print_failures(prd_failures)
+        print("next: Scaffold Plan")
         return 1
     assert prd_pack is not None
 
@@ -66,6 +71,7 @@ def _cmd_scaffold_render(args: argparse.Namespace) -> int:
     )
     if scaffold_failures:
         _print_failures(scaffold_failures)
+        print("next: Scaffold Plan")
         return 1
     assert scaffold_pack is not None
 
@@ -74,6 +80,7 @@ def _cmd_scaffold_render(args: argparse.Namespace) -> int:
     paths["global_context"].write_text(markdown, encoding="utf-8")
     print("PASS")
     print(f"wrote: {paths['global_context'].relative_to(workspace).as_posix()}")
+    print("next: Split Plan")
     return 0
 
 

@@ -7,7 +7,7 @@ Read:
 - `docs/prd-pack.json`
 - `docs/scaffold-pack.json`
 
-Write: none
+Write: `docs/scaffold-pack.json` (refresh extracted/source if needed)
 
 ## Command
 

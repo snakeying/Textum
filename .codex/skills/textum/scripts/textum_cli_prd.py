@@ -17,11 +17,12 @@ def _cmd_prd_init(args: argparse.Namespace) -> int:
     written, failures = init_prd_pack(skill_paths["prd_template"], paths["prd_pack"], force=args.force)
     if failures:
         _print_failures(failures)
+        print("next: PRD Plan")
         return 1
+    print("PASS")
     if written:
-        print(f"OK: wrote {paths['prd_pack'].as_posix()}")
-    else:
-        print(f"SKIP: {paths['prd_pack'].as_posix()} already exists (use --force to overwrite)")
+        print(f"wrote: {paths['prd_pack'].relative_to(workspace).as_posix()}")
+    print("next: PRD Plan")
     return 0
 
 
@@ -31,17 +32,18 @@ def _cmd_prd_check(args: argparse.Namespace) -> int:
     prd_pack, updated, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
     if failures:
         _print_failures(failures)
+        print("next: PRD Plan")
         return 1
     assert prd_pack is not None
 
     ready, check_failures = check_prd_pack(prd_pack)
     if not ready:
         _print_failures(check_failures)
+        print("next: PRD Plan")
         return 1
 
     print("PASS")
-    if updated and args.fix:
-        print(f"UPDATED: {paths['prd_pack'].as_posix()}")
+    print("next: PRD Render")
     return 0
 
 
@@ -51,13 +53,16 @@ def _cmd_prd_render(args: argparse.Namespace) -> int:
     prd_pack, _, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
     if failures:
         _print_failures(failures)
+        print("next: PRD Plan")
         return 1
     assert prd_pack is not None
 
     markdown = render_prd_markdown(prd_pack, lang=args.lang)
     paths["docs_dir"].mkdir(parents=True, exist_ok=True)
     paths["prd_render"].write_text(markdown, encoding="utf-8")
-    print(f"OK: wrote {paths['prd_render'].as_posix()}")
+    print("PASS")
+    print(f"wrote: {paths['prd_render'].relative_to(workspace).as_posix()}")
+    print("next: PRD Slice")
     return 0
 
 
@@ -67,12 +72,14 @@ def _cmd_prd_slice(args: argparse.Namespace) -> int:
     prd_pack, _, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
     if failures:
         _print_failures(failures)
+        print("next: PRD Plan")
         return 1
     assert prd_pack is not None
 
     ready, check_failures = check_prd_pack(prd_pack)
     if not ready:
         _print_failures(check_failures)
+        print("next: PRD Plan")
         return 1
 
     budget = SliceBudget(max_lines=args.max_lines, max_chars=args.max_chars)
@@ -85,11 +92,12 @@ def _cmd_prd_slice(args: argparse.Namespace) -> int:
     )
     if failures:
         _print_failures(failures)
+        print("next: PRD Plan")
         return 1
 
     print("PASS")
-    print(f"OK: wrote {paths['prd_slices_index'].as_posix()}")
-    print(f"OK: parts={len(written) - 1}")
+    print(f"wrote: {paths['prd_slices_dir'].relative_to(workspace).as_posix()}/")
+    print("next: Scaffold Plan")
     return 0
 
 
@@ -145,4 +153,3 @@ def register_prd_commands(subparsers: Any) -> None:
     prd_slice.add_argument("--max-lines", type=int, default=350, help="Max lines per slice file (default: 350).")
     prd_slice.add_argument("--max-chars", type=int, default=12000, help="Max chars per slice file (default: 12000).")
     prd_slice.set_defaults(func=_cmd_prd_slice)
-

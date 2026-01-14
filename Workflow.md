@@ -1,6 +1,4 @@
-# Textum Workflow (1.0)
-
-> **设计原则**：低噪是硬约束（约束注意力/上下文污染），最终产出符合用户预期是优化目标。
+# Textum Workflow
 
 ## 流程总览
 
@@ -40,9 +38,11 @@ flowchart TB
     Stage1 --> Stage2
     Stage2 --> Stage3
     Stage3 --> Stage4
-    ST1 -->|FAIL| SP3
     SP6 -->|FAIL| SP3
 ```
+
+⚠️ 注意：
+- `story-check` / `story-pack` 在 `FAIL` 时以输出中的 `next: <stage>` 为准（fail-fast 分流）。
 
 ---
 
@@ -107,6 +107,7 @@ flowchart TB
 ## Stage 4: Story
 
 **前置条件**：
+- `docs/prd-pack.json` 可用（PRD Check 已 PASS）
 - `docs/stories/story-###-<slug>.json` 存在（Split Generate 已完成）
 - `docs/scaffold-pack.json` 包含 `extracted.modules_index`（Scaffold Check 已 PASS）
 
@@ -114,8 +115,8 @@ flowchart TB
 
 | 步骤 | Skill | 输入 | 说明 |
 |------|-------|------|------|
-| 1 | `story-check` | `n`（Story 编号） | 单 Story 门禁；`FAIL` → 返回 Split Generate |
-| 2 | `story-pack` | `n` | 生成低噪执行包 `docs/story-exec/story-###-<slug>/index.json`；内置自包含门禁 + 预算校验 |
+| 1 | `story-check` | `n`（Story 编号） | 单 Story 门禁；`FAIL` → 输出 `FAIL` 列表 + `next: <stage>`（fail-fast 分流） |
+| 2 | `story-pack` | `n` | 生成低噪执行包 `docs/story-exec/story-###-<slug>/index.json`；内置自包含门禁 + 预算校验；`FAIL` → 输出 `FAIL` 列表 + `next: <stage>`（fail-fast 分流） |
 | 3 | `story` | `n` | 只读执行包 + 按需最小化读取 repo 代码；只实现该 Story 的 `feature_points` 与 `api_endpoints` |
 | 4 | `story-full-exec` | `1/2/3` | 批量执行（按顺序，不回滚） |
 

@@ -1,6 +1,6 @@
 # Stage 1b: PRD Check (gate on JSON pack)
 
-Read: `docs/prd-pack.json` | Write: none (except auto-assigning IDs when `--fix` is enabled)
+Read: `docs/prd-pack.json` | Write: `docs/prd-pack.json` (normalize/ID)
 
 ## Command
 
