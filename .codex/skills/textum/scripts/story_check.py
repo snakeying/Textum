@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from prd_pack_types import Failure
-from story_check_utils import scan_story_text
+from story_check_utils import scan_story_placeholders, scan_story_text
 from story_check_validate_external import validate_story_against_prd, validate_story_against_scaffold
 from story_check_validate_internal import validate_story_internal
 
@@ -22,6 +22,7 @@ def check_story_source(
     failures: list[Failure] = []
 
     failures += scan_story_text(story_text, path=story_path)
+    failures += scan_story_placeholders(story, path=story_path)
 
     lines = story_text.count("\n")
     chars = len(story_text)

@@ -12,7 +12,7 @@ Write:
 
 - `$ARGUMENTS` must match: `<n1>/<n2>/...` (positive integers, `/` only, no spaces)
 - Split by `/`, keep order, de-duplicate (keep first occurrence)
-- If parsing fails or list is empty: output `FAIL` and stop (do not execute any story)
+- If parsing fails or list is empty: output a `FAIL` list (exactly 1 item; `loc/problem/expected/impact/fix`; `fix` is one action), then `next: N/A`, and stop (do not execute any story)
 
 ## Pre-check (fail-fast)
 
@@ -33,8 +33,8 @@ For each `n` in order:
 ## Output (one-time summary; low-noise)
 
 - Summary:
-  - If any story failed → output `FAIL`
-  - Else → output `PASS`
+  - If any story failed: output `FAIL`
+  - Else: output `PASS`
 - Per-story status (1 line each):
   - `Story <n>: PASS` or `Story <n>: FAIL`
 - If any failures: output a `FAIL` list (each item must include `loc/problem/expected/impact/fix`; `fix` is one action)

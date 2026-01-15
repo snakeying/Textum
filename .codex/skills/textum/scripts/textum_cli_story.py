@@ -6,12 +6,13 @@ from typing import Any
 
 from prd_pack import Failure, read_prd_pack, workspace_paths
 from prd_slices_types import SliceBudget
-from scaffold_pack import read_scaffold_pack
+from scaffold_pack import check_scaffold_pack, read_scaffold_pack
 from story_check import check_story_source
 from story_exec_pack import write_story_exec_pack
 from story_exec_pack_validate import check_story_exec_pack
 from story_exec_paths import find_story_source, story_exec_dir
 from textum_cli_support import _print_failures, _require_scaffold_extracted_modules_index
+from textum_cli_support import _ensure_prd_ready
 
 
 def _next_for_failures(failures: list[Failure]) -> str:
@@ -113,6 +114,10 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
         _print_failures_with_next(prd_failures)
         return 1
     assert prd_pack is not None
+    prd_ready_failures = _ensure_prd_ready(prd_pack, prd_pack_path=paths["prd_pack"])
+    if prd_ready_failures:
+        _print_failures_with_next(prd_ready_failures)
+        return 1
 
     scaffold_pack, scaffold_failures = read_scaffold_pack(paths["scaffold_pack"])
     if scaffold_failures:
@@ -122,6 +127,10 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
     scaffold_ready_failures = _require_scaffold_extracted_modules_index(scaffold_pack=scaffold_pack, prd_pack=prd_pack)
     if scaffold_ready_failures:
         _print_failures_with_next(scaffold_ready_failures)
+        return 1
+    scaffold_ready, scaffold_check_failures = check_scaffold_pack(scaffold_pack)
+    if not scaffold_ready:
+        _print_failures_with_next(scaffold_check_failures)
         return 1
 
     story_rel = story_path.relative_to(workspace).as_posix()
@@ -160,6 +169,10 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
         _print_failures_with_next(prd_failures)
         return 1
     assert prd_pack is not None
+    prd_ready_failures = _ensure_prd_ready(prd_pack, prd_pack_path=paths["prd_pack"])
+    if prd_ready_failures:
+        _print_failures_with_next(prd_ready_failures)
+        return 1
 
     scaffold_pack, scaffold_failures = read_scaffold_pack(paths["scaffold_pack"])
     if scaffold_failures:
@@ -169,6 +182,10 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
     scaffold_ready_failures = _require_scaffold_extracted_modules_index(scaffold_pack=scaffold_pack, prd_pack=prd_pack)
     if scaffold_ready_failures:
         _print_failures_with_next(scaffold_ready_failures)
+        return 1
+    scaffold_ready, scaffold_check_failures = check_scaffold_pack(scaffold_pack)
+    if not scaffold_ready:
+        _print_failures_with_next(scaffold_check_failures)
         return 1
 
     story_rel = story_path.relative_to(workspace).as_posix()

@@ -39,6 +39,7 @@ py-modules = [
   "prd_pack_validate_access",
   "prd_pack_validate_modules",
   "prd_pack_validate_project",
+  "prd_pack_validate_refs",
   "prd_pack_validate_rules_api",
   "prd_pack_validate_utils",
   "scaffold_pack",

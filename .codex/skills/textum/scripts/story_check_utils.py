@@ -1,9 +1,27 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Iterable
 
 from prd_pack_types import PLACEHOLDER_SENTINEL, Failure
 from prd_pack_maps import build_prd_maps
+
+
+def iter_json_paths(value: Any, path: str = "$") -> Iterable[tuple[str, Any]]:
+    yield path, value
+    if isinstance(value, dict):
+        for key, child in value.items():
+            yield from iter_json_paths(child, f"{path}.{key}")
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            yield from iter_json_paths(child, f"{path}[{index}]")
+
+
+def _examples_summary(examples: list[str], *, limit: int = 8) -> str:
+    if len(examples) <= limit:
+        return ", ".join(examples)
+    shown = examples[:limit]
+    remaining = len(examples) - limit
+    return ", ".join(shown) + f", ... (+{remaining} more)"
 
 
 def scan_story_text(text: str, *, path: str) -> list[Failure]:
@@ -26,6 +44,48 @@ def scan_story_text(text: str, *, path: str) -> list[Failure]:
                 expected="no placeholders in generated story",
                 impact="ambiguous requirements",
                 fix="remove placeholder tokens from docs/prd-pack.json",
+            )
+        )
+    return failures
+
+
+def scan_story_placeholders(story: dict[str, Any], *, path: str) -> list[Failure]:
+    todo_paths: list[str] = []
+    ellipsis_paths: list[str] = []
+    for loc, value in iter_json_paths(story):
+        if not isinstance(value, str):
+            continue
+
+        stripped = value.strip()
+        if stripped.upper() in ("TBD", "TODO"):
+            todo_paths.append(f"{loc}={stripped.upper()}")
+        if "[...]" in stripped:
+            ellipsis_paths.append(loc)
+
+    def placeholder_fix(paths: list[str], *, placeholder: str) -> str:
+        if any(p.startswith("$.details") for p in paths):
+            return f"replace all {placeholder} placeholders in docs/prd-pack.json"
+        return f"replace all {placeholder} placeholders in {path}"
+
+    failures: list[Failure] = []
+    if todo_paths:
+        failures.append(
+            Failure(
+                loc=path,
+                problem=f"placeholder found: TBD/TODO ({len(todo_paths)}) at {_examples_summary(todo_paths)}",
+                expected="no TBD/TODO placeholders",
+                impact="story is not executable",
+                fix=placeholder_fix(todo_paths, placeholder="TBD/TODO"),
+            )
+        )
+    if ellipsis_paths:
+        failures.append(
+            Failure(
+                loc=path,
+                problem=f"placeholder found: [...] ({len(ellipsis_paths)}) at {_examples_summary(ellipsis_paths)}",
+                expected="no [...] placeholders",
+                impact="story is not executable",
+                fix=placeholder_fix(ellipsis_paths, placeholder="[...]"),
             )
         )
     return failures
