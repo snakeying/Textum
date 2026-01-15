@@ -124,7 +124,7 @@ def validate_decisions(decisions: dict[str, Any], failures: list[Failure]) -> No
                         problem="partial N/A row",
                         expected="either all fields are N/A, or none are N/A",
                         impact="validation command row is ambiguous",
-                        fix=f"make {loc} fully N/A or fully concrete",
+                        fix=f"set {loc} to a full N/A row",
                     )
                 )
                 continue
@@ -139,7 +139,7 @@ def validate_decisions(decisions: dict[str, Any], failures: list[Failure]) -> No
                         problem=f"invalid type: {typ!r}",
                         expected="type starts with gate: or opt:",
                         impact="cannot classify the command",
-                        fix=f"set {loc}.type to gate:<name> or opt:<name>",
+                        fix=f"prefix {loc}.type with 'gate:'",
                     )
                 )
 
@@ -151,6 +151,6 @@ def validate_decisions(decisions: dict[str, Any], failures: list[Failure]) -> No
                 problem=f"expected string or null, got {type(coding_conventions).__name__}",
                 expected="string or null",
                 impact="coding_conventions is invalid",
-                fix="set decisions.coding_conventions to a string or null",
+                fix="set decisions.coding_conventions to null",
             )
         )

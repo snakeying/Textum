@@ -19,6 +19,7 @@ Output MUST be exactly one of:
      - `next: Scaffold Check`
 
 - Never output JSON bodies (including `docs/scaffold-pack.json`)
+- Do NOT write `docs/scaffold-pack.json` in a round whose output contains questions
 
 ## Interaction language (must follow)
 

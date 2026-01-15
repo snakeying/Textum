@@ -61,9 +61,9 @@ def normalize_scaffold_pack(
 
     decisions = scaffold_pack.get("decisions")
     if not isinstance(decisions, dict):
-        scaffold_pack["decisions"] = {}
+        decisions = {}
+        scaffold_pack["decisions"] = decisions
         updated = True
-        return updated, failures
 
     if "tech_stack" not in decisions or not isinstance(decisions.get("tech_stack"), dict):
         decisions["tech_stack"] = {"backend": None, "frontend": None, "database": None, "other": []}
@@ -79,4 +79,3 @@ def normalize_scaffold_pack(
         updated = True
 
     return updated, failures
-

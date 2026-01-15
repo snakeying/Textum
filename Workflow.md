@@ -58,6 +58,8 @@ flowchart TB
 - 所有命令在项目根目录运行
 - 推荐每个阶段开新窗口执行（避免上下文污染）
 - 流程通过 `textum` skill 路由触发；仅调试时使用 CLI 命令
+- 默认 `--fix=true`：部分 gate/render/slice 命令可能写回 `docs/*-pack.json`（normalize/ID、补齐 `source/extracted` 等），这是预期行为（用 git diff 检查即可）
+- Plan 阶段：一轮只做一件事——要么提问要么写回；若输出包含 questions，则本轮不写回 `docs/*-pack.json`
 
 ---
 
