@@ -7,6 +7,14 @@ from split_check_refs_prd import extract_prd_ref_sets
 from split_check_refs_scaffold import extract_gc_br_ids
 
 
+def _examples_summary(examples: list[str], *, limit: int = 8) -> str:
+    if len(examples) <= limit:
+        return ", ".join(examples)
+    shown = examples[:limit]
+    remaining = len(examples) - limit
+    return ", ".join(shown) + f", ... (+{remaining} more)"
+
+
 def validate_split_refs(
     *,
     index_pack: dict[str, Any],
@@ -122,7 +130,7 @@ def validate_split_refs(
         failures.append(
             Failure(
                 loc="docs/prd-pack.json",
-                problem=f"some PRD feature points are not covered by stories: {', '.join(missing_fp)}",
+                problem=f"some PRD feature points are not covered by stories ({len(missing_fp)}): {_examples_summary(missing_fp)}",
                 expected="every PRD FP-### covered by at least one story",
                 impact="requirements are missing in execution plan",
                 fix="revise docs/split-plan-pack.json boundaries to cover missing FP-###",
@@ -134,43 +142,46 @@ def validate_split_refs(
         failures.append(
             Failure(
                 loc="docs/split-check-index-pack.json",
-                problem=f"unknown fp ids referenced: {', '.join(unknown_fp)}",
+                problem=f"unknown fp ids referenced ({len(unknown_fp)}): {_examples_summary(unknown_fp)}",
                 expected="fp ids exist in PRD modules[].feature_points[].id",
                 impact="index pack is inconsistent",
-                fix="fix docs/split-plan-pack.json stories[].fp_ids to use existing FP-### ids",
+                fix="regenerate docs/stories/",
             )
         )
 
-    for tid in sorted(s_tbl - prd_sets.tbl_ids):
+    unknown_tbl = sorted(s_tbl - prd_sets.tbl_ids)
+    if unknown_tbl:
         failures.append(
             Failure(
                 loc="docs/split-check-index-pack.json",
-                problem=f"unknown table id referenced: {tid}",
+                problem=f"unknown table ids referenced ({len(unknown_tbl)}): {_examples_summary(unknown_tbl)}",
                 expected="TBL-### exists in PRD data_model.tables[].id",
                 impact="execution plan references unknown storage",
-                fix="fix docs/prd-pack.json data_model.tables[].id to include the table id",
+                fix="add missing tables to docs/prd-pack.json data_model.tables[]",
             )
         )
 
-    for rid in sorted(s_prd_br - prd_sets.br_ids):
+    unknown_prd_br = sorted(s_prd_br - prd_sets.br_ids)
+    if unknown_prd_br:
         failures.append(
             Failure(
                 loc="docs/split-check-index-pack.json",
-                problem=f"unknown PRD business rule id referenced: {rid}",
+                problem=f"unknown PRD business rule ids referenced ({len(unknown_prd_br)}): {_examples_summary(unknown_prd_br)}",
                 expected="BR-### exists in PRD business_rules[].id",
                 impact="execution plan references unknown rule",
-                fix="fix docs/prd-pack.json business_rules[].id to include the rule id",
+                fix="add missing rules to docs/prd-pack.json business_rules[]",
             )
         )
 
-    for rid in sorted(s_gc_br - gc_br):
+    unknown_gc_br = sorted(s_gc_br - gc_br)
+    if unknown_gc_br:
         failures.append(
             Failure(
-                loc="docs/scaffold-pack.json",
-                problem=f"unknown GC business rule id referenced: {rid}",
-                expected="BR-### exists in scaffold-pack extracted.business_rules",
+                loc="docs/prd-pack.json",
+                problem=f"unknown GC business rule ids referenced ({len(unknown_gc_br)}): {_examples_summary(unknown_gc_br)}",
+                expected="BR-### exists in PRD business_rules[]",
                 impact="execution plan references unknown rule",
-                fix="refresh docs/scaffold-pack.json extracted.business_rules",
+                fix="add missing rules to docs/prd-pack.json business_rules[]",
             )
         )
 
@@ -180,7 +191,7 @@ def validate_split_refs(
         failures.append(
             Failure(
                 loc="docs/split-check-index-pack.json",
-                problem=f"P0 modules not covered: {', '.join(missing_p0)}",
+                problem=f"P0 modules not covered ({len(missing_p0)}): {_examples_summary(missing_p0)}",
                 expected="every P0 module appears in at least 1 story",
                 impact="critical scope is uncovered",
                 fix="fix docs/split-plan-pack.json stories[].modules to cover all P0 modules",
@@ -215,7 +226,7 @@ def validate_split_refs(
             failures.append(
                 Failure(
                     loc="docs/split-check-index-pack.json",
-                    problem=f"some PRD APIs are not covered by stories: {', '.join(missing_api)}",
+                    problem=f"some PRD APIs are not covered by stories ({len(missing_api)}): {_examples_summary(missing_api)}",
                     expected="every PRD API-### assigned to exactly 1 story",
                     impact="API work has no owning story",
                     fix="fix docs/split-plan-pack.json api_assignments to cover every PRD API-### exactly once",
@@ -225,7 +236,7 @@ def validate_split_refs(
             failures.append(
                 Failure(
                     loc="docs/split-check-index-pack.json",
-                    problem=f"unknown API ids referenced: {', '.join(extra_api)}",
+                    problem=f"unknown API ids referenced ({len(extra_api)}): {_examples_summary(extra_api)}",
                     expected="API ids exist in PRD api.endpoints[].id",
                     impact="execution plan references unknown endpoints",
                     fix="fix docs/split-plan-pack.json api_assignments to use existing PRD API-### ids",

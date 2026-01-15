@@ -24,7 +24,7 @@ def evaluate_story_thresholds(
                 problem=f"oversized story: api_refs={api_refs}, tbl_refs={tbl_refs}, feature_points={feature_points}",
                 expected="api_refs<=5, tbl_refs<=10, feature_points<=12 (prefer smaller)",
                 impact="fails Split Check1 thresholds",
-                fix="revise docs/split-plan-pack.json to split/redistribute scope",
+                fix="split this story into smaller stories in docs/split-plan-pack.json",
             )
         )
         return
@@ -38,7 +38,7 @@ def evaluate_story_thresholds(
                 problem=f"oversized story (DECISION escalation): {', '.join(decision_hits)}",
                 expected="at most 1 DECISION-range hit per story",
                 impact="fails Split Check1 thresholds",
-                fix="revise docs/split-plan-pack.json to split/redistribute scope",
+                fix="split this story into smaller stories in docs/split-plan-pack.json",
             )
         )
         return
@@ -49,6 +49,6 @@ def evaluate_story_thresholds(
                 "story": story_name,
                 "story_file": str(story_file.as_posix()),
                 "decision": decision_hits[0],
-                "suggested_action": "consider splitting or redistributing scope to reduce risk",
+                "suggested_action": "consider reducing scope in this story",
             }
         )

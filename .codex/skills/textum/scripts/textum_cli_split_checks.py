@@ -45,16 +45,7 @@ def _cmd_split_check1(args: argparse.Namespace) -> int:
                     encoding="utf-8",
                 )
                 rel = paths["split_replan_pack"].relative_to(workspace).as_posix()
-                print(f"REPLAN: wrote {rel}")
-                print("REPLAN_SUMMARY:")
-                for story in replan["oversized_stories"]:
-                    if not isinstance(story, dict):
-                        continue
-                    metrics = story.get("metrics") if isinstance(story.get("metrics"), dict) else {}
-                    fp = metrics.get("feature_points")
-                    api = metrics.get("api_refs")
-                    tbl = metrics.get("tbl_refs")
-                    print(f"- {story.get('story')}: fp={fp}; api={api}; tbl={tbl}")
+                print(f"wrote: {rel}")
         print("next: Split Plan")
         return 1
 
@@ -139,4 +130,3 @@ def _cmd_split_checkout(args: argparse.Namespace) -> int:
     print("PASS")
     print("next: Story Check")
     return 0
-

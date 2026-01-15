@@ -57,7 +57,7 @@ def parse_landing_tokens(
                         problem=f"DB table name not found: {ref}",
                         expected="DB:<table_name> must exist in data_model.tables[].name",
                         impact="cannot derive table refs",
-                        fix="add the table to data_model.tables or fix the landing token",
+                        fix=f"add data_model.tables[] entry with name={ref}",
                     )
                 )
                 continue
@@ -113,4 +113,3 @@ def parse_landing_tokens(
             continue
 
     return tbl_ids, art_file, art_cfg, art_ext
-

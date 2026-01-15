@@ -16,7 +16,7 @@ Run (workspace root):
 
 ## Output rule
 
-- If command prints `FAIL`: output the `FAIL` list as-is (including optional `REPLAN*` lines), then one line: `next: Split Plan`
+- If command prints `FAIL`: output the `FAIL` list as-is, then (if present) one line `wrote: docs/split-replan-pack.json`, then one line: `next: Split Plan`
 - If command prints `DECISION`: output `DECISION` list as-is, then one line: `next: Split Check2`
 - If command prints `PASS`: output:
   - `PASS`

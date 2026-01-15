@@ -185,7 +185,7 @@ def validate_stories_and_module_coverage(
                                 problem=f"prereq must be a smaller story number: {p!r}",
                                 expected=f"Story {prereq_n} where {prereq_n} < {n}",
                                 impact="dependency graph is not executable",
-                                fix=f"remove or fix {loc}.prereq_stories[{pi}] to reference an earlier story",
+                                fix=f"remove {loc}.prereq_stories[{pi}]",
                             )
                         )
 

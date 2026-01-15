@@ -235,7 +235,7 @@ def generate_split_check_index_pack(
                     problem=f"story file too large: lines={lines}, chars={chars}",
                     expected=f"lines<={max_story_lines} and chars<={max_story_chars}",
                     impact="noise budget exceeded",
-                    fix="revise docs/split-plan-pack.json to split/redistribute scope",
+                    fix="split this story into smaller stories in docs/split-plan-pack.json",
                 )
             )
 

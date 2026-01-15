@@ -141,6 +141,6 @@ def validate_api_assignments(
                     problem=f"API assigned too many for {story_name}: {count}",
                     expected="<= 5 APIs per story (prefer <= 3)",
                     impact="story likely oversized",
-                    fix="split the story or redistribute API assignments to reduce per-story API count",
+                    fix=f"redistribute api_assignments to reduce API count for {story_name}",
                 )
             )

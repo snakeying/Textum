@@ -196,7 +196,7 @@ def generate_story_files(
                         problem=f"table id not found in PRD: {tid}",
                         expected="TBL-### exists in data_model.tables[].id",
                         impact="cannot generate table overview",
-                        fix="fix PRD data_model.tables ids or landing tokens",
+                        fix=f"add docs/prd-pack.json data_model.tables[] entry with id={tid}",
                     )
                 )
                 continue

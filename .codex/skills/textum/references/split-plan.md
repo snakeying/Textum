@@ -26,6 +26,7 @@ Output MUST be exactly one of:
      - `next: Split Generate`
 
 - Never output JSON bodies (including `docs/split-plan-pack.json`)
+- Do NOT write `docs/split-plan-pack.json` in a round whose output contains questions
 
 ## Writing rules (must follow)
 
