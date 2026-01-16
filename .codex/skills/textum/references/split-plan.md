@@ -17,8 +17,8 @@ Output MUST be exactly one of:
 
 1) `IN_PROGRESS`
    - Output exactly 2 blocks:
-     1) This-round questions (≤4; blockers only) OR This-round change summary (JSONPath list)
-     2) Remaining blockers (≤8; prioritized)
+     1) This-round questions (~4; blockers only) OR This-round change summary (JSONPath list)
+     2) Remaining blockers (~8; prioritized)
 2) `READY`
    - Output exactly 3 plain-text lines:
      - `READY`
@@ -54,4 +54,9 @@ If `docs/split-plan-pack.json` does not exist, initialize once (workspace root):
 1) `uv sync --project .codex/skills/textum/scripts`
 2) `uv run --project .codex/skills/textum/scripts textum split plan init`
 
-Then ask: how many Stories do you want initially (e.g., 6–12), and any must-have sequencing constraints?
+Then ask (preference check; defaults are OK):
+- Story count preference? (default: 12)
+- Any must-have sequencing constraints? (default: dependencies first, then P0 modules)
+
+If the user has no preference, proceed with defaults without further questions.
+

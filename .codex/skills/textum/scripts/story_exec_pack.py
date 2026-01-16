@@ -6,20 +6,23 @@ from typing import Any
 
 from prd_pack_types import Failure
 from prd_slices_types import SliceBudget
-from prd_slices_utils import chunk_list, measure_json, rel_posix, sha256_file, write_json
+from prd_slices_utils import chunk_list, rel_posix
+from story_exec_pack_context import collect_story_prd_context
+from story_exec_pack_utils import scaffold_module_rows
+from story_exec_pack_write import (
+    build_story_exec_source,
+    write_story_exec_context_base,
+    write_story_exec_context_parts,
+    write_story_exec_index,
+)
 from story_exec_types import (
-    STORY_EXEC_CONTEXT_BASE_FILENAME,
-    STORY_EXEC_CONTEXT_BASE_SCHEMA_VERSION,
     STORY_EXEC_CONTEXT_BUSINESS_RULES_FILENAME,
     STORY_EXEC_CONTEXT_BUSINESS_RULES_SCHEMA_VERSION,
     STORY_EXEC_CONTEXT_TABLES_FILENAME,
     STORY_EXEC_CONTEXT_TABLES_SCHEMA_VERSION,
-    STORY_EXEC_INDEX_FILENAME,
-    STORY_EXEC_INDEX_SCHEMA_VERSION,
     STORY_EXEC_STORY_SNAPSHOT_FILENAME,
 )
-from prd_pack_maps import build_prd_maps
-from story_exec_pack_utils import scaffold_module_rows
+
 
 def write_story_exec_pack(
     *,
@@ -58,53 +61,11 @@ def write_story_exec_pack(
             ],
         )
 
-    story_refs = story.get("refs") if isinstance(story.get("refs"), dict) else {}
-    prd_tbl_ids = story_refs.get("prd_tbl") if isinstance(story_refs.get("prd_tbl"), list) else []
-    prd_br_ids = story_refs.get("prd_br") if isinstance(story_refs.get("prd_br"), list) else []
-
-    _, tbl_by_id, _, br_by_id = build_prd_maps(prd_pack)
-
-    tables: list[dict[str, Any]] = []
-    for idx, tbl_id in enumerate(prd_tbl_ids):
-        if not isinstance(tbl_id, str):
-            continue
-        row = tbl_by_id.get(tbl_id)
-        if not isinstance(row, dict):
-            return (
-                None,
-                [],
-                [
-                    Failure(
-                        loc=f"$.refs.prd_tbl[{idx}]",
-                        problem=f"unknown table id in PRD: {tbl_id}",
-                        expected="table id exists in docs/prd-pack.json data_model.tables[]",
-                        impact="cannot build exec context",
-                        fix=f"regenerate {rel_posix(story_source_path, workspace_root)}",
-                    )
-                ],
-            )
-        tables.append(row)
-
-    business_rules: list[dict[str, Any]] = []
-    for idx, br_id in enumerate(prd_br_ids):
-        if not isinstance(br_id, str):
-            continue
-        row = br_by_id.get(br_id)
-        if not isinstance(row, dict):
-            return (
-                None,
-                [],
-                [
-                    Failure(
-                        loc=f"$.refs.prd_br[{idx}]",
-                        problem=f"unknown BR id in PRD: {br_id}",
-                        expected="BR id exists in docs/prd-pack.json business_rules[]",
-                        impact="cannot build exec context",
-                        fix=f"regenerate {rel_posix(story_source_path, workspace_root)}",
-                    )
-                ],
-            )
-        business_rules.append(row)
+    tables, business_rules, context_failures = collect_story_prd_context(
+        story=story, prd_pack=prd_pack, story_source_path=story_source_path, workspace_root=workspace_root
+    )
+    if context_failures:
+        return None, [], context_failures
 
     api_obj = prd_pack.get("api") if isinstance(prd_pack.get("api"), dict) else {}
     api_meta = dict(api_obj)
@@ -117,69 +78,28 @@ def write_story_exec_pack(
     module_ids = [m for m in module_ids if isinstance(m, str)]
     modules_rows = scaffold_module_rows(scaffold_pack, module_ids=module_ids)
 
-    source = {
-        "story_source_path": rel_posix(story_source_path, workspace_root),
-        "story_source_sha256": sha256_file(story_source_path),
-        "prd_pack_path": rel_posix(prd_pack_path, workspace_root),
-        "prd_pack_schema_version": prd_pack.get("schema_version"),
-        "prd_pack_sha256": sha256_file(prd_pack_path) if prd_pack_path.exists() else None,
-        "scaffold_pack_path": rel_posix(scaffold_pack_path, workspace_root),
-        "scaffold_pack_schema_version": scaffold_pack.get("schema_version"),
-        "scaffold_pack_sha256": sha256_file(scaffold_pack_path) if scaffold_pack_path.exists() else None,
-    }
+    source = build_story_exec_source(
+        workspace_root=workspace_root,
+        story_source_path=story_source_path,
+        prd_pack_path=prd_pack_path,
+        prd_pack=prd_pack,
+        scaffold_pack_path=scaffold_pack_path,
+        scaffold_pack=scaffold_pack,
+    )
 
-    base_obj: dict[str, Any] = {
-        "schema_version": STORY_EXEC_CONTEXT_BASE_SCHEMA_VERSION,
-        "source": source,
-        "budget": {"max_lines": budget.max_lines, "max_chars": budget.max_chars},
-        "project": extracted.get("project"),
-        "modules": modules_rows,
-        "tech_stack": decisions.get("tech_stack"),
-        "repo_structure": decisions.get("repo_structure"),
-        "coding_conventions": decisions.get("coding_conventions"),
-        "validation_commands": decisions.get("validation_commands"),
-        "api_meta": api_meta,
-    }
-    base_path = out_dir / STORY_EXEC_CONTEXT_BASE_FILENAME
-    base_lines, base_chars = write_json(base_path, base_obj)
-    if base_lines > budget.max_lines or base_chars > budget.max_chars:
-        base_candidates = {
-            k: v for k, v in base_obj.items() if k not in {"schema_version", "source", "budget"}
-        }
-        largest_key: str | None = None
-        largest_chars: int = -1
-        for key, value in base_candidates.items():
-            _, chars = measure_json({key: value})
-            if chars > largest_chars:
-                largest_key = key
-                largest_chars = chars
-        key_loc = (
-            f"{rel_posix(base_path, workspace_root)}:$.{largest_key}"
-            if isinstance(largest_key, str) and largest_key
-            else rel_posix(base_path, workspace_root)
-        )
-        key_fix_map: dict[str, str] = {
-            "tech_stack": "reduce docs/scaffold-pack.json:$.decisions.tech_stack",
-            "repo_structure": "reduce docs/scaffold-pack.json:$.decisions.repo_structure",
-            "coding_conventions": "reduce docs/scaffold-pack.json:$.decisions.coding_conventions",
-            "validation_commands": "reduce docs/scaffold-pack.json:$.decisions.validation_commands",
-            "modules": "reduce this story's modules in docs/split-plan-pack.json",
-        }
-        key_hint = f" (largest field: {largest_key})" if isinstance(largest_key, str) and largest_key else ""
-        fix = key_fix_map.get(str(largest_key), "reduce scaffold/prd context included in the exec pack")
-        return (
-            None,
-            [],
-            [
-                Failure(
-                    loc=key_loc,
-                    problem=f"context base exceeds budget: {base_lines} lines, {base_chars} chars{key_hint}",
-                    expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
-                    impact="cannot produce low-noise story exec pack",
-                    fix=fix,
-                )
-            ],
-        )
+    base_path, base_lines, base_chars, base_failures = write_story_exec_context_base(
+        out_dir=out_dir,
+        workspace_root=workspace_root,
+        budget=budget,
+        source=source,
+        extracted_project=extracted.get("project"),
+        modules_rows=modules_rows,
+        decisions=decisions,
+        api_meta=api_meta,
+    )
+    if base_failures:
+        return None, [], base_failures
+    assert base_path is not None
 
     def build_business_rules_obj(part_items: list[Any]) -> dict[str, Any]:
         return {
@@ -216,8 +136,6 @@ def write_story_exec_pack(
         return None, [], table_failures
 
     written: list[Path] = [story_snapshot_path, base_path]
-    business_rules_paths: list[Path] = []
-    table_paths: list[Path] = []
     files: list[dict[str, Any]] = [
         {
             "kind": "story",
@@ -233,110 +151,57 @@ def write_story_exec_pack(
         },
     ]
 
-    for idx, part_obj in enumerate(business_rules_parts, start=1):
-        if len(business_rules_parts) == 1:
-            filename = STORY_EXEC_CONTEXT_BUSINESS_RULES_FILENAME
-        else:
-            filename = f"context.business_rules.part-{idx:03d}.json"
-        path = out_dir / filename
-        lines, chars = write_json(path, part_obj)
-        if lines > budget.max_lines or chars > budget.max_chars:
-            return (
-                None,
-                [],
-                [
-                    Failure(
-                        loc=rel_posix(path, workspace_root),
-                        problem=f"business rules context exceeds budget: {lines} lines, {chars} chars",
-                        expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
-                        impact="cannot produce low-noise story exec pack",
-                        fix="reduce referenced business rules per story in docs/split-plan-pack.json",
-                    )
-                ],
-            )
-        business_rules_paths.append(path)
-        written.append(path)
-        rules_in_part = (
-            part_obj.get("business_rules", []) if isinstance(part_obj.get("business_rules"), list) else []
-        )
-        rule_ids = [r.get("id") for r in rules_in_part if isinstance(r, dict)]
-        files.append(
-            {
-                "kind": "context_business_rules",
-                "path": rel_posix(path, workspace_root),
-                "lines": lines,
-                "chars": chars,
-                "count": len(rule_ids),
-                "ids": [r for r in rule_ids if isinstance(r, str)],
-            }
-        )
+    business_rules_paths, rules_files, rules_failures = write_story_exec_context_parts(
+        out_dir=out_dir,
+        workspace_root=workspace_root,
+        budget=budget,
+        parts=business_rules_parts,
+        single_filename=STORY_EXEC_CONTEXT_BUSINESS_RULES_FILENAME,
+        part_filename_fmt="context.business_rules.part-{idx:03d}.json",
+        kind="context_business_rules",
+        list_key="business_rules",
+        budget_label="business rules context",
+        budget_fix="reduce referenced business rules per story in docs/split-plan-pack.json",
+    )
+    if rules_failures:
+        return None, [], rules_failures
 
-    for idx, part_obj in enumerate(table_parts, start=1):
-        if len(table_parts) == 1:
-            filename = STORY_EXEC_CONTEXT_TABLES_FILENAME
-        else:
-            filename = f"context.tables.part-{idx:03d}.json"
-        path = out_dir / filename
-        lines, chars = write_json(path, part_obj)
-        if lines > budget.max_lines or chars > budget.max_chars:
-            return (
-                None,
-                [],
-                [
-                    Failure(
-                        loc=rel_posix(path, workspace_root),
-                        problem=f"tables context exceeds budget: {lines} lines, {chars} chars",
-                        expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
-                        impact="cannot produce low-noise story exec pack",
-                        fix="reduce referenced tables per story in docs/split-plan-pack.json",
-                    )
-                ],
-            )
-        table_paths.append(path)
-        written.append(path)
-        tables_in_part = part_obj.get("tables", []) if isinstance(part_obj.get("tables"), list) else []
-        table_ids = [t.get("id") for t in tables_in_part if isinstance(t, dict)]
-        files.append(
-            {
-                "kind": "context_tables",
-                "path": rel_posix(path, workspace_root),
-                "lines": lines,
-                "chars": chars,
-                "count": len(table_ids),
-                "ids": [t for t in table_ids if isinstance(t, str)],
-            }
-        )
+    table_paths, table_files, table_failures2 = write_story_exec_context_parts(
+        out_dir=out_dir,
+        workspace_root=workspace_root,
+        budget=budget,
+        parts=table_parts,
+        single_filename=STORY_EXEC_CONTEXT_TABLES_FILENAME,
+        part_filename_fmt="context.tables.part-{idx:03d}.json",
+        kind="context_tables",
+        list_key="tables",
+        budget_label="tables context",
+        budget_fix="reduce referenced tables per story in docs/split-plan-pack.json",
+    )
+    if table_failures2:
+        return None, [], table_failures2
 
-    index_obj = {
-        "schema_version": STORY_EXEC_INDEX_SCHEMA_VERSION,
-        "source": source,
-        "budget": {"max_lines": budget.max_lines, "max_chars": budget.max_chars},
-        "story": {
-            "n": story.get("n"),
-            "slug": story.get("slug"),
-            "title": story.get("title"),
-        },
-        "read": [rel_posix(story_snapshot_path, workspace_root), rel_posix(base_path, workspace_root)]
-        + [rel_posix(p, workspace_root) for p in business_rules_paths]
-        + [rel_posix(p, workspace_root) for p in table_paths],
-        "files": files,
-    }
-    index_path = out_dir / STORY_EXEC_INDEX_FILENAME
-    index_lines, index_chars = write_json(index_path, index_obj)
-    if index_lines > budget.max_lines or index_chars > budget.max_chars:
-        return (
-            None,
-            [],
-            [
-                Failure(
-                    loc=rel_posix(index_path, workspace_root),
-                    problem=f"index exceeds budget: {index_lines} lines, {index_chars} chars",
-                    expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
-                    impact="cannot produce low-noise story exec pack",
-                    fix="reduce metadata in index.json",
-                )
-            ],
-        )
+    written.extend(business_rules_paths)
+    written.extend(table_paths)
+    files.extend(rules_files)
+    files.extend(table_files)
+
+    index_path, _, _, index_failures = write_story_exec_index(
+        out_dir=out_dir,
+        workspace_root=workspace_root,
+        budget=budget,
+        source=source,
+        story=story,
+        story_snapshot_path=story_snapshot_path,
+        base_path=base_path,
+        business_rules_paths=business_rules_paths,
+        table_paths=table_paths,
+        files=files,
+    )
+    if index_failures:
+        return None, [], index_failures
+    assert index_path is not None
+
     written.append(index_path)
-
     return out_dir, written, []
+
