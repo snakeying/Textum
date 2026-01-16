@@ -5,6 +5,10 @@ Read (minimal, low-noise):
 - `docs/prd-slices/modules.*.json`
 - `docs/prd-slices/api_endpoints.*.json` (only if `api.has_api=true`)
 - `docs/split-replan-pack.json` (only if exists)
+- `docs/split-plan-check-replan-pack.json` (only if exists)
+- `docs/split-check1-replan-pack.json` (only if exists)
+- `docs/split-check2-replan-pack.json` (only if exists)
+- `docs/diagnostics/split-*.md` (only if exists; prefer the matching stage)
 
 Write:
 - `docs/split-plan-pack.json` (pure JSON; no ``` blocks)
@@ -59,3 +63,9 @@ Then ask (preference check; defaults are OK):
 - Ask only if needed (at most 1 preference question):
   - "Any preferred story count or must-have sequencing constraints? (default: 12; deps-first then P0)"
 - If the user says "no preference": accept defaults and proceed without follow-up questions.
+
+If the user is returning from a Split gate failure and a `docs/split-*-replan-pack.json` exists:
+- Treat `items[]` as the current blockers (ignore older issues not present).
+- Choose exactly one mode for this round:
+  - Ask-mode: ask up to ~4 questions to resolve blockers; do NOT write JSON.
+  - Write-mode: apply a minimal write (single-action fix if possible), and output a JSONPath change summary; do NOT ask questions.

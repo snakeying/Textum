@@ -11,7 +11,8 @@ from story_check import check_story_source
 from story_exec_pack import write_story_exec_pack
 from story_exec_pack_validate import check_story_exec_pack
 from story_exec_paths import find_story_source, story_exec_dir
-from textum_cli_next import _print_failures_with_next
+from textum_cli_artifacts import write_check_artifacts
+from textum_cli_next import _next_stage_for_failures
 from textum_cli_support import _require_scaffold_extracted_modules_index
 from textum_cli_support import _ensure_prd_ready
 
@@ -66,7 +67,18 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
 
     story_path, story_text, story, failures = _load_story_source(stories_dir=paths["stories_dir"], n=args.n)
     if failures:
-        _print_failures_with_next(failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum story check --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert story_path is not None
     assert story_text is not None
@@ -74,26 +86,81 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
 
     prd_pack, prd_failures = read_prd_pack(paths["prd_pack"])
     if prd_failures:
-        _print_failures_with_next(prd_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(prd_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum story check --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=prd_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert prd_pack is not None
     prd_ready_failures = _ensure_prd_ready(prd_pack, prd_pack_path=paths["prd_pack"])
     if prd_ready_failures:
-        _print_failures_with_next(prd_ready_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(prd_ready_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum story check --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=prd_ready_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
 
     scaffold_pack, scaffold_failures = read_scaffold_pack(paths["scaffold_pack"])
     if scaffold_failures:
-        _print_failures_with_next(scaffold_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(scaffold_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum story check --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=scaffold_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert scaffold_pack is not None
     scaffold_ready_failures = _require_scaffold_extracted_modules_index(scaffold_pack=scaffold_pack, prd_pack=prd_pack)
     if scaffold_ready_failures:
-        _print_failures_with_next(scaffold_ready_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(scaffold_ready_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum story check --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=scaffold_ready_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     scaffold_ready, scaffold_check_failures = check_scaffold_pack(scaffold_pack)
     if not scaffold_ready:
-        _print_failures_with_next(scaffold_check_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(scaffold_check_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum story check --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=scaffold_check_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
 
     story_rel = story_path.relative_to(workspace).as_posix()
@@ -108,9 +175,29 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
         scaffold_pack=scaffold_pack,
     )
     if failures:
-        _print_failures_with_next(failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum story check --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     print("PASS")
+    _, wrote = write_check_artifacts(
+        workspace_root=workspace,
+        stage_id="story-check",
+        command=f"uv run --project .codex/skills/textum/scripts textum story check --workspace {workspace.as_posix()} --n {args.n}",
+        next_stage="Story Pack",
+        failures=[],
+    )
+    for rel in wrote:
+        print(f"wrote: {rel}")
     print("next: Story Pack")
     return 0
 
@@ -121,7 +208,18 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
 
     story_path, story_text, story, failures = _load_story_source(stories_dir=paths["stories_dir"], n=args.n)
     if failures:
-        _print_failures_with_next(failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-pack",
+            command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert story_path is not None
     assert story_text is not None
@@ -129,26 +227,81 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
 
     prd_pack, prd_failures = read_prd_pack(paths["prd_pack"])
     if prd_failures:
-        _print_failures_with_next(prd_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(prd_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-pack",
+            command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=prd_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert prd_pack is not None
     prd_ready_failures = _ensure_prd_ready(prd_pack, prd_pack_path=paths["prd_pack"])
     if prd_ready_failures:
-        _print_failures_with_next(prd_ready_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(prd_ready_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-pack",
+            command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=prd_ready_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
 
     scaffold_pack, scaffold_failures = read_scaffold_pack(paths["scaffold_pack"])
     if scaffold_failures:
-        _print_failures_with_next(scaffold_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(scaffold_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-pack",
+            command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=scaffold_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert scaffold_pack is not None
     scaffold_ready_failures = _require_scaffold_extracted_modules_index(scaffold_pack=scaffold_pack, prd_pack=prd_pack)
     if scaffold_ready_failures:
-        _print_failures_with_next(scaffold_ready_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(scaffold_ready_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-pack",
+            command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=scaffold_ready_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     scaffold_ready, scaffold_check_failures = check_scaffold_pack(scaffold_pack)
     if not scaffold_ready:
-        _print_failures_with_next(scaffold_check_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(scaffold_check_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-pack",
+            command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=scaffold_check_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
 
     story_rel = story_path.relative_to(workspace).as_posix()
@@ -163,7 +316,18 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
         scaffold_pack=scaffold_pack,
     )
     if failures:
-        _print_failures_with_next(failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-pack",
+            command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
 
     exec_dir = story_exec_dir(paths["docs_dir"], story_source=story_path)
@@ -182,18 +346,49 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
         clean=args.clean,
     )
     if pack_failures:
-        _print_failures_with_next(pack_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(pack_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-pack",
+            command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=pack_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert out_dir is not None
 
     exec_failures = check_story_exec_pack(workspace_root=workspace, exec_dir=out_dir, budget=budget)
     if exec_failures:
-        _print_failures_with_next(exec_failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(exec_failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="story-pack",
+            command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+            next_stage=next_stage,
+            failures=exec_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
 
     rel_dir = out_dir.relative_to(workspace).as_posix()
     print("PASS")
     print(f"entry: {rel_dir}/index.json")
+    _, wrote = write_check_artifacts(
+        workspace_root=workspace,
+        stage_id="story-pack",
+        command=f"uv run --project .codex/skills/textum/scripts textum story pack --workspace {workspace.as_posix()} --n {args.n}",
+        next_stage="Story Exec",
+        failures=[],
+    )
+    for rel in wrote:
+        print(f"wrote: {rel}")
     print("next: Story Exec")
     return 0
 

@@ -19,9 +19,10 @@ def generate_split_check_index_pack(
     out_path: Path,
     max_story_lines: int,
     max_story_chars: int,
-) -> tuple[dict[str, Any] | None, list[Failure], list[dict[str, Any]]]:
+    strict: bool,
+) -> tuple[dict[str, Any] | None, list[Failure], list[Failure]]:
     failures: list[Failure] = []
-    decisions: list[dict[str, Any]] = []
+    warnings: list[Failure] = []
 
     stories_plan = split_plan_pack.get("stories") if isinstance(split_plan_pack.get("stories"), list) else []
     plan_by_story: dict[str, dict[str, Any]] = {}
@@ -43,7 +44,7 @@ def generate_split_check_index_pack(
                 fix="generate docs/stories/story-###-<slug>.json",
             )
         )
-        return None, failures, decisions
+        return None, failures, warnings
 
     stories_index: list[dict[str, Any]] = []
 
@@ -114,7 +115,8 @@ def generate_split_check_index_pack(
             tbl_refs=tbl_refs,
             feature_points=feature_points,
             failures=failures,
-            decisions=decisions,
+            warnings=warnings,
+            strict=strict,
         )
 
         lines, chars = count_lines_chars(path)
@@ -158,8 +160,7 @@ def generate_split_check_index_pack(
     }
 
     if failures:
-        return index_pack, failures, decisions
+        return index_pack, failures, warnings
 
     write_json(out_path, index_pack)
-    return index_pack, [], decisions
-
+    return index_pack, [], warnings

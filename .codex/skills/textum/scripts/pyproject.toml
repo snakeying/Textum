@@ -17,6 +17,7 @@ py-modules = [
   "textum_cli",
   "textum_cli_support",
   "textum_cli_next",
+  "textum_cli_artifacts",
   "textum_cli_prd",
   "textum_cli_scaffold",
   "textum_cli_split",

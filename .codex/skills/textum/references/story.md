@@ -35,7 +35,6 @@ Write:
 - `Status (FP/API)`:
   - For each `FP-###`: `DONE` / `NOT_DONE`
   - For each `API-###`: `DONE` / `NOT_DONE`
-- `Key Changes`: only “file path + 1-line change”
-- `Verification`: each executed command → `PASS/FAIL`
-- `DECISION`: only if needed
+- `Key Changes`: only "file path + 1-line change"
+- `Verification`: each executed command -> `PASS/FAIL`
 - `Next`: `N/A` (if preconditions fail: output `FAIL` list + `next:` and stop)

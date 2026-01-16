@@ -1,6 +1,9 @@
 # Stage 2a: Scaffold Plan (write JSON scaffold-pack)
 
-Read: `docs/prd-pack.json` | Write: `docs/scaffold-pack.json` (pure JSON; no ``` blocks) 
+Read: `docs/prd-pack.json` | Write: `docs/scaffold-pack.json` (pure JSON; no ``` blocks)
+Also read (only if exists; for returning from Scaffold Check):
+- `docs/scaffold-check-replan-pack.json`
+- `docs/diagnostics/scaffold-check.md`
 
 Goal: write **confirmed technical decisions only** into `docs/scaffold-pack.json` (single source of truth).
 
@@ -10,8 +13,8 @@ Output MUST be exactly one of:
 
 1) `IN_PROGRESS`
    - Output exactly 2 blocks:
-     1) This-round questions (≤4; blockers only) OR This-round change summary (JSONPath list)
-     2) Remaining blockers (≤8; prioritized)
+     1) This-round questions (~4; blockers only) OR This-round change summary (JSONPath list)
+     2) Remaining blockers (~8; prioritized)
 2) `READY`
    - Output exactly 3 plain-text lines:
      - `READY`
@@ -47,3 +50,9 @@ If `docs/scaffold-pack.json` does not exist, initialize once (workspace root):
 2) `uv run --project .codex/skills/textum/scripts textum scaffold init`
 
 Then ask: confirm your preferred backend/frontend/database choices (be specific: language + framework + DB).
+
+If the user is returning from a `Scaffold Check` failure and `docs/scaffold-check-replan-pack.json` exists:
+- Treat `items[]` as the current blockers.
+- Choose exactly one mode for this round:
+  - Ask-mode: ask up to ~4 questions to resolve blockers; do NOT write JSON.
+  - Write-mode: apply a minimal write (single-action fix if possible), and output a JSONPath change summary; do NOT ask questions.

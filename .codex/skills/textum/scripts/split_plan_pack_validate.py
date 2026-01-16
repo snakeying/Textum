@@ -10,8 +10,11 @@ from split_plan_pack_validate_stories import validate_stories_and_module_coverag
 from split_plan_pack_validate_utils import get_list
 
 
-def validate_split_plan_pack(split_plan_pack: dict[str, Any], *, prd_pack: dict[str, Any]) -> list[Failure]:
+def validate_split_plan_pack(
+    split_plan_pack: dict[str, Any], *, prd_pack: dict[str, Any], strict: bool
+) -> tuple[list[Failure], list[Failure]]:
     failures: list[Failure] = []
+    warnings: list[Failure] = []
 
     if split_plan_pack.get("schema_version") != "split-plan-pack@v1":
         failures.append(
@@ -23,13 +26,13 @@ def validate_split_plan_pack(split_plan_pack: dict[str, Any], *, prd_pack: dict[
                 fix="set schema_version to 'split-plan-pack@v1'",
             )
         )
-        return failures
+        return failures, warnings
 
     failures.extend(collect_placeholders(split_plan_pack))
 
     stories = get_list(split_plan_pack.get("stories"), "$.stories", failures)
     if stories is None:
-        return failures
+        return failures, warnings
     if len(stories) == 0:
         failures.append(
             Failure(
@@ -40,7 +43,7 @@ def validate_split_plan_pack(split_plan_pack: dict[str, Any], *, prd_pack: dict[
                 fix="add at least one story to stories[]",
             )
         )
-        return failures
+        return failures, warnings
 
     prd_modules_value = prd_pack.get("modules")
     prd_modules: list[str] = []
@@ -71,7 +74,7 @@ def validate_split_plan_pack(split_plan_pack: dict[str, Any], *, prd_pack: dict[
                 fix="fill docs/prd-pack.json modules[].id with valid M-01 ids",
             )
         )
-        return failures
+        return failures, warnings
 
     seen_story_names, expected_ns = validate_stories_and_module_coverage(
         stories,
@@ -85,11 +88,16 @@ def validate_split_plan_pack(split_plan_pack: dict[str, Any], *, prd_pack: dict[
         seen_story_names=seen_story_names,
         expected_ns=expected_ns,
         failures=failures,
+        warnings=warnings,
+        strict=strict,
     )
 
-    return failures
+    return failures, warnings
 
 
-def check_split_plan_pack(split_plan_pack: dict[str, Any], *, prd_pack: dict[str, Any]) -> tuple[bool, list[Failure]]:
-    failures = validate_split_plan_pack(split_plan_pack, prd_pack=prd_pack)
-    return (len(failures) == 0), failures
+def check_split_plan_pack(
+    split_plan_pack: dict[str, Any], *, prd_pack: dict[str, Any], strict: bool = False
+) -> tuple[bool, list[Failure], list[Failure]]:
+    failures, warnings = validate_split_plan_pack(split_plan_pack, prd_pack=prd_pack, strict=strict)
+    ready = len(failures) == 0 and (len(warnings) == 0 if strict else True)
+    return ready, failures, warnings

@@ -7,6 +7,8 @@ from typing import Any
 from prd_pack import check_prd_pack, init_prd_pack, skill_asset_paths, workspace_paths
 from prd_render import render_prd_markdown
 from prd_slices import SliceBudget, generate_prd_slices
+from textum_cli_artifacts import write_check_artifacts
+from textum_cli_next import _next_stage_for_failures
 from textum_cli_support import _load_prd_pack_and_normalize, _print_failures
 
 
@@ -31,18 +33,49 @@ def _cmd_prd_check(args: argparse.Namespace) -> int:
     paths = workspace_paths(workspace)
     prd_pack, updated, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
     if failures:
-        _print_failures(failures)
-        print("next: PRD Plan")
+        next_stage = _next_stage_for_failures(failures, fallback="PRD Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="prd-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum prd check --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert prd_pack is not None
 
     ready, check_failures = check_prd_pack(prd_pack)
     if not ready:
-        _print_failures(check_failures)
-        print("next: PRD Plan")
+        next_stage = _next_stage_for_failures(check_failures, fallback="PRD Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="prd-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum prd check --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=check_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
 
     print("PASS")
+    if updated and args.fix:
+        print(f"wrote: {paths['prd_pack'].relative_to(workspace).as_posix()}")
+    _, wrote = write_check_artifacts(
+        workspace_root=workspace,
+        stage_id="prd-check",
+        command=f"uv run --project .codex/skills/textum/scripts textum prd check --workspace {workspace.as_posix()}",
+        next_stage="PRD Render",
+        failures=[],
+    )
+    for rel in wrote:
+        print(f"wrote: {rel}")
     print("next: PRD Render")
     return 0
 

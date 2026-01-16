@@ -7,6 +7,8 @@ from typing import Any
 from prd_pack import skill_asset_paths, workspace_paths
 from scaffold_pack import init_scaffold_pack
 from scaffold_render import render_global_context_markdown
+from textum_cli_artifacts import write_check_artifacts
+from textum_cli_next import _next_stage_for_failures
 from textum_cli_support import (
     _load_prd_pack_and_ensure_ready,
     _load_scaffold_pack_and_ensure_ready,
@@ -36,21 +38,52 @@ def _cmd_scaffold_check(args: argparse.Namespace) -> int:
 
     prd_pack, prd_failures = _load_prd_pack_and_ensure_ready(paths)
     if prd_failures:
-        _print_failures(prd_failures)
-        print("next: Scaffold Plan")
+        next_stage = _next_stage_for_failures(prd_failures, fallback="Scaffold Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="scaffold-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum scaffold check --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=prd_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert prd_pack is not None
 
-    scaffold_pack, _, scaffold_failures = _load_scaffold_pack_and_ensure_ready(
+    scaffold_pack, updated, scaffold_failures = _load_scaffold_pack_and_ensure_ready(
         paths, prd_pack=prd_pack, fix=args.fix
     )
     if scaffold_failures:
-        _print_failures(scaffold_failures)
-        print("next: Scaffold Plan")
+        next_stage = _next_stage_for_failures(scaffold_failures, fallback="Scaffold Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="scaffold-check",
+            command=f"uv run --project .codex/skills/textum/scripts textum scaffold check --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=scaffold_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert scaffold_pack is not None
 
     print("PASS")
+    if updated and args.fix:
+        print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
+    _, wrote = write_check_artifacts(
+        workspace_root=workspace,
+        stage_id="scaffold-check",
+        command=f"uv run --project .codex/skills/textum/scripts textum scaffold check --workspace {workspace.as_posix()}",
+        next_stage="Scaffold Render",
+        failures=[],
+    )
+    for rel in wrote:
+        print(f"wrote: {rel}")
     print("next: Scaffold Render")
     return 0
 

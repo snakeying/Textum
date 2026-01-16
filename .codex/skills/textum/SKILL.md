@@ -53,4 +53,5 @@ Routing:
 - If intent is unclear, ask the user to pick one: `PRD Plan` / `PRD Check` / `PRD Render` / `PRD Slice` / `Scaffold Plan` / `Scaffold Render` / `Scaffold Check` / `Split Plan` / `Split Generate` / `Split Check1` / `Split Check2` / `Split Checkout` / `Story Check` / `Story Pack` / `Story Exec` / `Story Full Exec`.
 
 Always:
-- For every `FAIL` item: include `loc/problem/expected/impact/fix`, and `fix` must be a single action.
+- For every `FAIL` item (in diagnostics/replan packs): include `loc/problem/expected/impact/fix`, and `fix` must be a single action.
+- Keep chat output low-noise: prefer paths (`wrote: docs/*`) over pasting long `FAIL` lists.

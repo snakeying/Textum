@@ -28,6 +28,12 @@ def register_split_commands(subparsers: Any) -> None:
         default=True,
         help="Auto-fix and write back (default: true).",
     )
+    split_plan_check.add_argument(
+        "--strict",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Treat warnings as FAIL (default: false).",
+    )
     split_plan_check.set_defaults(func=_cmd_split_plan_check)
 
     split_generate = split_subparsers.add_parser("generate", help="Generate per-story JSON files under docs/stories/")
@@ -50,6 +56,12 @@ def register_split_commands(subparsers: Any) -> None:
     split_check1.add_argument("--workspace", default=".", help="Workspace root that contains ./docs.")
     split_check1.add_argument("--max-lines", type=int, default=350, help="Max lines per story file (default: 350).")
     split_check1.add_argument("--max-chars", type=int, default=12000, help="Max chars per story file (default: 12000).")
+    split_check1.add_argument(
+        "--strict",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Treat threshold warnings as FAIL (default: false).",
+    )
     split_check1.set_defaults(func=_cmd_split_check1)
 
     split_check2 = split_subparsers.add_parser("check2", help="Ref consistency checks (PRD/Scaffold)")

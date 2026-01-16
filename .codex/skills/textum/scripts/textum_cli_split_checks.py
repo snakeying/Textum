@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import Any
 
 from prd_pack import read_prd_pack, workspace_paths
 from scaffold_pack import read_scaffold_pack
@@ -11,8 +10,9 @@ from split_check_refs import validate_split_refs
 from split_checkout import write_story_dependency_mermaid
 from split_pack_io import read_json_object
 from split_plan_pack import read_split_plan_pack
-from textum_cli_next import _print_failures_with_next
-from textum_cli_support import _ensure_prd_ready, _ensure_scaffold_ready, _print_failures
+from textum_cli_artifacts import write_check_artifacts
+from textum_cli_next import _next_stage_for_failures
+from textum_cli_support import _ensure_prd_ready, _ensure_scaffold_ready
 
 
 def _cmd_split_check1(args: argparse.Namespace) -> int:
@@ -21,88 +21,76 @@ def _cmd_split_check1(args: argparse.Namespace) -> int:
 
     split_plan_pack, read_failures = read_split_plan_pack(paths["split_plan_pack"])
     if read_failures:
-        _print_failures(read_failures)
-        print("next: Split Plan")
+        next_stage = _next_stage_for_failures(read_failures, fallback="Split Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="split-check1",
+            command=f"uv run --project .codex/skills/textum/scripts textum split check1 --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=read_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert split_plan_pack is not None
 
-    index_pack, failures, decisions = generate_split_check_index_pack(
+    index_pack, failures, warnings = generate_split_check_index_pack(
         split_plan_pack_path=paths["split_plan_pack"],
         split_plan_pack=split_plan_pack,
         stories_dir=paths["stories_dir"],
         out_path=paths["split_check_index_pack"],
         max_story_lines=args.max_lines,
         max_story_chars=args.max_chars,
+        strict=getattr(args, "strict", False) is True,
     )
 
-    if failures:
-        _print_failures(failures)
-        if isinstance(index_pack, dict):
-            replan = build_split_replan_pack(index_pack=index_pack)
-            if isinstance(replan.get("oversized_stories"), list) and len(replan["oversized_stories"]) > 0:
-                import json
+    split_replan_written = False
+    if isinstance(index_pack, dict):
+        replan = build_split_replan_pack(index_pack=index_pack)
+        if isinstance(replan.get("oversized_stories"), list) and len(replan["oversized_stories"]) > 0:
+            import json
 
-                paths["split_replan_pack"].write_text(
-                    json.dumps(replan, ensure_ascii=False, indent=2) + "\n",
-                    encoding="utf-8",
-                )
-                rel = paths["split_replan_pack"].relative_to(workspace).as_posix()
-                print(f"wrote: {rel}")
-        print("next: Split Plan")
+            paths["split_replan_pack"].write_text(
+                json.dumps(replan, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            split_replan_written = True
+
+    if failures:
+        next_stage = _next_stage_for_failures(failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="split-check1",
+            command=f"uv run --project .codex/skills/textum/scripts textum split check1 --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=failures,
+            warnings=warnings,
+            extra={"split_replan_pack": "docs/split-replan-pack.json"} if split_replan_written else None,
+        )
+        print("FAIL")
+        if split_replan_written:
+            print(f"wrote: {paths['split_replan_pack'].relative_to(workspace).as_posix()}")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
 
-    if decisions:
-        print("DECISION")
-        story_meta_by_name: dict[str, dict[str, Any]] = {}
-        if isinstance(index_pack, dict):
-            index_stories = index_pack.get("stories") if isinstance(index_pack.get("stories"), list) else []
-            for row in index_stories:
-                if not isinstance(row, dict):
-                    continue
-                story_name = row.get("story")
-                if isinstance(story_name, str) and story_name.strip():
-                    story_meta_by_name[story_name] = row
-
-        for i, decision in enumerate(decisions, start=1):
-            story = decision.get("story")
-            story_file = decision.get("story_file")
-            detail = decision.get("decision")
-            action = decision.get("suggested_action")
-
-            rel_story_file = story_file
-            if isinstance(story_file, str) and story_file.strip():
-                try:
-                    rel_story_file = Path(story_file).resolve().relative_to(workspace).as_posix()
-                except Exception:
-                    rel_story_file = story_file
-
-            extra = ""
-            if isinstance(story, str) and isinstance(detail, str):
-                meta = story_meta_by_name.get(story)
-                refs = meta.get("refs") if isinstance(meta, dict) else {}
-                if isinstance(refs, dict):
-                    if detail.startswith("api_refs="):
-                        apis = refs.get("prd_api_ids") if isinstance(refs.get("prd_api_ids"), list) else []
-                        apis_s = ",".join([a for a in apis if isinstance(a, str) and a.strip()])
-                        if apis_s:
-                            extra = f"; apis={apis_s}"
-                    elif detail.startswith("tbl_refs="):
-                        tbls = refs.get("prd_tbl_ids") if isinstance(refs.get("prd_tbl_ids"), list) else []
-                        tbls_s = ",".join([t for t in tbls if isinstance(t, str) and t.strip()])
-                        if tbls_s:
-                            extra = f"; tables={tbls_s}"
-                    elif detail.startswith("feature_points="):
-                        fps = refs.get("fp_ids") if isinstance(refs.get("fp_ids"), list) else []
-                        fps_s = ",".join([fp for fp in fps if isinstance(fp, str) and fp.strip()])
-                        if fps_s:
-                            extra = f"; fps={fps_s}"
-
-            file_part = f"; file={rel_story_file}" if isinstance(rel_story_file, str) and rel_story_file.strip() else ""
-            print(f"- D-{i:03d}; story={story}{file_part}; issue={detail}{extra}; action={action}")
-        print("next: Split Check2")
-        return 0
-
     print("PASS")
+    if split_replan_written:
+        print(f"wrote: {paths['split_replan_pack'].relative_to(workspace).as_posix()}")
+    _, wrote = write_check_artifacts(
+        workspace_root=workspace,
+        stage_id="split-check1",
+        command=f"uv run --project .codex/skills/textum/scripts textum split check1 --workspace {workspace.as_posix()}",
+        next_stage="Split Check2",
+        failures=[],
+        warnings=warnings,
+        extra={"split_replan_pack": "docs/split-replan-pack.json"} if split_replan_written else None,
+    )
+    for rel in wrote:
+        print(f"wrote: {rel}")
     print("next: Split Check2")
     return 0
 
@@ -113,22 +101,55 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
 
     prd_pack, prd_read_failures = read_prd_pack(paths["prd_pack"])
     if prd_read_failures:
-        _print_failures_with_next(prd_read_failures, fallback="Split Plan")
+        next_stage = _next_stage_for_failures(prd_read_failures, fallback="Split Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="split-check2",
+            command=f"uv run --project .codex/skills/textum/scripts textum split check2 --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=prd_read_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert prd_pack is not None
 
     prd_ready_failures = _ensure_prd_ready(prd_pack, prd_pack_path=paths["prd_pack"])
     if prd_ready_failures:
-        _print_failures_with_next(prd_ready_failures, fallback="Split Plan")
+        next_stage = _next_stage_for_failures(prd_ready_failures, fallback="Split Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="split-check2",
+            command=f"uv run --project .codex/skills/textum/scripts textum split check2 --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=prd_ready_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
 
     scaffold_pack, scaffold_read_failures = read_scaffold_pack(paths["scaffold_pack"])
     if scaffold_read_failures:
-        _print_failures_with_next(scaffold_read_failures, fallback="Split Plan")
+        next_stage = _next_stage_for_failures(scaffold_read_failures, fallback="Split Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="split-check2",
+            command=f"uv run --project .codex/skills/textum/scripts textum split check2 --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=scaffold_read_failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert scaffold_pack is not None
 
-    _, scaffold_ready_failures = _ensure_scaffold_ready(
+    scaffold_updated, scaffold_ready_failures = _ensure_scaffold_ready(
         scaffold_pack,  # type: ignore[arg-type]
         prd_pack_path=paths["prd_pack"],
         prd_pack=prd_pack,  # type: ignore[arg-type]
@@ -136,22 +157,72 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
         fix=args.fix,
     )
     if scaffold_ready_failures:
-        _print_failures_with_next(scaffold_ready_failures, fallback="Split Plan")
+        next_stage = _next_stage_for_failures(scaffold_ready_failures, fallback="Split Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="split-check2",
+            command=f"uv run --project .codex/skills/textum/scripts textum split check2 --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=scaffold_ready_failures,
+        )
+        print("FAIL")
+        if scaffold_updated and args.fix:
+            print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     index_pack, index_failures = read_json_object(
         paths["split_check_index_pack"],
         missing_fix="regenerate docs/split-check-index-pack.json",
     )
     if index_failures:
-        _print_failures_with_next(index_failures, fallback="Split Plan")
+        next_stage = _next_stage_for_failures(index_failures, fallback="Split Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="split-check2",
+            command=f"uv run --project .codex/skills/textum/scripts textum split check2 --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=index_failures,
+        )
+        print("FAIL")
+        if scaffold_updated and args.fix:
+            print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     assert index_pack is not None
 
     failures = validate_split_refs(index_pack=index_pack, prd_pack=prd_pack, scaffold_pack=scaffold_pack)
     if failures:
-        _print_failures_with_next(failures, fallback="Split Plan")
+        next_stage = _next_stage_for_failures(failures, fallback="Split Plan")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="split-check2",
+            command=f"uv run --project .codex/skills/textum/scripts textum split check2 --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=failures,
+        )
+        print("FAIL")
+        if scaffold_updated and args.fix:
+            print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     print("PASS")
+    if scaffold_updated and args.fix:
+        print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
+    _, wrote = write_check_artifacts(
+        workspace_root=workspace,
+        stage_id="split-check2",
+        command=f"uv run --project .codex/skills/textum/scripts textum split check2 --workspace {workspace.as_posix()}",
+        next_stage="Split Checkout",
+        failures=[],
+    )
+    for rel in wrote:
+        print(f"wrote: {rel}")
     print("next: Split Checkout")
     return 0
 
@@ -161,8 +232,29 @@ def _cmd_split_checkout(args: argparse.Namespace) -> int:
     paths = workspace_paths(workspace)
     failures = write_story_dependency_mermaid(stories_dir=paths["stories_dir"], out_path=paths["story_mermaid"])
     if failures:
-        _print_failures_with_next(failures, fallback="Split Generate")
+        next_stage = _next_stage_for_failures(failures, fallback="Split Generate")
+        _, wrote = write_check_artifacts(
+            workspace_root=workspace,
+            stage_id="split-checkout",
+            command=f"uv run --project .codex/skills/textum/scripts textum split checkout --workspace {workspace.as_posix()}",
+            next_stage=next_stage,
+            failures=failures,
+        )
+        print("FAIL")
+        for rel in wrote:
+            print(f"wrote: {rel}")
+        print(f"next: {next_stage}")
         return 1
     print("PASS")
+    print(f"wrote: {paths['story_mermaid'].relative_to(workspace).as_posix()}")
+    _, wrote = write_check_artifacts(
+        workspace_root=workspace,
+        stage_id="split-checkout",
+        command=f"uv run --project .codex/skills/textum/scripts textum split checkout --workspace {workspace.as_posix()}",
+        next_stage="Story Check",
+        failures=[],
+    )
+    for rel in wrote:
+        print(f"wrote: {rel}")
     print("next: Story Check")
     return 0

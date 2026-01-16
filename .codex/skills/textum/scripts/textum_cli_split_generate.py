@@ -37,14 +37,17 @@ def _cmd_split_generate(args: argparse.Namespace) -> int:
         return 1
     assert scaffold_pack is not None
 
-    _, scaffold_ready_failures = _ensure_scaffold_ready(
+    scaffold_updated, scaffold_ready_failures = _ensure_scaffold_ready(
         scaffold_pack,  # type: ignore[arg-type]
         prd_pack_path=paths["prd_pack"],
         prd_pack=prd_pack,  # type: ignore[arg-type]
         scaffold_pack_path=paths["scaffold_pack"],
         fix=args.fix,
     )
+    scaffold_pack_written = scaffold_updated and args.fix
     if scaffold_ready_failures:
+        if scaffold_pack_written:
+            print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
         _print_failures_with_next(scaffold_ready_failures, fallback="Split Plan")
         return 1
 
@@ -63,11 +66,17 @@ def _cmd_split_generate(args: argparse.Namespace) -> int:
     if norm_failures:
         _print_failures_with_next(norm_failures, fallback="Split Plan")
         return 1
+    split_plan_pack_written = False
     if updated and args.fix:
         write_split_plan_pack(paths["split_plan_pack"], split_plan_pack)
+        split_plan_pack_written = True
 
-    ready, check_failures = check_split_plan_pack(split_plan_pack, prd_pack=prd_pack)
+    ready, check_failures, _ = check_split_plan_pack(split_plan_pack, prd_pack=prd_pack)
     if not ready:
+        if scaffold_pack_written:
+            print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
+        if split_plan_pack_written:
+            print(f"wrote: {paths['split_plan_pack'].relative_to(workspace).as_posix()}")
         _print_failures_with_next(check_failures, fallback="Split Plan")
         return 1
 
@@ -78,10 +87,18 @@ def _cmd_split_generate(args: argparse.Namespace) -> int:
         clean=args.clean,
     )
     if gen_failures:
+        if scaffold_pack_written:
+            print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
+        if split_plan_pack_written:
+            print(f"wrote: {paths['split_plan_pack'].relative_to(workspace).as_posix()}")
         _print_failures_with_next(gen_failures, fallback="Split Plan")
         return 1
 
     print("PASS")
+    if scaffold_pack_written:
+        print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
+    if split_plan_pack_written:
+        print(f"wrote: {paths['split_plan_pack'].relative_to(workspace).as_posix()}")
     print("wrote: docs/stories/")
     print("next: Split Check1")
     return 0

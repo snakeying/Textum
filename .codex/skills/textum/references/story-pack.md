@@ -9,6 +9,8 @@ Read:
 
 Write:
 - `docs/story-exec/story-###-<slug>/` (entry: `index.json`)
+- `docs/story-pack-replan-pack.json`
+- `docs/diagnostics/story-pack.md`
 
 ## Command
 
@@ -18,8 +20,9 @@ Ask the user for the story number `n` (e.g. `1`), then run (workspace root):
 
 ## Output rule
 
-- If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: <stage>` (fail-fast; computed from the `FAIL` list)
-- If command prints `PASS`: output:
-  - `PASS`
-  - `entry: docs/story-exec/story-###-<slug>/index.json`
-  - `next: Story Exec`
+- Output the command output as-is (low-noise).
+- The command always prints:
+  - `PASS` or `FAIL`
+  - optional `entry: ...` (on PASS)
+  - optional `wrote: ...` lines (diagnostics/replan packs)
+  - final line `next: <stage>` (fail-fast; computed from artifacts)

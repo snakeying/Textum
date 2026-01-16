@@ -7,7 +7,10 @@ Read:
 - `docs/prd-pack.json`
 - `docs/scaffold-pack.json`
 
-Write: `docs/scaffold-pack.json` (refresh extracted/source if needed)
+Write:
+- `docs/scaffold-pack.json` (refresh extracted/source if needed)
+- `docs/split-check2-replan-pack.json`
+- `docs/diagnostics/split-check2.md`
 
 ## Command
 
@@ -17,7 +20,8 @@ Run (workspace root):
 
 ## Output rule
 
-- If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: Split Plan`
-- If command prints `PASS`: output:
-  - `PASS`
-  - `next: Split Checkout`
+- Output the command output as-is (low-noise).
+- The command always prints:
+  - `PASS` or `FAIL`
+  - optional `wrote: ...` lines (diagnostics/replan packs; and maybe normalized pack)
+  - final line `next: <stage>`

@@ -38,5 +38,4 @@ For each `n` in order:
 - Per-story status (1 line each):
   - `Story <n>: PASS` or `Story <n>: FAIL`
 - If any failures: output a `FAIL` list (each item must include `loc/problem/expected/impact/fix`; `fix` is one action)
-- If any non-blocking items: output `DECISION` list
 - Final line: `next: N/A`

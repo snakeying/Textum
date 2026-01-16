@@ -1,6 +1,11 @@
 # Stage 1b: PRD Check (gate on JSON pack)
 
-Read: `docs/prd-pack.json` | Write: `docs/prd-pack.json` (normalize/ID)
+Read: `docs/prd-pack.json`
+
+Write:
+- `docs/prd-pack.json` (normalize/ID)
+- `docs/prd-check-replan-pack.json`
+- `docs/diagnostics/prd-check.md`
 
 ## Command
 
@@ -10,7 +15,8 @@ Run (workspace root):
 
 ## Output rule
 
-- If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: PRD Plan`
-- If command prints `PASS`: output:
-  - `PASS`
-  - `next: PRD Render`
+- Output the command output as-is (low-noise).
+- The command always prints:
+  - `PASS` or `FAIL`
+  - optional `wrote: ...` lines (diagnostics/replan packs; and maybe normalized pack)
+  - final line `next: <stage>`

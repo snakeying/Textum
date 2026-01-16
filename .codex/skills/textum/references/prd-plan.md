@@ -1,6 +1,9 @@
 # Stage 1a: PRD Plan & Clarification (write JSON prd-pack)
 
 Read: `docs/prd-pack.json` (if exists) | Write: `docs/prd-pack.json` (pure JSON; no ``` blocks)
+Also read (only if exists; for returning from PRD Check):
+- `docs/prd-check-replan-pack.json`
+- `docs/diagnostics/prd-check.md`
 
 Goal: keep writing **confirmed facts only** into `docs/prd-pack.json` (single source of truth).
 
@@ -46,3 +49,8 @@ If `docs/prd-pack.json` does not exist, initialize once (workspace root):
 
 Then ask: describe the app in 1-3 sentences (who is it for, and what problem does it solve?).
 
+If the user is returning from a `PRD Check` failure and `docs/prd-check-replan-pack.json` exists:
+- Treat `items[]` as the current blockers (ignore older issues not present).
+- Choose exactly one mode for this round:
+  - Ask-mode: ask up to ~4 questions to resolve blockers; do NOT write JSON.
+  - Write-mode: apply a minimal write (single-action fix if possible), and output a JSONPath change summary; do NOT ask questions.

@@ -5,6 +5,8 @@ Read:
 
 Write:
 - `docs/story-mermaid.md`
+- `docs/split-checkout-replan-pack.json`
+- `docs/diagnostics/split-checkout.md`
 
 ## Command
 
@@ -14,8 +16,8 @@ Run (workspace root):
 
 ## Output rule
 
-- If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: Split Generate`
-- If command prints `PASS`: output:
-  - `PASS`
-  - `next: Story Check`
-
+- Output the command output as-is (low-noise).
+- The command always prints:
+  - `PASS` or `FAIL`
+  - optional `wrote: ...` lines (dependency graph, diagnostics/replan packs)
+  - final line `next: <stage>`

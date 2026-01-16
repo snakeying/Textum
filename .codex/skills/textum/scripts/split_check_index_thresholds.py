@@ -15,32 +15,37 @@ def evaluate_story_thresholds(
     tbl_refs: int,
     feature_points: int,
     failures: list[Failure],
-    decisions: list[dict[str, Any]],
+    warnings: list[Failure],
+    strict: bool,
 ) -> None:
     if is_threshold_hard_fail(api_refs=api_refs, tbl_refs=tbl_refs, feature_points=feature_points):
-        failures.append(
-            Failure(
-                loc=str(story_file),
-                problem=f"oversized story: api_refs={api_refs}, tbl_refs={tbl_refs}, feature_points={feature_points}",
-                expected="api_refs<=5, tbl_refs<=10, feature_points<=12 (prefer smaller)",
-                impact="fails Split Check1 thresholds",
-                fix="split this story into smaller stories in docs/split-plan-pack.json",
-            )
+        item = Failure(
+            loc=str(story_file),
+            problem=f"oversized story: api_refs={api_refs}, tbl_refs={tbl_refs}, feature_points={feature_points}",
+            expected="api_refs<=5, tbl_refs<=10, feature_points<=12 (prefer smaller)",
+            impact="story scope may exceed low-noise budget",
+            fix="split this story into smaller stories in docs/split-plan-pack.json",
         )
+        if strict:
+            failures.append(item)
+        else:
+            warnings.append(item)
         return
 
     decision_hits = threshold_decision_hits(api_refs=api_refs, tbl_refs=tbl_refs, feature_points=feature_points)
 
     if len(decision_hits) >= 2:
-        failures.append(
-            Failure(
-                loc=str(story_file),
-                problem=f"oversized story (DECISION escalation): {', '.join(decision_hits)}",
-                expected="at most 1 DECISION-range hit per story",
-                impact="fails Split Check1 thresholds",
-                fix="split this story into smaller stories in docs/split-plan-pack.json",
-            )
+        item = Failure(
+            loc=str(story_file),
+            problem=f"oversized story (warn escalation): {', '.join(decision_hits)}",
+            expected="at most 1 warn-range hit per story",
+            impact="story scope may exceed low-noise budget",
+            fix="split this story into smaller stories in docs/split-plan-pack.json",
         )
+        if strict:
+            failures.append(item)
+        else:
+            warnings.append(item)
         return
 
     if len(decision_hits) == 1:
@@ -52,11 +57,12 @@ def evaluate_story_thresholds(
             suggested_action = "move 1 FP (and its DB landings) out of this story in docs/split-plan-pack.json (aim tbl_refs<=6)"
         elif hit.startswith("feature_points="):
             suggested_action = "move 1 FP out of this story in docs/split-plan-pack.json (aim feature_points<=8)"
-        decisions.append(
-            {
-                "story": story_name,
-                "story_file": str(story_file.as_posix()),
-                "decision": hit,
-                "suggested_action": suggested_action,
-            }
+        warnings.append(
+            Failure(
+                loc=str(story_file),
+                problem=f"threshold warning: {hit}",
+                expected="stay under threshold warnings (prefer smaller stories)",
+                impact="may increase iteration cost",
+                fix=suggested_action,
+            )
         )

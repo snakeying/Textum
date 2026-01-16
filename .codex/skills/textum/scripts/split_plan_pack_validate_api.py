@@ -13,6 +13,8 @@ def validate_api_assignments(
     seen_story_names: set[str],
     expected_ns: set[int],
     failures: list[Failure],
+    warnings: list[Failure],
+    strict: bool,
 ) -> None:
     api = prd_pack.get("api") if isinstance(prd_pack.get("api"), dict) else {}
     prd_has_api = api.get("has_api") is True
@@ -135,12 +137,14 @@ def validate_api_assignments(
 
     for story_name, count in sorted(assigned_count_by_story.items(), key=lambda x: x[0]):
         if count >= 6:
-            failures.append(
-                Failure(
-                    loc="$.api_assignments",
-                    problem=f"API assigned too many for {story_name}: {count}",
-                    expected="<= 5 APIs per story (prefer <= 3)",
-                    impact="story likely oversized",
-                    fix=f"redistribute api_assignments to reduce API count for {story_name}",
-                )
+            item = Failure(
+                loc="$.api_assignments",
+                problem=f"API assigned too many for {story_name}: {count}",
+                expected="<= 5 APIs per story (prefer <= 3)",
+                impact="story scope may exceed low-noise budget",
+                fix=f"redistribute $.api_assignments to reduce API count for {story_name}",
             )
+            if strict:
+                failures.append(item)
+            else:
+                warnings.append(item)
