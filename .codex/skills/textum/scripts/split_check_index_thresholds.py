@@ -44,11 +44,19 @@ def evaluate_story_thresholds(
         return
 
     if len(decision_hits) == 1:
+        hit = decision_hits[0]
+        suggested_action = "consider reducing scope in this story"
+        if hit.startswith("api_refs="):
+            suggested_action = "move 1 API (and related FP) out of this story in docs/split-plan-pack.json (aim api_refs<=3)"
+        elif hit.startswith("tbl_refs="):
+            suggested_action = "move 1 FP (and its DB landings) out of this story in docs/split-plan-pack.json (aim tbl_refs<=6)"
+        elif hit.startswith("feature_points="):
+            suggested_action = "move 1 FP out of this story in docs/split-plan-pack.json (aim feature_points<=8)"
         decisions.append(
             {
                 "story": story_name,
                 "story_file": str(story_file.as_posix()),
-                "decision": decision_hits[0],
-                "suggested_action": "consider reducing scope in this story",
+                "decision": hit,
+                "suggested_action": suggested_action,
             }
         )

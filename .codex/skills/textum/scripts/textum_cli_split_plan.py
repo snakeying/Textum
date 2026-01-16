@@ -93,23 +93,6 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
         print("next: Split Plan")
         return 1
 
-    api_counts: dict[str, int] = {}
-    api_rows = split_plan_pack.get("api_assignments") if isinstance(split_plan_pack.get("api_assignments"), list) else []
-    for row in api_rows:
-        if not isinstance(row, dict):
-            continue
-        story = row.get("story")
-        if isinstance(story, str) and story.strip():
-            api_counts[story] = api_counts.get(story, 0) + 1
-    decisions = [(s, c) for s, c in sorted(api_counts.items(), key=lambda x: x[0]) if c in (4, 5)]
-
-    if decisions:
-        print("DECISION")
-        for i, (story, count) in enumerate(decisions, start=1):
-            print(f"- D-{i:03d}; story={story}; api_assigned={count}; action=consider splitting/redistributing")
-        print("next: Split Generate")
-        return 0
-
     print("PASS")
     print("next: Split Generate")
     return 0

@@ -98,7 +98,7 @@ flowchart TB
 
 | 步骤 | Skill | 说明 |
 |------|-------|------|
-| 1 | `split-plan` | 交互澄清 + 内置 READY gate；写清 Story 边界/顺序、模块归属、API 归属到 `docs/split-plan-pack.json`；`PASS/DECISION` → 继续 |
+| 1 | `split-plan` | 交互澄清 + 内置 READY gate；写清 Story 边界/顺序、模块归属、API 归属到 `docs/split-plan-pack.json`；`PASS` → 继续 |
 | 2 | `split` | 生成 `docs/stories/story-###-<slug>.json` |
 | 3 | `split-check1` | 结构/阈值门禁 + 生成交接索引 `docs/split-check-index-pack.json`；`FAIL` → 返回步骤 1（可能额外写入 `docs/split-replan-pack.json`） |
 | 4 | `split-check2` | 引用一致性 + 完整性门禁（`story_count` 必须与实际文件数一致）；`FAIL` → 返回步骤 1 |

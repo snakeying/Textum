@@ -45,7 +45,7 @@ After each write, run (workspace root):
 
 `uv run --project .codex/skills/textum/scripts textum split plan check`
 
-Only if the output is `PASS` (or `DECISION`), you may output `READY`.
+Only if the output is `PASS`, you may output `READY`.
 
 ## Start
 

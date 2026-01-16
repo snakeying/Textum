@@ -25,13 +25,14 @@ def read_prd_pack(path: Path) -> tuple[dict[str, Any] | None, list[Failure]]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
+        loc_hint = f"line {error.lineno} col {error.colno}"
         return None, [
             Failure(
                 loc=str(path),
                 problem=f"invalid JSON: {error.msg} at line {error.lineno} col {error.colno}",
                 expected="valid JSON document",
                 impact="cannot proceed",
-                fix="rewrite docs/prd-pack.json as valid JSON",
+                fix=f"edit {path.as_posix()} to fix JSON syntax at {loc_hint}",
             )
         ]
     if not isinstance(data, dict):

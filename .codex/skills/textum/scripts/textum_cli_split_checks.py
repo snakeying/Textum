@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import Any
 
 from prd_pack import read_prd_pack, workspace_paths
 from scaffold_pack import read_scaffold_pack
@@ -51,11 +52,52 @@ def _cmd_split_check1(args: argparse.Namespace) -> int:
 
     if decisions:
         print("DECISION")
+        story_meta_by_name: dict[str, dict[str, Any]] = {}
+        if isinstance(index_pack, dict):
+            index_stories = index_pack.get("stories") if isinstance(index_pack.get("stories"), list) else []
+            for row in index_stories:
+                if not isinstance(row, dict):
+                    continue
+                story_name = row.get("story")
+                if isinstance(story_name, str) and story_name.strip():
+                    story_meta_by_name[story_name] = row
+
         for i, decision in enumerate(decisions, start=1):
             story = decision.get("story")
+            story_file = decision.get("story_file")
             detail = decision.get("decision")
             action = decision.get("suggested_action")
-            print(f"- D-{i:03d}; story={story}; issue={detail}; action={action}")
+
+            rel_story_file = story_file
+            if isinstance(story_file, str) and story_file.strip():
+                try:
+                    rel_story_file = Path(story_file).resolve().relative_to(workspace).as_posix()
+                except Exception:
+                    rel_story_file = story_file
+
+            extra = ""
+            if isinstance(story, str) and isinstance(detail, str):
+                meta = story_meta_by_name.get(story)
+                refs = meta.get("refs") if isinstance(meta, dict) else {}
+                if isinstance(refs, dict):
+                    if detail.startswith("api_refs="):
+                        apis = refs.get("prd_api_ids") if isinstance(refs.get("prd_api_ids"), list) else []
+                        apis_s = ",".join([a for a in apis if isinstance(a, str) and a.strip()])
+                        if apis_s:
+                            extra = f"; apis={apis_s}"
+                    elif detail.startswith("tbl_refs="):
+                        tbls = refs.get("prd_tbl_ids") if isinstance(refs.get("prd_tbl_ids"), list) else []
+                        tbls_s = ",".join([t for t in tbls if isinstance(t, str) and t.strip()])
+                        if tbls_s:
+                            extra = f"; tables={tbls_s}"
+                    elif detail.startswith("feature_points="):
+                        fps = refs.get("fp_ids") if isinstance(refs.get("fp_ids"), list) else []
+                        fps_s = ",".join([fp for fp in fps if isinstance(fp, str) and fp.strip()])
+                        if fps_s:
+                            extra = f"; fps={fps_s}"
+
+            file_part = f"; file={rel_story_file}" if isinstance(rel_story_file, str) and rel_story_file.strip() else ""
+            print(f"- D-{i:03d}; story={story}{file_part}; issue={detail}{extra}; action={action}")
         print("next: Split Check2")
         return 0
 
