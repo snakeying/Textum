@@ -11,7 +11,7 @@
   <em>不是让 AI 更聪明，而是让过程更可控</em>
 </p>
 
-> ⚠️ **注意**：旧的 commands 版本已废弃，不再支持。当前仅支持 skill 版本。
+> ⚠️ **注意**：旧的 commands 版本已废弃，不再支持。当前仅支持 SKILL 版本。
 
 ## 🤔 这是干什么的?
 
@@ -89,12 +89,14 @@ AI 一次只实现一个 Story，不会被其他无关信息干扰。
 > 💡 **更大的项目？** 建议拆成几个独立子项目，分别用 Textum 处理。
 
 **模拟测试报告**
-- [V2](./simulate-test-reports/v2simulate-test-report-opus.md) | [V3](./simulate-test-reports/v3simulate-test-report-opus.md) | [V4](./simulate-test-reports/v4simulate-test-report-opus.md)
-- [V5](./simulate-test-reports/v5simulate-test-report-opus.md)（从 V5 开始任务更复杂） | [V6](./simulate-test-reports/v6simulate-test-report-opus.md) | [Beta](./simulate-test-reports/beta-simulate-test-report-opus.md)
 
-（以上测试基于旧 commands 版本，采用 Claude Opus 4.5，仅供参考）
+ SKILL 版本的测试报告
+- [1.0](./simulate-test-reports/e2e-run-20260116_CN.md)
+- [1.1](./simulate-test-reports/e2e-run-20260117_CN.md) 
 
-⚠️ skills 版本的测试报告待更新。
+⚠️（以下测试基于旧 commands 版本，采用 Claude Opus 4.5。请注意：commands版本已经废弃，仅供参考）
+- [V2](./simulate-test-reports/v2simulate-test-report-opus_CN.md) | [V3](./simulate-test-reports/v3simulate-test-report-opus_CN.md) | [V4](./simulate-test-reports/v4simulate-test-report-opus_CN.md)
+- [V5](./simulate-test-reports/v5simulate-test-report-opus_CN.md)（从 V5 开始任务更复杂） | [V6](./simulate-test-reports/v6simulate-test-report-opus_CN.md) | [Beta](./simulate-test-reports/beta-simulate-test-report-opus_CN.md)
 
 ### ❌ 不太适合的场景
 

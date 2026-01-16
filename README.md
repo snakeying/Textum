@@ -93,12 +93,14 @@ That's why Textum's philosophy is simple: **Less is more**
 > 💡 **Even bigger?** Split it into independent sub-projects and run each through Textum separately.
 
 **Simulation Test Reports**
-- [V2](./simulate-test-reports/v2simulate-test-report-opus.md) | [V3](./simulate-test-reports/v3simulate-test-report-opus.md) | [V4](./simulate-test-reports/v4simulate-test-report-opus.md)
-- [V5](./simulate-test-reports/v5simulate-test-report-opus.md) (complexity ramps up from V5) | [V6](./simulate-test-reports/v6simulate-test-report-opus.md) | [Beta](./simulate-test-reports/beta-simulate-test-report-opus.md)
 
-(Tests above are based on the old commands version using Claude Opus 4.5, for reference only)
+SKILL version test reports:
+- [1.0](./simulate-test-reports/e2e-run-20260116_EN.md)
+- [1.1](./simulate-test-reports/e2e-run-20260117_EN.md)
 
-⚠️ Test reports for the skills version coming soon.
+⚠️ (Tests below are based on the old commands version using Claude Opus 4.5. Note: commands version is deprecated, for reference only)
+- [V2](./simulate-test-reports/v2simulate-test-report-opus_EN.md) | [V3](./simulate-test-reports/v3simulate-test-report-opus_EN.md) | [V4](./simulate-test-reports/v4simulate-test-report-opus_EN.md)
+- [V5](./simulate-test-reports/v5simulate-test-report-opus_EN.md) (complexity ramps up from V5) | [V6](./simulate-test-reports/v6simulate-test-report-opus_EN.md) | [Beta](./simulate-test-reports/beta-simulate-test-report-opus_EN.md)
 
 ### ❌ When Textum isn't the right fit
 
