@@ -59,6 +59,8 @@ One Story, one job. Finish it, then move on.
 AI tackles one Story at a time, laser-focused without distractions.
 Each Story gets validated when done — no drifting off course.
 
+> ⚠️ **Experimental**: `Story Full Exec` supports batch execution of multiple Stories (sequential, no rollback). This feature is experimental — use at your own discretion. ⚠️
+
 ---
 
 ## 🎯 Why all these steps?

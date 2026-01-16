@@ -55,8 +55,7 @@ If `docs/split-plan-pack.json` does not exist, initialize once (workspace root):
 2) `uv run --project .codex/skills/textum/scripts textum split plan init`
 
 Then ask (preference check; defaults are OK):
-- Story count preference? (default: 12)
-- Any must-have sequencing constraints? (default: dependencies first, then P0 modules)
-
-If the user has no preference, proceed with defaults without further questions.
-
+- Default (if user gives no preference): 12 stories; order = prerequisites first, then cover P0 modules early.
+- Ask only if needed (at most 1 preference question):
+  - "Any preferred story count or must-have sequencing constraints? (default: 12; deps-first then P0)"
+- If the user says "no preference": accept defaults and proceed without follow-up questions.

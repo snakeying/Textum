@@ -11,6 +11,7 @@ from split_check_refs import validate_split_refs
 from split_checkout import write_story_dependency_mermaid
 from split_pack_io import read_json_object
 from split_plan_pack import read_split_plan_pack
+from textum_cli_next import _print_failures_with_next
 from textum_cli_support import _ensure_prd_ready, _ensure_scaffold_ready, _print_failures
 
 
@@ -112,21 +113,18 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
 
     prd_pack, prd_read_failures = read_prd_pack(paths["prd_pack"])
     if prd_read_failures:
-        _print_failures(prd_read_failures)
-        print("next: Split Plan")
+        _print_failures_with_next(prd_read_failures, fallback="Split Plan")
         return 1
     assert prd_pack is not None
 
     prd_ready_failures = _ensure_prd_ready(prd_pack, prd_pack_path=paths["prd_pack"])
     if prd_ready_failures:
-        _print_failures(prd_ready_failures)
-        print("next: Split Plan")
+        _print_failures_with_next(prd_ready_failures, fallback="Split Plan")
         return 1
 
     scaffold_pack, scaffold_read_failures = read_scaffold_pack(paths["scaffold_pack"])
     if scaffold_read_failures:
-        _print_failures(scaffold_read_failures)
-        print("next: Split Plan")
+        _print_failures_with_next(scaffold_read_failures, fallback="Split Plan")
         return 1
     assert scaffold_pack is not None
 
@@ -138,23 +136,20 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
         fix=args.fix,
     )
     if scaffold_ready_failures:
-        _print_failures(scaffold_ready_failures)
-        print("next: Split Plan")
+        _print_failures_with_next(scaffold_ready_failures, fallback="Split Plan")
         return 1
     index_pack, index_failures = read_json_object(
         paths["split_check_index_pack"],
         missing_fix="regenerate docs/split-check-index-pack.json",
     )
     if index_failures:
-        _print_failures(index_failures)
-        print("next: Split Plan")
+        _print_failures_with_next(index_failures, fallback="Split Plan")
         return 1
     assert index_pack is not None
 
     failures = validate_split_refs(index_pack=index_pack, prd_pack=prd_pack, scaffold_pack=scaffold_pack)
     if failures:
-        _print_failures(failures)
-        print("next: Split Plan")
+        _print_failures_with_next(failures, fallback="Split Plan")
         return 1
     print("PASS")
     print("next: Split Checkout")
@@ -166,8 +161,7 @@ def _cmd_split_checkout(args: argparse.Namespace) -> int:
     paths = workspace_paths(workspace)
     failures = write_story_dependency_mermaid(stories_dir=paths["stories_dir"], out_path=paths["story_mermaid"])
     if failures:
-        _print_failures(failures)
-        print("next: Split Generate")
+        _print_failures_with_next(failures, fallback="Split Generate")
         return 1
     print("PASS")
     print("next: Story Check")
