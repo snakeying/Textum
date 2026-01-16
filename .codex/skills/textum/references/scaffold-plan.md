@@ -1,7 +1,7 @@
 # Stage 2a: Scaffold Plan (write JSON scaffold-pack)
 
 Read: `docs/prd-pack.json` | Write: `docs/scaffold-pack.json` (pure JSON; no ``` blocks)
-Also read (only if exists; for returning from Scaffold Check):
+Also read (only if exists; replan artifacts):
 - `docs/scaffold-check-replan-pack.json`
 - `docs/diagnostics/scaffold-check.md`
 
@@ -51,7 +51,7 @@ If `docs/scaffold-pack.json` does not exist, initialize once (workspace root):
 
 Then ask: confirm your preferred backend/frontend/database choices (be specific: language + framework + DB).
 
-If the user is returning from a `Scaffold Check` failure and `docs/scaffold-check-replan-pack.json` exists:
+If `docs/scaffold-check-replan-pack.json` exists:
 - Treat `items[]` as the current blockers.
 - Choose exactly one mode for this round:
   - Ask-mode: ask up to ~4 questions to resolve blockers; do NOT write JSON.

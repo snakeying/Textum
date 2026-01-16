@@ -1,6 +1,6 @@
 [project]
 name = "textum"
-version = "0.0.0"
+version = "1.0.0"
 description = "Textum workflow"
 requires-python = ">=3.11"
 dependencies = []
@@ -18,7 +18,11 @@ py-modules = [
   "textum_cli_support",
   "textum_cli_next",
   "textum_cli_artifacts",
+  "textum_json_path",
+  "textum_json_path_parse",
+  "textum_json_patch",
   "textum_cli_prd",
+  "textum_cli_prd_patch",
   "textum_cli_scaffold",
   "textum_cli_split",
   "textum_cli_split_plan",

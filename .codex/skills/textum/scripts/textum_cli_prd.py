@@ -9,6 +9,7 @@ from prd_render import render_prd_markdown
 from prd_slices import SliceBudget, generate_prd_slices
 from textum_cli_artifacts import write_check_artifacts
 from textum_cli_next import _next_stage_for_failures
+from textum_cli_prd_patch import register_prd_patch_command
 from textum_cli_support import _load_prd_pack_and_normalize, _print_failures
 
 
@@ -186,3 +187,6 @@ def register_prd_commands(subparsers: Any) -> None:
     prd_slice.add_argument("--max-lines", type=int, default=350, help="Max lines per slice file (default: 350).")
     prd_slice.add_argument("--max-chars", type=int, default=12000, help="Max chars per slice file (default: 12000).")
     prd_slice.set_defaults(func=_cmd_prd_slice)
+
+    register_prd_patch_command(prd_subparsers)
+

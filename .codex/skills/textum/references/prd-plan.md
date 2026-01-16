@@ -1,7 +1,7 @@
 # Stage 1a: PRD Plan & Clarification (write JSON prd-pack)
 
 Read: `docs/prd-pack.json` (if exists) | Write: `docs/prd-pack.json` (pure JSON; no ``` blocks)
-Also read (only if exists; for returning from PRD Check):
+Also read (only if exists; replan artifacts):
 - `docs/prd-check-replan-pack.json`
 - `docs/diagnostics/prd-check.md`
 
@@ -38,7 +38,8 @@ Output MUST be exactly one of the following (no extra explanation / paraphrase):
 - Do not rewrite user-provided tokens (especially `modules[].feature_points[].landing[]`)
 - When writing string values, avoid double-escaping quotes/backslashes; write the intended value as valid JSON.
 - **Do NOT maintain IDs**: all `*.id` may be `null`; ID continuity/uniqueness is enforced by scripts
-- **When writing, MUST start from the existing `docs/prd-pack.json` and only modify fields confirmed in this round; all other fields MUST be preserved verbatim (no reformat/reorder)**
+- **When writing, prefer using `uv run --project .codex/skills/textum/scripts textum prd patch ...` to apply minimal field-level changes (set/append/delete), instead of rewriting the whole file.**
+- If multiple JSONPath edits are needed, apply multiple patch commands; keep each patch atomic.
 
 ## Start
 
@@ -49,7 +50,7 @@ If `docs/prd-pack.json` does not exist, initialize once (workspace root):
 
 Then ask: describe the app in 1-3 sentences (who is it for, and what problem does it solve?).
 
-If the user is returning from a `PRD Check` failure and `docs/prd-check-replan-pack.json` exists:
+If `docs/prd-check-replan-pack.json` exists:
 - Treat `items[]` as the current blockers (ignore older issues not present).
 - Choose exactly one mode for this round:
   - Ask-mode: ask up to ~4 questions to resolve blockers; do NOT write JSON.

@@ -64,7 +64,7 @@ Then ask (preference check; defaults are OK):
   - "Any preferred story count or must-have sequencing constraints? (default: 12; deps-first then P0)"
 - If the user says "no preference": accept defaults and proceed without follow-up questions.
 
-If the user is returning from a Split gate failure and a `docs/split-*-replan-pack.json` exists:
+If any `docs/split-*-replan-pack.json` exists:
 - Treat `items[]` as the current blockers (ignore older issues not present).
 - Choose exactly one mode for this round:
   - Ask-mode: ask up to ~4 questions to resolve blockers; do NOT write JSON.
