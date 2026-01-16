@@ -35,7 +35,7 @@
 > "你想做什么？"
 
 AI 会跟你聊天，把模糊的想法变成清晰的需求文档。  
-每个功能都会被编号（比如 FEATURE-001），后面就用编号代替长篇大论。
+每个功能点都会被编号（比如 FP-001），API 也会编号（比如 API-001），后面就用编号代替长篇大论。
 
 ### 第 2 步：🏗️ 技术决策（Scaffold）
 > "用什么技术？怎么组织代码？"
@@ -115,9 +115,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Windows.
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-# 或者用包管理器
+# 或者用包管理器（可选）
 brew install uv  # macOS
-pip install uv   # 任意平台
 ```
 
 > 💡 **uv 是什么？** 一个超快的 Python 包管理工具（类似 npm 之于 Node.js）
