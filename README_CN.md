@@ -148,7 +148,7 @@ uv sync --project .claude/skills/textum/scripts
 
 AI 会引导你完成整个流程 🎯
 
-👉 **想看详细的技术文档？** 查看 [Workflow.md](./Workflow.md)
+👉 **想看详细的技术文档？** 查看 [Workflow](./Workflow_CN.md)
 
 ---
 
