@@ -6,7 +6,7 @@ Read: `docs/scaffold-pack.json` | Write: `docs/GLOBAL-CONTEXT.md`
 
 ## Command
 
-Run (workspace root):
+Execute (agent-run; workspace root):
 
 `uv run --project .codex/skills/textum/scripts textum scaffold render`
 

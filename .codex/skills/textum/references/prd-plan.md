@@ -57,7 +57,7 @@ Non-technical prompting (do not mention JSONPath/fields):
 
 ## Start / Replan handling
 
-If `docs/prd-pack.json` does not exist (workspace root):
+If `docs/prd-pack.json` does not exist (agent-run; workspace root):
 1) `uv sync --project .codex/skills/textum/scripts`
 2) `uv run --project .codex/skills/textum/scripts textum prd init`
 Then ask: describe the app in 1-3 sentences (who is it for, and what problem does it solve?).

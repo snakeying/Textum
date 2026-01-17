@@ -50,9 +50,17 @@ Output MUST be exactly one of:
   - If PRD `api.has_api=false`: must be `[]`
   - Else: every PRD `API-###` must appear exactly once.
 
+## Pre-READY minimum
+
+Hard gate: you MUST NOT output `READY` unless these are confirmed and written.
+- `stories[]` is non-empty.
+- Every story has non-placeholder `slug` and `goal` (no `<<FILL>>`, `TBD`, `TODO`, `[...]`).
+- `stories[].n` is consecutive `1..N`, and matches `stories[].story` (`Story <n>`).
+- `stories[].modules[]` uses PRD module ids only, and every PRD module is owned by at least one story.
+
 ## READY gate (single source of truth)
 
-After each write, run (workspace root):
+After each write, execute (agent-run; workspace root):
 
 `uv run --project .codex/skills/textum/scripts textum split plan check`
 
@@ -61,7 +69,7 @@ Only if the output is `PASS`, you may output `READY`.
 
 ## Start
 
-If `docs/split-plan-pack.json` does not exist, initialize once (workspace root):
+If `docs/split-plan-pack.json` does not exist, initialize once (agent-run; workspace root):
 
 1) `uv sync --project .codex/skills/textum/scripts`
 2) `uv run --project .codex/skills/textum/scripts textum split plan init`

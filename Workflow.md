@@ -58,9 +58,10 @@ flowchart TB
 **Execution Conventions**:
 - All commands run from project root
 - Recommended to open new window for each stage (avoid context pollution)
-- Workflow triggered via `textum` skill routing; CLI commands only for debugging
+- Workflow triggered via `textum` skill routing; script stages run the corresponding `uv run ... textum ...` commands (you may also run them for debugging)
 - Default `--fix=true`: Some gate/render/slice commands may write back to `docs/*-pack.json` (only normalize/ID, populate `source/extracted` non-business fields); only outputs `wrote: ...` when actually writing
-- `* check` commands have low-noise stdout: prints `PASS|FAIL`, optional one-line `FAIL/WARN` items (`loc/problem/expected/impact/fix`), optional `wrote:`/`entry:`, then final line `next:`; full snapshot also in `docs/*-replan-pack.json` + `docs/diagnostics/*.md`
+- Script commands have low-noise stdout: prints `PASS|FAIL`, optional one-line `FAIL/WARN` items (`loc/problem/expected/impact/fix`), optional `wrote:`/`entry:`, then final line `next:`
+- `* check` commands also write `docs/*-replan-pack.json` + `docs/diagnostics/*.md` (snapshot for replan loops)
 - `DECISION` branches deprecated as user branches: default recorded as WARN (non-blocking); you can ignore WARN when the goal is to keep moving; use `--strict` to upgrade WARN to FAIL for strict gates (currently mainly for Split gate)
 - Plan phase: One action per round—either ask questions or write back; if output contains questions, this round does not write back `docs/*-pack.json`
 
@@ -78,7 +79,7 @@ flowchart TB
 | 4 | `prd-slice` | PRD slicing / slice | Generate `docs/prd-slices/` (required for subsequent Split Plan) |
 
 Recommendation (reduce avoidable loops):
-- Before leaving `prd-plan` as `READY`, fill the minimal permission matrix: `roles[]` + `permission_matrix.operations[]` (otherwise `prd-check` may `FAIL` and bounce back).
+- Before leaving `prd-plan` as `READY`, fill the minimal access model: `roles[]` + `permission_matrix.operations[]` (even for single-user apps; otherwise `prd-check` may `FAIL` and bounce back).
 
 ---
 

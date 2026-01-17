@@ -6,7 +6,7 @@ Read: `docs/prd-pack.json` | Write: `docs/prd-pack.json` (normalize/ID), `docs/p
 
 ## Command
 
-Run (workspace root):
+Execute (agent-run; workspace root):
 
 `uv run --project .codex/skills/textum/scripts textum prd slice`
 

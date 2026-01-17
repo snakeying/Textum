@@ -11,7 +11,7 @@ Write:
 
 ## Command
 
-Ask the user for the story number `n` (e.g. `1`), then run (workspace root):
+Ask the user for the story number `n` (e.g. `1`), then execute (agent-run; workspace root):
 
 `uv run --project .codex/skills/textum/scripts textum story check --n <n>`
 

@@ -10,7 +10,7 @@ Write:
 
 ## Command
 
-Run (workspace root):
+Execute (agent-run; workspace root):
 
 `uv run --project .codex/skills/textum/scripts textum split checkout`
 

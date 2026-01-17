@@ -51,7 +51,7 @@ Output MUST be exactly one of:
 
 ## Start / Replan handling
 
-If `docs/scaffold-pack.json` does not exist (workspace root):
+If `docs/scaffold-pack.json` does not exist (agent-run; workspace root):
 1) `uv sync --project .codex/skills/textum/scripts`
 2) `uv run --project .codex/skills/textum/scripts textum scaffold init`
 Then ask: confirm backend/frontend/database choices (be specific: language + framework + DB).

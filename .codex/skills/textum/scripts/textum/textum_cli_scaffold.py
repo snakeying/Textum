@@ -97,8 +97,9 @@ def _cmd_scaffold_render(args: argparse.Namespace) -> int:
 
     prd_pack, prd_failures = _load_prd_pack_and_ensure_ready(paths)
     if prd_failures:
+        next_stage = _next_stage_for_failures(prd_failures, fallback="Scaffold Plan")
         _print_failures(prd_failures)
-        print("next: Scaffold Plan")
+        print(f"next: {next_stage}")
         return 1
     assert prd_pack is not None
 
@@ -106,8 +107,9 @@ def _cmd_scaffold_render(args: argparse.Namespace) -> int:
         paths, prd_pack=prd_pack, fix=args.fix
     )
     if scaffold_failures:
+        next_stage = _next_stage_for_failures(scaffold_failures, fallback="Scaffold Plan")
         _print_failures(scaffold_failures)
-        print("next: Scaffold Plan")
+        print(f"next: {next_stage}")
         return 1
     assert scaffold_pack is not None
 

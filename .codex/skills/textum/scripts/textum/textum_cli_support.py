@@ -14,19 +14,7 @@ from .scaffold_pack import (
 
 def _print_failures(failures: list[Failure]) -> None:
     print("FAIL")
-    for failure in failures:
-        print(
-            "- "
-            + "; ".join(
-                [
-                    f"loc={failure.loc}",
-                    f"problem={failure.problem}",
-                    f"expected={failure.expected}",
-                    f"impact={failure.impact}",
-                    f"fix={failure.fix}",
-                ]
-            )
-        )
+    _print_check_items(failures, label="FAIL")
 
 
 def _print_check_items(items: list[Failure], *, label: str) -> None:

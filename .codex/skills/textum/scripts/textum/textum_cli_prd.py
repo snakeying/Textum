@@ -88,8 +88,9 @@ def _cmd_prd_render(args: argparse.Namespace) -> int:
     paths = workspace_paths(workspace)
     prd_pack, _, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
     if failures:
+        next_stage = _next_stage_for_failures(failures, fallback="PRD Plan")
         _print_failures(failures)
-        print("next: PRD Plan")
+        print(f"next: {next_stage}")
         return 1
     assert prd_pack is not None
 
@@ -107,15 +108,17 @@ def _cmd_prd_slice(args: argparse.Namespace) -> int:
     paths = workspace_paths(workspace)
     prd_pack, _, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
     if failures:
+        next_stage = _next_stage_for_failures(failures, fallback="PRD Plan")
         _print_failures(failures)
-        print("next: PRD Plan")
+        print(f"next: {next_stage}")
         return 1
     assert prd_pack is not None
 
     ready, check_failures = check_prd_pack(prd_pack)
     if not ready:
+        next_stage = _next_stage_for_failures(check_failures, fallback="PRD Plan")
         _print_failures(check_failures)
-        print("next: PRD Plan")
+        print(f"next: {next_stage}")
         return 1
 
     budget = SliceBudget(max_lines=args.max_lines, max_chars=args.max_chars)
@@ -127,8 +130,9 @@ def _cmd_prd_slice(args: argparse.Namespace) -> int:
         clean=args.clean,
     )
     if failures:
+        next_stage = _next_stage_for_failures(failures, fallback="PRD Plan")
         _print_failures(failures)
-        print("next: PRD Plan")
+        print(f"next: {next_stage}")
         return 1
 
     print("PASS")
