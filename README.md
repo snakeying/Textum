@@ -153,7 +153,7 @@ Fire up your AI assistant (Codex/Claude Code) and say:
 
 AI will walk you through the rest 🎯
 
-👉 **Want the technical deep-dive?** Check out [Workflow](./Workflow_EN.md)
+👉 **Want the technical deep-dive?** Check out [Workflow](./Workflow.md)
 
 ---
 

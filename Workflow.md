@@ -61,7 +61,7 @@ flowchart TB
 - Workflow triggered via `textum` skill routing; CLI commands only for debugging
 - Default `--fix=true`: Some gate/render/slice commands may write back to `docs/*-pack.json` (only normalize/ID, populate `source/extracted` non-business fields); only outputs `wrote: ...` when actually writing
 - `* check` commands have low-noise stdout: only prints `PASS|FAIL` (optional `wrote:`/`entry:`) + final line `next:`; detailed FAIL/WARN in workspace replan/diagnostics
-- `DECISION` branches deprecated as user branches: default recorded as WARN (non-blocking); use `--strict` to upgrade WARN to FAIL for strict gates (currently mainly for Split gate)
+- `DECISION` branches deprecated as user branches: default recorded as WARN (non-blocking); you can ignore WARN when the goal is to keep moving; use `--strict` to upgrade WARN to FAIL for strict gates (currently mainly for Split gate)
 - Plan phase: One action per round—either ask questions or write back; if output contains questions, this round does not write back `docs/*-pack.json`
 
 ---
@@ -76,6 +76,9 @@ flowchart TB
 | 2 | `prd-check` | Validate PRD / Gate | Gate validation + auto-assign IDs; writes `docs/prd-check-replan-pack.json` + `docs/diagnostics/prd-check.md`; `FAIL` → return to step 1 |
 | 3 | `prd-render` | Generate PRD / Render PRD | Generate `docs/PRD.md` (manual acceptance; if not as expected → return to step 1) |
 | 4 | `prd-slice` | PRD slicing / slice | Generate `docs/prd-slices/` (required for subsequent Split Plan) |
+
+Recommendation (reduce avoidable loops):
+- Before leaving `prd-plan` as `READY`, fill the minimal permission matrix: `roles[]` + `permission_matrix.operations[]` (otherwise `prd-check` may `FAIL` and bounce back).
 
 ---
 
@@ -103,7 +106,7 @@ flowchart TB
 |------|-------|-------------|
 | 1 | `split-plan` | Interactive clarification + built-in READY gate; define Story boundaries/order, module ownership, API ownership in `docs/split-plan-pack.json`; `split plan check` writes `docs/split-plan-check-replan-pack.json` + `docs/diagnostics/split-plan-check.md`; `PASS` → continue |
 | 2 | `split` | Generate `docs/stories/story-###-<slug>.json` |
-| 3 | `split-check1` | Structure gate + generate handoff index `docs/split-check-index-pack.json`; threshold defaults to WARN (`--strict` upgrades to FAIL); writes `docs/split-check1-replan-pack.json` + `docs/diagnostics/split-check1.md`; `FAIL` → return to step 1 (may additionally write `docs/split-replan-pack.json`) |
+| 3 | `split-check1` | Structure gate + generate handoff index `docs/split-check-index-pack.json`; threshold defaults to WARN (non-blocking; ok to ignore; `--strict` upgrades to FAIL); writes `docs/split-check1-replan-pack.json` + `docs/diagnostics/split-check1.md`; `FAIL` → return to step 1 (may additionally write `docs/split-replan-pack.json`) |
 | 4 | `split-check2` | Reference consistency + completeness gate (`story_count` must match actual file count); writes `docs/split-check2-replan-pack.json` + `docs/diagnostics/split-check2.md`; `FAIL` → return to step 1 |
 | 5 | `split-checkout` | Export dependency graph `docs/story-mermaid.md` (for manual order inspection) |
 

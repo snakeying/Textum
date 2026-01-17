@@ -23,3 +23,8 @@ Run (workspace root):
   - `PASS` or `FAIL`
   - optional `wrote: ...` lines (diagnostics/replan packs)
   - final line `next: <stage>`
+
+Note:
+- `WARN` items (threshold) are non-blocking by default; you can ignore them unless you want to reduce iteration cost.
+- `--strict` is a CLI flag for `textum split check1` (not a stage suffix). Example:
+  - `uv run --project .codex/skills/textum/scripts textum split check1 --strict`

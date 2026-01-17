@@ -15,14 +15,17 @@ Write:
 
 Goal: write **confirmed planning decisions only** (story boundaries/order, module ownership, API ownership) until the `READY` gate passes.
 
-## Output rules (must follow)
+## Output contract (hard)
 
 Output MUST be exactly one of:
 
 1) `IN_PROGRESS`
    - Output exactly 2 blocks:
-     1) This-round questions (~4; blockers only) OR This-round change summary (JSONPath list)
+     1) Either:
+        - This-round questions (<=4; blockers only), OR
+        - This-round change summary (JSONPath list; no questions)
      2) Remaining blockers (~8; prioritized)
+   - If you output questions: **do NOT write** `docs/split-plan-pack.json` this round.
 2) `READY`
    - Output exactly 3 plain-text lines:
      - `READY`
@@ -30,9 +33,13 @@ Output MUST be exactly one of:
      - `next: Split Generate`
 
 - Never output JSON bodies (including `docs/split-plan-pack.json`)
-- Do NOT write `docs/split-plan-pack.json` in a round whose output contains questions
 
-## Writing rules (must follow)
+## Interaction
+
+- Ask in the user's language (ZH/EN).
+- Prefer the single preference question in "Start"; accept defaults if the user has no preference.
+
+## Writing rules
 
 - No narration; write facts/decisions only.
 - Story numbering must be consecutive: `Story 1..N`.
@@ -65,7 +72,5 @@ Then ask (preference check; defaults are OK):
 - If the user says "no preference": accept defaults and proceed without follow-up questions.
 
 If any `docs/split-*-replan-pack.json` exists:
-- Treat `items[]` as the current blockers (ignore older issues not present).
-- Choose exactly one mode for this round:
-  - Ask-mode: ask up to ~4 questions to resolve blockers; do NOT write JSON.
-  - Write-mode: apply a minimal write (single-action fix if possible), and output a JSONPath change summary; do NOT ask questions.
+- Treat `items[]` as the current blockers and resolve them first.
+- Follow the Output contract: pick either ask-mode (questions only) or write-mode (change summary only).
