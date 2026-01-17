@@ -38,6 +38,7 @@ Output MUST be exactly one of:
 
 - Do not guess; if not confirmed, ask.
 - Do not manually edit `extracted` (it is auto-populated by scripts).
+- Hard gate: you MUST NOT output `READY` unless all required decisions below are confirmed and written (no placeholders).
 - Required decisions (minimum):
   - `$.decisions.tech_stack.backend`
   - `$.decisions.tech_stack.frontend`
@@ -46,6 +47,7 @@ Output MUST be exactly one of:
   - `$.decisions.validation_commands[]` (use a single full `N/A` row if truly not applicable)
 - `$.decisions.validation_commands[].type` must start with `gate:` or `opt:` (unless the row is fully `N/A`).
 - `validation_commands` `N/A` must be either fully `N/A`, or fully concrete (no partial `N/A`).
+- If the project has “no frontend” / “no DB”: still fill with a concrete string (e.g., `CLI (no UI)`, `file-based`, `none`), not `N/A`.
 
 ## Start / Replan handling
 

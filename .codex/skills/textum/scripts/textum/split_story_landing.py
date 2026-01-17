@@ -43,7 +43,7 @@ def parse_landing_tokens(
                         problem="DB: token missing table reference",
                         expected="DB:<table_name> or DB:TBL-###",
                         impact="cannot derive table refs",
-                        fix=f"set {loc} to DB:<table_name>",
+                        fix=f"set {loc} to DB:<table_name> or DB:TBL-###",
                     )
                 )
                 continue

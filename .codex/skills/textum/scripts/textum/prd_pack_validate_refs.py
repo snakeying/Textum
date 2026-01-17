@@ -58,7 +58,7 @@ def validate_internal_refs(prd_pack: dict[str, Any], failures: list[Failure]) ->
                     problem=f"invalid module_id refs ({len(bad)}): {_examples_summary(bad)}",
                     expected="null or an existing module id in $.modules[].id",
                     impact="ui_routes cannot be mapped to modules",
-                    fix="set invalid ui_routes[].module_id to null",
+                    fix="set invalid ui_routes[].module_id to an existing module id in $.modules[].id (or null)",
                 )
             )
 
@@ -94,7 +94,7 @@ def validate_internal_refs(prd_pack: dict[str, Any], failures: list[Failure]) ->
                 problem=f"invalid module_id refs ({len(bad_endpoints)}): {_examples_summary(bad_endpoints)}",
                 expected="null or an existing module id in $.modules[].id",
                 impact="api endpoints cannot be mapped to modules",
-                fix="set invalid api.endpoints[].module_id to null",
+                fix="set invalid api.endpoints[].module_id to an existing module id in $.modules[].id (or null)",
             )
         )
 

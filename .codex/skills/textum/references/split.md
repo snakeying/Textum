@@ -18,8 +18,9 @@ Run (workspace root):
 
 ## Output rule
 
-- If command prints `FAIL`: output the `FAIL` list as-is, then one line: `next: Split Plan`
-- If command prints `PASS`: output:
-  - `PASS`
-  - `wrote: docs/stories/`
-  - `next: Split Check1`
+- Output the command output as-is (low-noise).
+- The command always prints:
+  - `PASS` or `FAIL`
+  - on `FAIL`: one-line `FAIL` items (`loc/problem/expected/impact/fix`)
+  - optional `wrote: ...` lines (generated stories; and maybe normalized packs)
+  - final line `next: <stage>`

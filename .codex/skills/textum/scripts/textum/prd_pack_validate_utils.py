@@ -156,7 +156,7 @@ def _validate_landing_tokens(
                     problem=f"invalid landing prefix: {token}",
                     expected="DB:/FILE:/CFG:/EXT: or N/A",
                     impact="mapping is invalid",
-                    fix=f"rewrite {token_loc} with a valid prefix",
+                    fix=f"rewrite {token_loc} with DB:/FILE:/CFG:/EXT: prefix (or N/A)",
                 )
             )
             continue
@@ -164,16 +164,16 @@ def _validate_landing_tokens(
             continue
         table_ref = stripped.removeprefix("DB:").strip()
         if table_ref == "":
-            failures.append(
-                Failure(
-                    loc=token_loc,
-                    problem="DB: token missing table reference",
-                    expected="DB:<table_name> or DB:TBL-###",
-                    impact="cannot resolve table",
-                    fix=f"set {token_loc} to DB:<table_name>",
+                failures.append(
+                    Failure(
+                        loc=token_loc,
+                        problem="DB: token missing table reference",
+                        expected="DB:<table_name> or DB:TBL-###",
+                        impact="cannot resolve table",
+                        fix=f"set {token_loc} to DB:<table_name> or DB:TBL-###",
+                    )
                 )
-            )
-            continue
+                continue
         if TBL_ID_RE.match(table_ref):
             if table_ref not in table_index.values():
                 failures.append(

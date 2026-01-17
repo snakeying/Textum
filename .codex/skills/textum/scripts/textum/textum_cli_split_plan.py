@@ -33,6 +33,7 @@ def _cmd_split_plan_init(args: argparse.Namespace) -> int:
             failures=failures,
         )
         print("FAIL")
+        _print_check_items(failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")

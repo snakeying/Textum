@@ -139,7 +139,7 @@ def validate_decisions(decisions: dict[str, Any], failures: list[Failure]) -> No
                         problem=f"invalid type: {typ!r}",
                         expected="type starts with gate: or opt:",
                         impact="cannot classify the command",
-                        fix=f"prefix {loc}.type with 'gate:'",
+                        fix=f"prefix {loc}.type with 'gate:' or 'opt:'",
                     )
                 )
 

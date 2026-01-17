@@ -71,7 +71,7 @@ def validate_split_plan_pack(
                 problem="PRD modules missing or invalid",
                 expected="docs/prd-pack.json has modules[].id like M-01",
                 impact="cannot validate module coverage",
-                fix="fill docs/prd-pack.json modules[].id with valid M-01 ids",
+                fix="run PRD Check to normalize/assign docs/prd-pack.json modules[].id",
             )
         )
         return failures, warnings

@@ -45,12 +45,13 @@ Output MUST be exactly one of:
 
 ## Pre-READY minimum
 
-Before outputting `READY`, ensure these are **confirmed** and written:
+Hard gate: you MUST NOT output `READY` unless these are **confirmed** and written.
 - `roles[]` is non-empty (each role has `role/description/typical_scenarios[]`).
 - `permission_matrix.operations[]` is non-empty (each item has `op` and `per_role` with `A/D/O`).
 
 Non-technical prompting (do not mention JSONPath/fields):
 - Confirm roles and "who can do what".
+- Even for personal / single-user apps, `roles[]` still needs at least one role (e.g., `user` / `owner`).
 - If the user does not care about permissions: explicitly confirm a simple default "everyone can do everything",
   then encode it as one operation row (e.g., `op="all"`, every role=`A`).
 

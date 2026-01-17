@@ -49,7 +49,7 @@ def validate_api_assignments(
                 problem="PRD has_api=true but no valid endpoint ids found",
                 expected="api.endpoints[].id like API-001",
                 impact="cannot plan API coverage",
-                fix="fill docs/prd-pack.json api.endpoints[].id with valid API-### ids",
+                fix="run PRD Check to normalize/assign docs/prd-pack.json api.endpoints[].id",
             )
         )
         return

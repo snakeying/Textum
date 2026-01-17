@@ -70,7 +70,7 @@ def validate_data_model_and_modules(prd_pack: dict[str, Any], failures: list[Fai
                             problem="dependency must be non-empty string",
                             expected="module id or name",
                             impact="dependency graph is invalid",
-                            fix=f"set {dep_loc} to an existing module id in modules[].id",
+                            fix=f"set {dep_loc} to an existing module id in modules[].id or name in modules[].name",
                         )
                     )
                     continue
@@ -82,7 +82,7 @@ def validate_data_model_and_modules(prd_pack: dict[str, Any], failures: list[Fai
                             problem=f"unknown module dependency: {dep}",
                             expected="existing module id or name",
                             impact="dependency graph is invalid",
-                            fix=f"set {dep_loc} to an existing module id in modules[].id",
+                            fix=f"set {dep_loc} to an existing module id in modules[].id or name in modules[].name",
                         )
                     )
 
