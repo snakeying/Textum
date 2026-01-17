@@ -16,11 +16,8 @@ Output MUST be exactly one of:
 
 1) `IN_PROGRESS`
    - Output exactly 2 blocks:
-     1) Either:
-        - This-round questions (<=4; blockers only), OR
-        - This-round change summary (JSONPath list; no questions)
+     1) This-round change summary (JSONPath list; may be empty; no questions)
      2) Remaining blockers (<=8; prioritized)
-   - If you output questions: **do NOT write** `docs/scaffold-pack.json` this round.
 
 2) `READY`
    - Output exactly 3 plain-text lines:
@@ -30,32 +27,40 @@ Output MUST be exactly one of:
 
 - Never output JSON bodies (including `docs/scaffold-pack.json`).
 
-## Interaction
+## No conversation
 
-- Ask in the user's language (ZH/EN).
+- Do not ask questions in this stage.
+- If prerequisites are missing, output blockers with a single-action fix (update `docs/prd-pack.json.workflow_preferences`), then stop.
+
+## Blocking prerequisites
+
+Do not write `docs/scaffold-pack.json` unless all are true:
+- `docs/prd-pack.json.workflow_preferences` exists and `workflow_preferences.confirmed=true`
+- `workflow_preferences.scaffold_plan` is complete and valid:
+  - `tech_stack.backend`, `tech_stack.frontend`, `tech_stack.database` are non-null strings (not `N/A`)
+  - `repo_structure[]` is non-empty, each row has concrete `path` and `purpose`
+  - `validation_commands[]` is non-empty; each row is either:
+    - fully `N/A` (`type/command/note` all `N/A`), OR
+    - fully concrete with `type` starting `gate:` or `opt:` (no partial `N/A`)
 
 ## Writing rules
 
-- Do not guess; if not confirmed, ask.
+- Source of truth for preferences: `docs/prd-pack.json.workflow_preferences.scaffold_plan.*`
+- Copy preferences into `docs/scaffold-pack.json` decisions:
+  - `$.decisions.tech_stack.*` from `workflow_preferences.scaffold_plan.tech_stack.*`
+  - `$.decisions.repo_structure[]` from `workflow_preferences.scaffold_plan.repo_structure[]`
+  - `$.decisions.validation_commands[]` from `workflow_preferences.scaffold_plan.validation_commands[]`
+- Do not infer/guess decisions beyond the confirmed preferences.
 - Do not manually edit `extracted` (it is auto-populated by scripts).
-- Hard gate: you MUST NOT output `READY` unless all required decisions below are confirmed and written (no placeholders).
-- Required decisions (minimum):
-  - `$.decisions.tech_stack.backend`
-  - `$.decisions.tech_stack.frontend`
-  - `$.decisions.tech_stack.database`
-  - `$.decisions.repo_structure[]`
-  - `$.decisions.validation_commands[]` (use a single full `N/A` row if truly not applicable)
-- `$.decisions.validation_commands[].type` must start with `gate:` or `opt:` (unless the row is fully `N/A`).
-- `validation_commands` `N/A` must be either fully `N/A`, or fully concrete (no partial `N/A`).
-- If the project has “no frontend” / “no DB”: still fill with a concrete string (e.g., `CLI (no UI)`, `file-based`, `none`), not `N/A`.
+- Hard gate: you MUST NOT output `READY` unless `docs/scaffold-pack.json.decisions` is complete and concrete (no placeholders; no partial `N/A` rows).
 
 ## Start / Replan handling
 
 If `docs/scaffold-pack.json` does not exist (agent-run; workspace root):
 1) `uv sync --project .codex/skills/textum/scripts`
 2) `uv run --project .codex/skills/textum/scripts textum scaffold init`
-Then ask: confirm backend/frontend/database choices (be specific: language + framework + DB).
-
+Then proceed to fill `docs/scaffold-pack.json` from `docs/prd-pack.json.workflow_preferences` (no questions).
+ 
 If `docs/scaffold-check-replan-pack.json` exists:
 - Treat `items[]` as the current blockers and resolve them first.
-- Follow the Output contract: pick either ask-mode (questions only) or write-mode (change summary only).
+- Follow the Output contract.

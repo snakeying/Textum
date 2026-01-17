@@ -64,7 +64,8 @@ flowchart TB
 - `* check` 命令还会写 `docs/*-replan-pack.json` + `docs/diagnostics/*.md`（用于回跳修复的快照）
 - `DECISION` 分支已弃用为用户分支：默认以 WARN 形式记录（不阻塞）；需要严格门禁时用 `--strict` 升级 WARN 为 FAIL（目前主要用于 Split gate）
 - **WARN 默认不阻塞**：以推进流程为目标时可忽略 WARN（把它当作“优化建议”）；需要强制收敛时再用 `--strict`
-- Plan 阶段：一轮只做一件事——要么提问要么写回；若输出包含 questions，则本轮不写回 `docs/*-pack.json`
+- 唯一用户交互点：`prd-plan`。
+- Plan 阶段：`prd-plan` 允许提问或写回；`scaffold-plan` / `split-plan` 不提问，只根据已确认的 artifacts（`docs/prd-pack.json.workflow_preferences`、`docs/prd-slices/*`）+ 确定性启发式写回，或输出 blockers 回到 `PRD Plan`。
 
 ---
 
@@ -90,7 +91,7 @@ flowchart TB
 
 | 步骤 | Skill | 触发意图 | 说明 |
 |------|-------|----------|------|
-| 1 | `scaffold-plan` | 上下文提取 / Scaffold 计划 | 交互澄清，把"已确认技术决策"写入 `docs/scaffold-pack.json`（首次自动初始化） |
+| 1 | `scaffold-plan` | 上下文提取 / Scaffold 计划 | 无对话计划：从已确认的 `docs/prd-pack.json.workflow_preferences` 写入"已确认技术决策"到 `docs/scaffold-pack.json`（首次自动初始化） |
 | 2 | `scaffold-check` | 校验GLOBAL-CONTEXT / GC 门禁 | 门禁校验 + 自动补齐 extracted/source；写 `docs/scaffold-check-replan-pack.json` + `docs/diagnostics/scaffold-check.md`；`FAIL` → 返回步骤 1 |
 | 3 | `scaffold` | 生成GLOBAL-CONTEXT | 生成 `docs/GLOBAL-CONTEXT.md`（人工验收；不符合预期 → 返回步骤 1） |
 
@@ -106,7 +107,7 @@ flowchart TB
 
 | 步骤 | Skill | 说明 |
 |------|-------|------|
-| 1 | `split-plan` | 交互澄清 + 内置 READY gate；写清 Story 边界/顺序、模块归属、API 归属到 `docs/split-plan-pack.json`；`split plan check` 写 `docs/split-plan-check-replan-pack.json` + `docs/diagnostics/split-plan-check.md`；`PASS` → 继续 |
+| 1 | `split-plan` | 无对话计划 + 内置 READY gate；启发式：story 数量随 PRD 复杂度（modules/FP/API）推导、deps-first、P0 优先；写入 `docs/split-plan-pack.json`，迭代 replan packs 直到 `PASS` |
 | 2 | `split` | 生成 `docs/stories/story-###-<slug>.json` |
 | 3 | `split-check1` | 结构门禁 + 生成交接索引 `docs/split-check-index-pack.json`；阈值默认 WARN（`--strict` 才升级为 FAIL）；写 `docs/split-check1-replan-pack.json` + `docs/diagnostics/split-check1.md`；`FAIL` → 返回步骤 1（可能额外写 `docs/split-replan-pack.json`） |
 | 4 | `split-check2` | 引用一致性 + 完整性门禁（`story_count` 必须与实际文件数一致）；写 `docs/split-check2-replan-pack.json` + `docs/diagnostics/split-check2.md`；`FAIL` → 返回步骤 1 |

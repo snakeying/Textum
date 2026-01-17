@@ -37,6 +37,19 @@
     "extra_error_codes": [],
     "endpoints": []
   },
-  "nfr": []
+  "nfr": [],
+  "workflow_preferences": {
+    "schema_version": "workflow-preferences@v1",
+    "confirmed": false,
+    "scaffold_plan": {
+      "tech_stack": {
+        "backend": null,
+        "frontend": null,
+        "database": null,
+        "other": []
+      },
+      "repo_structure": [],
+      "validation_commands": []
+    }
+  }
 }
-

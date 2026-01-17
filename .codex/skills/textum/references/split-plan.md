@@ -21,11 +21,8 @@ Output MUST be exactly one of:
 
 1) `IN_PROGRESS`
    - Output exactly 2 blocks:
-     1) Either:
-        - This-round questions (<=4; blockers only), OR
-        - This-round change summary (JSONPath list; no questions)
+     1) This-round change summary (JSONPath list; may be empty; no questions)
      2) Remaining blockers (~8; prioritized)
-   - If you output questions: **do NOT write** `docs/split-plan-pack.json` this round.
 2) `READY`
    - Output exactly 3 plain-text lines:
      - `READY`
@@ -34,10 +31,36 @@ Output MUST be exactly one of:
 
 - Never output JSON bodies (including `docs/split-plan-pack.json`)
 
-## Interaction
+## No conversation
 
-- Ask in the user's language (ZH/EN).
-- Prefer the single preference question in "Start"; accept defaults if the user has no preference.
+- Do not ask questions in this stage.
+- Use data-driven heuristics from the input JSON; you may write iteratively in `IN_PROGRESS` rounds.
+
+## Blocking prerequisites
+
+Do not write `docs/split-plan-pack.json` unless all are true:
+- `docs/prd-slices/index.json` exists
+- `docs/prd-slices/modules.*.json` are available (from the slice index)
+- If `api.has_api=true`: `docs/prd-slices/api_endpoints.*.json` are available (from the slice index)
+
+## Heuristics (story count + ordering)
+
+Compute `module_count`, `total_feature_points`, and `api_count` (if any) from the slice JSON.
+
+Budget-style targets (soft):
+- target `feature_points` per story: ~6 (prefer <=8; avoid >12)
+- target APIs per story: ~2 (prefer <=3; avoid >5)
+
+Derive story count:
+- `n_fp = ceil(total_feature_points / 6)`
+- `n_api = ceil(api_count / 2)` (if `api_count > 0`)
+- `N = max(1, n_fp, n_api)`
+
+Then build stories with these rules:
+- Ordering: prerequisites/dependencies first; cover P0 modules early.
+- Every PRD module id must appear in at least one story `stories[].modules[]`.
+- If a module is too large, split it across multiple stories by assigning the same module id to multiple stories (and later distribute feature points round-robin).
+- If `api.has_api=true`: assign every PRD `API-###` to exactly one story in `api_assignments[]` and keep per-story API counts within budget.
 
 ## Writing rules
 
@@ -74,12 +97,8 @@ If `docs/split-plan-pack.json` does not exist, initialize once (agent-run; works
 1) `uv sync --project .codex/skills/textum/scripts`
 2) `uv run --project .codex/skills/textum/scripts textum split plan init`
 
-Then ask (preference check; defaults are OK):
-- Default (if user gives no preference): 12 stories; order = prerequisites first, then cover P0 modules early.
-- Ask only if needed (at most 1 preference question):
-  - "Any preferred story count or must-have sequencing constraints? (default: 12; deps-first then P0)"
-- If the user says "no preference": accept defaults and proceed without follow-up questions.
+Then generate the plan using the "Blocking prerequisites" and "Heuristics" sections (no questions).
 
 If any `docs/split-*-replan-pack.json` exists:
 - Treat `items[]` as the current blockers and resolve them first.
-- Follow the Output contract: pick either ask-mode (questions only) or write-mode (change summary only).
+- Follow the Output contract.

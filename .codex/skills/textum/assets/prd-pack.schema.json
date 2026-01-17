@@ -231,6 +231,61 @@
           "acceptance": { "type": "string" }
         }
       }
+    },
+    "workflow_preferences": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["schema_version", "confirmed", "scaffold_plan"],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "workflow-preferences@v1"
+        },
+        "confirmed": { "type": "boolean" },
+        "scaffold_plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tech_stack", "repo_structure", "validation_commands"],
+          "properties": {
+            "tech_stack": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["backend", "frontend", "database", "other"],
+              "properties": {
+                "backend": { "type": ["string", "null"] },
+                "frontend": { "type": ["string", "null"] },
+                "database": { "type": ["string", "null"] },
+                "other": { "type": "array", "items": { "type": "string" } }
+              }
+            },
+            "repo_structure": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["path", "purpose"],
+                "properties": {
+                  "path": { "type": "string" },
+                  "purpose": { "type": "string" }
+                }
+              }
+            },
+            "validation_commands": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "command", "note"],
+                "properties": {
+                  "type": { "type": "string" },
+                  "command": { "type": "string" },
+                  "note": { "type": ["string", "null"] }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -429,4 +484,3 @@
     }
   }
 }
-
