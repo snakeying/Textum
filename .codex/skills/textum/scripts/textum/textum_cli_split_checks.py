@@ -12,7 +12,7 @@ from .split_pack_io import read_json_object
 from .split_plan_pack import read_split_plan_pack
 from .textum_cli_artifacts import write_check_artifacts
 from .textum_cli_next import _next_stage_for_failures
-from .textum_cli_support import _ensure_prd_ready, _ensure_scaffold_ready
+from .textum_cli_support import _ensure_prd_ready, _ensure_scaffold_ready, _print_check_items
 
 
 def _cmd_split_check1(args: argparse.Namespace) -> int:
@@ -30,6 +30,7 @@ def _cmd_split_check1(args: argparse.Namespace) -> int:
             failures=read_failures,
         )
         print("FAIL")
+        _print_check_items(read_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -70,6 +71,7 @@ def _cmd_split_check1(args: argparse.Namespace) -> int:
             extra={"split_replan_pack": "docs/split-replan-pack.json"} if split_replan_written else None,
         )
         print("FAIL")
+        _print_check_items(failures, label="FAIL")
         if split_replan_written:
             print(f"wrote: {paths['split_replan_pack'].relative_to(workspace).as_posix()}")
         for rel in wrote:
@@ -78,6 +80,8 @@ def _cmd_split_check1(args: argparse.Namespace) -> int:
         return 1
 
     print("PASS")
+    if warnings:
+        _print_check_items(warnings, label="WARN")
     if split_replan_written:
         print(f"wrote: {paths['split_replan_pack'].relative_to(workspace).as_posix()}")
     _, wrote = write_check_artifacts(
@@ -110,6 +114,7 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
             failures=prd_read_failures,
         )
         print("FAIL")
+        _print_check_items(prd_read_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -127,6 +132,7 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
             failures=prd_ready_failures,
         )
         print("FAIL")
+        _print_check_items(prd_ready_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -143,6 +149,7 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
             failures=scaffold_read_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_read_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -166,6 +173,7 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
             failures=scaffold_ready_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_ready_failures, label="FAIL")
         if scaffold_updated and args.fix:
             print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
         for rel in wrote:
@@ -186,6 +194,7 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
             failures=index_failures,
         )
         print("FAIL")
+        _print_check_items(index_failures, label="FAIL")
         if scaffold_updated and args.fix:
             print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
         for rel in wrote:
@@ -205,6 +214,7 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
             failures=failures,
         )
         print("FAIL")
+        _print_check_items(failures, label="FAIL")
         if scaffold_updated and args.fix:
             print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
         for rel in wrote:
@@ -241,6 +251,7 @@ def _cmd_split_checkout(args: argparse.Namespace) -> int:
             failures=failures,
         )
         print("FAIL")
+        _print_check_items(failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")

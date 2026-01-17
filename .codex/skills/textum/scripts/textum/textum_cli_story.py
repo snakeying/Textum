@@ -13,8 +13,7 @@ from .story_exec_pack_validate import check_story_exec_pack
 from .story_exec_paths import find_story_source, story_exec_dir
 from .textum_cli_artifacts import write_check_artifacts
 from .textum_cli_next import _next_stage_for_failures
-from .textum_cli_support import _require_scaffold_extracted_modules_index
-from .textum_cli_support import _ensure_prd_ready
+from .textum_cli_support import _ensure_prd_ready, _print_check_items, _require_scaffold_extracted_modules_index
 
 
 def _load_story_source(*, stories_dir: Path, n: int) -> tuple[Path | None, str | None, dict | None, list[Failure]]:
@@ -76,6 +75,7 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
             failures=failures,
         )
         print("FAIL")
+        _print_check_items(failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -95,6 +95,7 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
             failures=prd_failures,
         )
         print("FAIL")
+        _print_check_items(prd_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -111,6 +112,7 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
             failures=prd_ready_failures,
         )
         print("FAIL")
+        _print_check_items(prd_ready_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -127,6 +129,7 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
             failures=scaffold_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -143,6 +146,7 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
             failures=scaffold_ready_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_ready_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -158,6 +162,7 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
             failures=scaffold_check_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_check_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -184,6 +189,7 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
             failures=failures,
         )
         print("FAIL")
+        _print_check_items(failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -217,6 +223,7 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
             failures=failures,
         )
         print("FAIL")
+        _print_check_items(failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -236,6 +243,7 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
             failures=prd_failures,
         )
         print("FAIL")
+        _print_check_items(prd_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -252,6 +260,7 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
             failures=prd_ready_failures,
         )
         print("FAIL")
+        _print_check_items(prd_ready_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -268,6 +277,7 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
             failures=scaffold_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -284,6 +294,7 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
             failures=scaffold_ready_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_ready_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -299,6 +310,7 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
             failures=scaffold_check_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_check_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -325,6 +337,7 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
             failures=failures,
         )
         print("FAIL")
+        _print_check_items(failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -355,6 +368,7 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
             failures=pack_failures,
         )
         print("FAIL")
+        _print_check_items(pack_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -372,6 +386,7 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
             failures=exec_failures,
         )
         print("FAIL")
+        _print_check_items(exec_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")

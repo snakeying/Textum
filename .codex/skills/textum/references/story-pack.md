@@ -23,6 +23,7 @@ Ask the user for the story number `n` (e.g. `1`), then run (workspace root):
 - Output the command output as-is (low-noise).
 - The command always prints:
   - `PASS` or `FAIL`
+  - on `FAIL`: one-line `FAIL` items (`loc/problem/expected/impact/fix`)
   - optional `entry: ...` (on PASS)
   - optional `wrote: ...` lines (diagnostics/replan packs)
   - final line `next: <stage>` (fail-fast; computed from artifacts)

@@ -43,7 +43,7 @@ Output MUST be exactly one of:
 - **Do NOT maintain IDs**: all `*.id` may be `null` (scripts enforce ID continuity/uniqueness).
 - Prefer atomic edits via `textum prd patch {set|append|delete}`; avoid full-file rewrites.
 
-## Pre-READY minimum (avoid PRD Check bounce)
+## Pre-READY minimum
 
 Before outputting `READY`, ensure these are **confirmed** and written:
 - `roles[]` is non-empty (each role has `role/description/typical_scenarios[]`).

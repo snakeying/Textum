@@ -60,7 +60,7 @@ flowchart TB
 - Recommended to open new window for each stage (avoid context pollution)
 - Workflow triggered via `textum` skill routing; CLI commands only for debugging
 - Default `--fix=true`: Some gate/render/slice commands may write back to `docs/*-pack.json` (only normalize/ID, populate `source/extracted` non-business fields); only outputs `wrote: ...` when actually writing
-- `* check` commands have low-noise stdout: only prints `PASS|FAIL` (optional `wrote:`/`entry:`) + final line `next:`; detailed FAIL/WARN in workspace replan/diagnostics
+- `* check` commands have low-noise stdout: prints `PASS|FAIL`, optional one-line `FAIL/WARN` items (`loc/problem/expected/impact/fix`), optional `wrote:`/`entry:`, then final line `next:`; full snapshot also in `docs/*-replan-pack.json` + `docs/diagnostics/*.md`
 - `DECISION` branches deprecated as user branches: default recorded as WARN (non-blocking); you can ignore WARN when the goal is to keep moving; use `--strict` to upgrade WARN to FAIL for strict gates (currently mainly for Split gate)
 - Plan phase: One action per round—either ask questions or write back; if output contains questions, this round does not write back `docs/*-pack.json`
 

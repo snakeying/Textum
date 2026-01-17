@@ -29,6 +29,23 @@ def _print_failures(failures: list[Failure]) -> None:
         )
 
 
+def _print_check_items(items: list[Failure], *, label: str) -> None:
+    for item in items:
+        print(
+            "- "
+            + "; ".join(
+                [
+                    f"[{label}]",
+                    f"loc={item.loc}",
+                    f"problem={item.problem}",
+                    f"expected={item.expected}",
+                    f"impact={item.impact}",
+                    f"fix={item.fix}",
+                ]
+            )
+        )
+
+
 def _load_prd_pack(paths: dict[str, Path]) -> tuple[dict[str, Any] | None, list[Failure]]:
     prd_pack, read_failures = read_prd_pack(paths["prd_pack"])
     if read_failures:

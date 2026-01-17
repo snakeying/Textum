@@ -21,6 +21,8 @@ Run (workspace root):
 - Output the command output as-is (low-noise).
 - The command always prints:
   - `PASS` or `FAIL`
+  - on `FAIL`: one-line `FAIL` items (`loc/problem/expected/impact/fix`)
+  - on `PASS` with warnings: one-line `WARN` items (`loc/problem/expected/impact/fix`)
   - optional `wrote: ...` lines (diagnostics/replan packs)
   - final line `next: <stage>`
 

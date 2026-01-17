@@ -15,6 +15,7 @@ from .split_plan_pack import (
 from .textum_cli_artifacts import write_check_artifacts
 from .textum_cli_next import _next_stage_for_failures
 from .textum_cli_support import _ensure_prd_ready, _ensure_scaffold_ready
+from .textum_cli_support import _print_check_items
 
 
 def _cmd_split_plan_init(args: argparse.Namespace) -> int:
@@ -58,6 +59,7 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
             failures=prd_read_failures,
         )
         print("FAIL")
+        _print_check_items(prd_read_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -75,6 +77,7 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
             failures=prd_ready_failures,
         )
         print("FAIL")
+        _print_check_items(prd_ready_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -91,6 +94,7 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
             failures=scaffold_read_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_read_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -115,6 +119,7 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
             failures=scaffold_ready_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_ready_failures, label="FAIL")
         if scaffold_pack_written:
             print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
         for rel in wrote:
@@ -133,6 +138,7 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
             failures=read_failures,
         )
         print("FAIL")
+        _print_check_items(read_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -155,6 +161,7 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
             failures=norm_failures,
         )
         print("FAIL")
+        _print_check_items(norm_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -180,6 +187,7 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
             warnings=[] if strict else check_warnings,
         )
         print("FAIL")
+        _print_check_items(failures_for_next, label="FAIL")
         if scaffold_pack_written:
             print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
         if split_plan_pack_written:
@@ -190,6 +198,8 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
         return 1
 
     print("PASS")
+    if check_warnings:
+        _print_check_items(check_warnings, label="WARN")
     if scaffold_pack_written:
         print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
     if split_plan_pack_written:

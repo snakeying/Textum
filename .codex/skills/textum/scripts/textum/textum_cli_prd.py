@@ -10,7 +10,7 @@ from .prd_slices import SliceBudget, generate_prd_slices
 from .textum_cli_artifacts import write_check_artifacts
 from .textum_cli_next import _next_stage_for_failures
 from .textum_cli_prd_patch import register_prd_patch_command
-from .textum_cli_support import _load_prd_pack_and_normalize, _print_failures
+from .textum_cli_support import _load_prd_pack_and_normalize, _print_check_items, _print_failures
 
 
 def _cmd_prd_init(args: argparse.Namespace) -> int:
@@ -43,6 +43,7 @@ def _cmd_prd_check(args: argparse.Namespace) -> int:
             failures=failures,
         )
         print("FAIL")
+        _print_check_items(failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -60,6 +61,7 @@ def _cmd_prd_check(args: argparse.Namespace) -> int:
             failures=check_failures,
         )
         print("FAIL")
+        _print_check_items(check_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")

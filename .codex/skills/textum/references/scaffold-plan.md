@@ -32,7 +32,7 @@ Output MUST be exactly one of:
 
 ## Interaction
 
-- Ask in the user's language (ZH/EN). If mixed, follow the user's last message.
+- Ask in the user's language (ZH/EN).
 
 ## Writing rules
 

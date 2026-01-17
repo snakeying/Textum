@@ -12,6 +12,7 @@ from .textum_cli_next import _next_stage_for_failures
 from .textum_cli_support import (
     _load_prd_pack_and_ensure_ready,
     _load_scaffold_pack_and_ensure_ready,
+    _print_check_items,
     _print_failures,
 )
 
@@ -47,6 +48,7 @@ def _cmd_scaffold_check(args: argparse.Namespace) -> int:
             failures=prd_failures,
         )
         print("FAIL")
+        _print_check_items(prd_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")
@@ -66,6 +68,7 @@ def _cmd_scaffold_check(args: argparse.Namespace) -> int:
             failures=scaffold_failures,
         )
         print("FAIL")
+        _print_check_items(scaffold_failures, label="FAIL")
         for rel in wrote:
             print(f"wrote: {rel}")
         print(f"next: {next_stage}")

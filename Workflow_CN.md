@@ -60,7 +60,7 @@ flowchart TB
 - 推荐每个阶段开新窗口执行（避免上下文污染）
 - 流程通过 `textum` skill 路由触发；仅调试时使用 CLI 命令
 - 默认 `--fix=true`：部分 gate/render/slice 命令可能写回 `docs/*-pack.json`（仅 normalize/ID、补齐 `source/extracted` 等非业务决策字段）；仅在实际写回时才会输出 `wrote: ...`
-- `* check` 命令 stdout 低噪：只打印 `PASS|FAIL`（可选 `wrote:`/`entry:`）+ 最后一行 `next:`；详细 FAIL/WARN 见 workspace 内的 replan/diagnostics
+- `* check` 命令 stdout 低噪：打印 `PASS|FAIL`、可选的一行式 `FAIL/WARN` items（`loc/problem/expected/impact/fix`）、可选 `wrote:`/`entry:`，最后一行 `next:`；完整快照也会写入 `docs/*-replan-pack.json` + `docs/diagnostics/*.md`
 - `DECISION` 分支已弃用为用户分支：默认以 WARN 形式记录（不阻塞）；需要严格门禁时用 `--strict` 升级 WARN 为 FAIL（目前主要用于 Split gate）
 - **WARN 默认不阻塞**：以推进流程为目标时可忽略 WARN（把它当作“优化建议”）；需要强制收敛时再用 `--strict`
 - Plan 阶段：一轮只做一件事——要么提问要么写回；若输出包含 questions，则本轮不写回 `docs/*-pack.json`
