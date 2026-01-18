@@ -3,7 +3,7 @@
 ## 1. Test Overview
 
 - **Test Date**: 2026-01-18
-- **Model Version**: Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
+- **Model Version**: Claude Opus 4.5 (claude-opus-4-5-20251101) / GPT-5.2-xhigh
 - **Test Objective**: Validate end-to-end feasibility and gate effectiveness of Textum Skill workflow in "Household Manager" scenario (28 FPs, 12 APIs, 14 tables)
 
 **Test Scope** (by Workflow.md stages):
@@ -91,7 +91,7 @@ Story 1 (m-01: Household & Members) was selected for execution validation.
 
 ## 6. Conclusion
 
-The Textum Skill workflow completed the full chain simulation from user requirements to Story execution under Claude Sonnet 4.5 model. Of 19 steps in the full workflow, 2 steps encountered failures that were successfully fixed, and 6 validation commands (PRD Check, Scaffold Check, Split Plan Check, Split Check1, Split Check2, Story Check) operated effectively as gates.
+The Textum Skill workflow completed the full chain simulation from user requirements to Story execution under Claude Opus 4.5 / GPT-5.2-xhigh. Of 19 steps in the full workflow, 2 steps encountered failures that were successfully fixed, and 6 validation commands (PRD Check, Scaffold Check, Split Plan Check, Split Check1, Split Check2, Story Check) operated effectively as gates.
 
 This test covered a medium-complexity scenario with 7 modules, 28 feature points, 12 APIs, 14 data tables, and 6 Stories. PRD Plan converged within 6 rounds of dialogue, and all validation steps ultimately passed.
 

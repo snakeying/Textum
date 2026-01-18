@@ -3,7 +3,7 @@
 ## 1. 测试概述
 
 - **测试日期**：2026-01-18
-- **模型版本**：Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
+- **模型版本**：Claude Opus 4.5 (claude-opus-4-5-20251101) / GPT-5.2-xhigh
 - **测试目标**：验证 Textum Skill 版工作流在"家务小管家"场景（28 FP、12 API、14 表）下的端到端可行性与门禁有效性
 
 **测试范围**（按 Workflow.md 阶段）：
@@ -91,7 +91,7 @@
 
 ## 6. 结论
 
-Textum Skill 版工作流在 Claude Sonnet 4.5 模型下完成了从用户需求到 Story 执行的完整链路模拟。全流程 19 个步骤中，2 个步骤出现失败后均成功修复，6 个校验命令（PRD Check、Scaffold Check、Split Plan Check、Split Check1、Split Check2、Story Check）的门禁机制有效运作。
+Textum Skill 版工作流在 Claude Opus 4.5 / GPT-5.2-xhigh 模型下完成了从用户需求到 Story 执行的完整链路模拟。全流程 19 个步骤中，2 个步骤出现失败后均成功修复，6 个校验命令（PRD Check、Scaffold Check、Split Plan Check、Split Check1、Split Check2、Story Check）的门禁机制有效运作。
 
 本次测试覆盖了 7 个模块、28 个功能点、12 个 API、14 张数据表、6 个 Story 的中等复杂度场景。PRD Plan 在 6 轮对话内完成需求收敛，所有校验步骤最终均通过。
 

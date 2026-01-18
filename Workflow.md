@@ -41,9 +41,6 @@ flowchart TB
     SP6 -->|FAIL| SP3
 ```
 
-⚠️ Note:
-- `story-check` / `story-pack` follow the `next: <stage>` directive in output on `FAIL` (fail-fast routing).
-
 ---
 
 ## Core Concepts
@@ -55,16 +52,23 @@ flowchart TB
 | **Low-Noise Slicing** | Subsequent bundles only read slice index + files referenced by index, avoiding full file reads |
 | **Low-Noise Diagnostic Artifacts** | Each `* check` writes a current snapshot (`docs/*-replan-pack.json` + `docs/diagnostics/*.md`, overwritten on rerun). On `FAIL` it also writes a preserved snapshot: `docs/*-replan-pack.last-fail.json` + `docs/diagnostics/*.last-fail.md`. |
 
-**Execution Conventions**:
+---
+
+## Quick Start Guide
+
+**Key Execution Conventions**:
 - All commands run from project root
 - Recommended to open new window for each stage (avoid context pollution)
 - Workflow triggered via `textum` skill routing; script stages run the corresponding `uv run ... textum ...` commands (you may also run them for debugging)
-- Default `--fix=true`: Some gate/render/slice commands may write back to `docs/*-pack.json` (only normalize/ID, populate `source/extracted` non-business fields); only outputs `wrote: ...` when actually writing
+- **User interaction point**: `prd-plan` only
+- **WARN is non-blocking by default**: Ignore WARN when the goal is to keep moving; use `--strict` to upgrade WARN to FAIL for strict gates
+
+**Command Output Pattern**:
 - Script commands have low-noise stdout: prints `PASS|FAIL`, optional one-line `FAIL/WARN` items (`loc/problem/expected/impact/fix`), optional `wrote:`/`entry:`, then final line `next:`
-- `* check` commands also write `docs/*-replan-pack.json` + `docs/diagnostics/*.md` (current snapshot; overwritten on rerun). On `FAIL` they also write `docs/*-replan-pack.last-fail.json` + `docs/diagnostics/*.last-fail.md` (preserved).
-- `DECISION` branches deprecated as user branches: default recorded as WARN (non-blocking); you can ignore WARN when the goal is to keep moving; use `--strict` to upgrade WARN to FAIL for strict gates (currently mainly for Split gate)
-- User interaction point: `prd-plan` only.
-- Plan phase: `prd-plan` may ask questions or write back; `scaffold-plan` and `split-plan` do not ask questions and instead write from confirmed artifacts (`docs/prd-pack.json.workflow_preferences`, `docs/prd-slices/*`) + deterministic heuristics, or emit blockers to return to `PRD Plan`.
+
+**Plan Phase Behavior**:
+- `prd-plan` may ask questions or write back
+- `scaffold-plan` and `split-plan` do not ask questions and instead write from confirmed artifacts (`docs/prd-pack.json.workflow_preferences`, `docs/prd-slices/*`) + deterministic heuristics, or emit blockers to return to `PRD Plan`
 
 ---
 
@@ -72,15 +76,15 @@ flowchart TB
 
 **Goal**: Requirements clarification → Gate validation → Generate acceptance view → Slice
 
-| Step | Skill | Trigger Intent | Description |
-|------|-------|----------------|-------------|
-| 1 | `prd-plan` | Requirements clarification / PRD planning | Interactive clarification, write "confirmed facts" to `docs/prd-pack.json` (auto-init on first run) |
-| 2 | `prd-check` | Validate PRD / Gate | Gate validation + auto-assign IDs; writes `docs/prd-check-replan-pack.json` + `docs/diagnostics/prd-check.md`; `FAIL` → return to step 1 |
-| 3 | `prd-render` | Generate PRD / Render PRD | Generate `docs/PRD.md` (manual acceptance; if not as expected → return to step 1) |
-| 4 | `prd-slice` | PRD slicing / slice | Generate `docs/prd-slices/` (required for subsequent Split Plan) |
+| Step | Skill | Description |
+|------|-------|-------------|
+| 1 | `prd-plan` | Interactive clarification, write "confirmed facts" to `docs/prd-pack.json` (auto-init on first run) |
+| 2 | `prd-check` | Gate validation + auto-assign IDs; writes diagnostic artifacts; `FAIL` → return to step 1 |
+| 3 | `prd-render` | Generate `docs/PRD.md` (manual acceptance; if not as expected → return to step 1) |
+| 4 | `prd-slice` | Generate `docs/prd-slices/` (required for subsequent Split Plan) |
 
-Recommendation (reduce avoidable loops):
-- Before leaving `prd-plan` as `READY`, fill the minimal access model: `roles[]` + `permission_matrix.operations[]` (even for single-user apps; otherwise `prd-check` may `FAIL` and bounce back).
+**Recommendation** (reduce avoidable loops):
+- Before leaving `prd-plan` as `READY`, fill the minimal access model: `roles[]` + `permission_matrix.operations[]` (even for single-user apps; otherwise `prd-check` may `FAIL` and bounce back)
 
 ---
 
@@ -88,11 +92,11 @@ Recommendation (reduce avoidable loops):
 
 **Goal**: Technical decisions → Gate validation → Generate global context
 
-| Step | Skill | Trigger Intent | Description |
-|------|-------|----------------|-------------|
-| 1 | `scaffold-plan` | Context extraction / Scaffold planning | No-conversation planning; write "confirmed technical decisions" to `docs/scaffold-pack.json` from confirmed `docs/prd-pack.json.workflow_preferences` (auto-init on first run) |
-| 2 | `scaffold-check` | Validate GLOBAL-CONTEXT / GC gate | Gate validation + auto-populate extracted/source; writes `docs/scaffold-check-replan-pack.json` + `docs/diagnostics/scaffold-check.md`; `FAIL` → return to step 1 |
-| 3 | `scaffold` | Generate GLOBAL-CONTEXT | Generate `docs/GLOBAL-CONTEXT.md` (manual acceptance; if not as expected → return to step 1) |
+| Step | Skill | Description |
+|------|-------|-------------|
+| 1 | `scaffold-plan` | No-conversation planning; write "confirmed technical decisions" to `docs/scaffold-pack.json` from confirmed `docs/prd-pack.json.workflow_preferences` (auto-init on first run) |
+| 2 | `scaffold-check` | Gate validation + auto-populate extracted/source; writes diagnostic artifacts; `FAIL` → return to step 1 |
+| 3 | `scaffold` | Generate `docs/GLOBAL-CONTEXT.md` (manual acceptance; if not as expected → return to step 1) |
 
 ---
 
@@ -108,8 +112,8 @@ Recommendation (reduce avoidable loops):
 |------|-------|-------------|
 | 1 | `split-plan` | No-conversation planning + built-in READY gate; heuristics: story count derived from PRD complexity (modules/FP/API), deps-first, P0 early; write `docs/split-plan-pack.json`; iterate via replan packs until `PASS` |
 | 2 | `split` | Generate `docs/stories/story-###-<slug>.json` |
-| 3 | `split-check1` | Structure gate + generate handoff index `docs/split-check-index-pack.json`; threshold defaults to WARN (non-blocking; ok to ignore; `--strict` upgrades to FAIL); writes `docs/split-check1-replan-pack.json` + `docs/diagnostics/split-check1.md`; `FAIL` → return to step 1 (may additionally write `docs/split-replan-pack.json`) |
-| 4 | `split-check2` | Reference consistency + completeness gate (`story_count` must match actual file count); writes `docs/split-check2-replan-pack.json` + `docs/diagnostics/split-check2.md`; `FAIL` → return to step 1 |
+| 3 | `split-check1` | Structure gate + generate handoff index `docs/split-check-index-pack.json`; threshold defaults to WARN (non-blocking; ok to ignore; `--strict` upgrades to FAIL); writes diagnostic artifacts; `FAIL` → return to step 1 (may additionally write `docs/split-replan-pack.json`) |
+| 4 | `split-check2` | Reference consistency + completeness gate (`story_count` must match actual file count); writes diagnostic artifacts; `FAIL` → return to step 1 |
 | 5 | `split-checkout` | Export dependency graph `docs/story-mermaid.md` (for manual order inspection) |
 
 ---
@@ -125,14 +129,37 @@ Recommendation (reduce avoidable loops):
 
 | Step | Skill | Input | Description |
 |------|-------|-------|-------------|
-| 1 | `story-check` | `n` (Story number) | Single Story gate; writes `docs/story-check-replan-pack.json` + `docs/diagnostics/story-check.md`; `FAIL` → route by `next:` |
-| 2 | `story-pack` | `n` | Generate low-noise execution bundle `docs/story-exec/story-###-<slug>/index.json`; writes `docs/story-pack-replan-pack.json` + `docs/diagnostics/story-pack.md`; `FAIL` → route by `next:` |
+| 1 | `story-check` | `n` (Story number) | Single Story gate; writes diagnostic artifacts; `FAIL` → route by `next:` |
+| 2 | `story-pack` | `n` | Generate low-noise execution bundle `docs/story-exec/story-###-<slug>/index.json`; writes diagnostic artifacts; `FAIL` → route by `next:` |
 | 3 | `story` | `n` | Read-only execution bundle + minimal on-demand repo code reads; only implement this Story's `feature_points` and `api_endpoints` |
 | 4 | `story-full-exec` | `1/2/3` | Batch execution (in order, no rollback) |
 
+⚠️ **Note**: `story-check` / `story-pack` follow the `next: <stage>` directive in output on `FAIL` (fail-fast routing).
+
 ---
 
-## Appendix A: Artifact Inventory
+## Appendix A: Execution Details
+
+### Execution Conventions
+
+**Default Behavior**:
+- Default `--fix=true`: Some gate/render/slice commands may write back to `docs/*-pack.json` (only normalize/ID, populate `source/extracted` non-business fields); only outputs `wrote: ...` when actually writing
+
+**Diagnostic Artifacts**:
+- `* check` commands write `docs/*-replan-pack.json` + `docs/diagnostics/*.md` (current snapshot; overwritten on rerun)
+- On `FAIL` they also write `docs/*-replan-pack.last-fail.json` + `docs/diagnostics/*.last-fail.md` (preserved)
+
+**WARN vs FAIL**:
+- WARN is non-blocking by default: treat as "optimization suggestions" when the goal is to keep moving
+- Use `--strict` to upgrade WARN to FAIL for strict gates (currently mainly for Split gate)
+
+**Plan Phase Details**:
+- `prd-plan`: Interactive, may ask questions or write back
+- `scaffold-plan` / `split-plan`: No-conversation, write from confirmed artifacts + deterministic heuristics, or emit blockers to return to `PRD Plan`
+
+---
+
+## Appendix B: Artifact Inventory
 
 | Stage | Source of Truth | Views/Slices |
 |-------|-----------------|--------------|
@@ -144,7 +171,7 @@ Recommendation (reduce avoidable loops):
 
 ---
 
-## Appendix B: CLI Usage
+## Appendix C: CLI Usage
 
 > Dependencies isolated in `$SCRIPTS_PATH/.venv`, does not pollute project.
 >
@@ -157,11 +184,11 @@ uv sync --project $SCRIPTS_PATH              # First time/dependency updates
 uv run --project $SCRIPTS_PATH textum <cmd>  # Execute command
 ```
 
-See Appendix C for specific `<cmd>` options.
+See Appendix D for specific `<cmd>` options.
 
 ---
 
-## Appendix C: Skill → Script Mapping
+## Appendix D: Skill → Script Mapping
 
 > Entry point: `$SCRIPTS_PATH/textum/textum_cli.py`
 
