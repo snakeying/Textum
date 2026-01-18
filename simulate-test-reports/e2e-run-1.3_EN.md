@@ -3,7 +3,7 @@
 ## 1. Test Overview
 
 - **Test Date**: 2026-01-17
-- **Model Version**: Claude Opus 4.5 (claude-opus-4-5-20251101)
+- **Model Version**: Claude Opus 4.5 (claude-opus-4-5-20251101) / GPT-5.2-xhigh
 - **Test Objective**: Validate the end-to-end feasibility and gate effectiveness of Textum Skill-based workflow in "zero-programming user + medium complexity requirements (28 FP, 12 API)" scenario
 
 **Test Scope** (by Workflow.md stages):
@@ -90,7 +90,7 @@ Story 1 (auth-foundation) was selected for execution validation.
 
 ## 6. Conclusion
 
-The Textum Skill-based workflow completed the full end-to-end simulation from user requirements to Story execution under Claude Opus 4.5 model. All 19 steps in the workflow executed as expected, with 6 validation commands (PRD Check, Scaffold Check, Split Plan Check, Split Check1, Split Check2, Story Check) operating effectively as gates.
+The Textum Skill-based workflow completed the full end-to-end simulation from user requirements to Story execution under Claude Opus 4.5 / GPT-5.2-xhigh model. All 19 steps in the workflow executed as expected, with 6 validation commands (PRD Check, Scaffold Check, Split Plan Check, Split Check1, Split Check2, Story Check) operating effectively as gates.
 
 This test covered a medium-complexity scenario with 7 modules, 28 feature points, 12 APIs, 21 data tables, and 24 Stories. PRD Plan completed requirement convergence within 6 rounds of dialogue, and all validation steps passed on first attempt.
 

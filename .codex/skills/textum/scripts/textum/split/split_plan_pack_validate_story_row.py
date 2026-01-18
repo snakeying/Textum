@@ -84,7 +84,7 @@ def validate_story_row(
                     problem=f"duplicate slug: {slug}",
                     expected="unique slugs",
                     impact="file names collide",
-                    fix="make all stories[].slug unique",
+                    fix="rewrite all stories[].slug deterministically (e.g., join(lowercase modules,'-'); if duplicate add '-s<n>')",
                 )
             )
         seen_slugs.add(slug)

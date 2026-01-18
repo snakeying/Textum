@@ -17,6 +17,14 @@ def _diagnostics_path(*, docs_dir: Path, stage_id: str) -> Path:
     return docs_dir / "diagnostics" / f"{stage_id}.md"
 
 
+def _last_fail_replan_pack_path(*, docs_dir: Path, stage_id: str) -> Path:
+    return docs_dir / f"{stage_id}-replan-pack.last-fail.json"
+
+
+def _last_fail_diagnostics_path(*, docs_dir: Path, stage_id: str) -> Path:
+    return docs_dir / "diagnostics" / f"{stage_id}.last-fail.md"
+
+
 def _ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
@@ -66,6 +74,8 @@ def write_check_artifacts(
     docs_dir = workspace_root / "docs"
     replan_path = _replan_pack_path(docs_dir=docs_dir, stage_id=stage_id)
     diag_path = _diagnostics_path(docs_dir=docs_dir, stage_id=stage_id)
+    last_fail_replan_path = _last_fail_replan_pack_path(docs_dir=docs_dir, stage_id=stage_id)
+    last_fail_diag_path = _last_fail_diagnostics_path(docs_dir=docs_dir, stage_id=stage_id)
 
     warnings = warnings or []
     status = "FAIL" if failures else ("WARN" if warnings else "PASS")
@@ -122,6 +132,13 @@ def write_check_artifacts(
         wrote.append(replan_path.relative_to(workspace_root).as_posix())
     if _write_text_if_changed(diag_path, diagnostics):
         wrote.append(diag_path.relative_to(workspace_root).as_posix())
+
+    # Keep the most recent FAIL snapshot for debugging after a rerun turns the main artifacts into PASS/WARN.
+    if failures:
+        if _write_json_if_changed(last_fail_replan_path, replan):
+            wrote.append(last_fail_replan_path.relative_to(workspace_root).as_posix())
+        if _write_text_if_changed(last_fail_diag_path, diagnostics):
+            wrote.append(last_fail_diag_path.relative_to(workspace_root).as_posix())
     return status, wrote
 
 

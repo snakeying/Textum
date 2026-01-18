@@ -66,7 +66,7 @@ Then build stories with these rules:
 
 - No narration; write facts/decisions only.
 - Story numbering must be consecutive: `Story 1..N`.
-- `stories[].slug` must be unique kebab-case.
+- `stories[].slug` must be unique kebab-case. Suggested rule: `slug = join(lowercase story.modules, '-')`; if duplicate, suffix `-s<n>`.
 - `stories[].modules` must be PRD module ids only (`M-01`), not names.
 - If a PRD module is assigned to multiple stories, feature points under that module are distributed round-robin across those stories.
 - `api_assignments[]`:

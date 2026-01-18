@@ -6,7 +6,7 @@ from typing import Any
 from textum.prd.prd_pack_types import Failure
 from .split_check_index_io import count_lines_chars, read_story
 from .split_check_index_story import collect_story_index_row
-from .split_check_index_thresholds import evaluate_story_thresholds
+from .split_check_index_thresholds import evaluate_story_thresholds, suggest_fp_to_move_for_threshold
 from .split_pack_io import write_json
 from .split_story_paths import iter_story_files
 
@@ -108,6 +108,7 @@ def generate_split_check_index_pack(
         tbl_union |= tbl_set
         module_union |= modules_set
 
+        suggested_fp_to_move = suggest_fp_to_move_for_threshold(story_data=data)
         evaluate_story_thresholds(
             story_file=path,
             story_name=story_name,
@@ -116,6 +117,7 @@ def generate_split_check_index_pack(
             feature_points=feature_points,
             failures=failures,
             warnings=warnings,
+            suggested_fp_to_move=suggested_fp_to_move,
             strict=strict,
         )
 

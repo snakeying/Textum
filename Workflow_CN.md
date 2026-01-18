@@ -53,7 +53,7 @@ flowchart TB
 | **真源只认 JSON** | `docs/*.json` 是唯一事实来源；`docs/*.md` 只是生成视图（生成后不手改） |
 | **门禁/ID 交给脚本** | 模型只写"已确认事实"；`*.id` 允许为 `null`，连续性/唯一性/append-only 由脚本自动分配与校验 |
 | **低噪切片** | 后续 bundle 默认只读取切片索引 + 被索引引用的少量文件，不通读大文件 |
-| **低噪诊断产物** | 每个 `* check` 都写 `docs/*-replan-pack.json` + `docs/diagnostics/*.md`（覆盖为最新快照）；Plan 回跳优先读这些 artifacts，不翻长 log |
+| **低噪诊断产物** | 每个 `* check` 都写“当前快照”（`docs/*-replan-pack.json` + `docs/diagnostics/*.md`，rerun 会覆盖）。当 `FAIL` 时额外写“保留快照”：`docs/*-replan-pack.last-fail.json` + `docs/diagnostics/*.last-fail.md`。 |
 
 **运行约定**：
 - 所有命令在项目根目录运行
@@ -61,7 +61,7 @@ flowchart TB
 - 流程通过 `textum` skill 路由触发；脚本阶段（init/check/render/slice/...）会执行对应的 `uv run ... textum ...` 命令（你也可手动跑作调试）
 - 默认 `--fix=true`：部分 gate/render/slice 命令可能写回 `docs/*-pack.json`（仅 normalize/ID、补齐 `source/extracted` 等非业务决策字段）；仅在实际写回时才会输出 `wrote: ...`
 - 脚本命令 stdout 低噪：打印 `PASS|FAIL`、可选的一行式 `FAIL/WARN` items（`loc/problem/expected/impact/fix`）、可选 `wrote:`/`entry:`，最后一行 `next:`
-- `* check` 命令还会写 `docs/*-replan-pack.json` + `docs/diagnostics/*.md`（用于回跳修复的快照）
+- `* check` 命令还会写 `docs/*-replan-pack.json` + `docs/diagnostics/*.md`（当前快照；rerun 会覆盖）。当 `FAIL` 时还会写 `docs/*-replan-pack.last-fail.json` + `docs/diagnostics/*.last-fail.md`（保留）。
 - `DECISION` 分支已弃用为用户分支：默认以 WARN 形式记录（不阻塞）；需要严格门禁时用 `--strict` 升级 WARN 为 FAIL（目前主要用于 Split gate）
 - **WARN 默认不阻塞**：以推进流程为目标时可忽略 WARN（把它当作“优化建议”）；需要强制收敛时再用 `--strict`
 - 唯一用户交互点：`prd-plan`。
@@ -141,7 +141,7 @@ flowchart TB
 | Scaffold | `docs/scaffold-pack.json` | `docs/GLOBAL-CONTEXT.md` |
 | Split | `docs/split-plan-pack.json`、`docs/stories/story-###-<slug>.json` | `docs/split-check-index-pack.json`、`docs/split-replan-pack.json`、`docs/story-mermaid.md` |
 | Story | — | `docs/story-exec/story-###-<slug>/index.json` |
-| Checks | — | `docs/*-replan-pack.json`、`docs/diagnostics/*.md` |
+| Checks | — | `docs/*-replan-pack.json`、`docs/diagnostics/*.md`、`docs/*-replan-pack.last-fail.json`、`docs/diagnostics/*.last-fail.md` |
 
 ---
 

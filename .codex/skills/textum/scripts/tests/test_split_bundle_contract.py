@@ -145,4 +145,118 @@ class TestSplitBundleContract(unittest.TestCase):
             self.assertGreaterEqual(len(lines), 2, msg=out)
             self.assertEqual(lines[0], "PASS", msg=out)
             self.assertTrue(any(line.startswith("- [WARN]; loc=") for line in lines), msg=out)
+            self.assertTrue(any("suggested: FP-" in line for line in lines if line.startswith("- [WARN];")), msg=out)
             self.assertEqual(lines[-1], "next: Split Check2", msg=out)
+
+    def test_split_plan_check_duplicate_slug_error_message_actionable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            _write_json(workspace / "docs" / "prd-pack.json", _minimal_valid_prd_pack())
+            _write_json(workspace / "docs" / "scaffold-pack.json", _minimal_scaffold_pack_decisions_only())
+
+            split_plan = _minimal_split_plan_pack()
+            split_plan["stories"].append(
+                {
+                    "story": "Story 2",
+                    "n": 2,
+                    "slug": "core-flow",  # duplicate on purpose
+                    "modules": ["M-01"],
+                    "goal": "More core flow",
+                    "prereq_stories": ["Story 1"],
+                }
+            )
+            _write_json(workspace / "docs" / "split-plan-pack.json", split_plan)
+
+            code, out, err = _run_textum(["split", "plan", "check", "--workspace", str(workspace)])
+            self.assertEqual(code, 1, msg=err)
+            self.assertIn("duplicate slug", out)
+            self.assertIn("join(lowercase modules", out)
+            self.assertEqual(out.strip().split("\n")[-1], "next: Split Plan", msg=out)
+
+    def test_check_artifacts_preserve_last_fail_on_rerun(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            _write_json(workspace / "docs" / "prd-pack.json", _minimal_valid_prd_pack())
+            _write_json(workspace / "docs" / "scaffold-pack.json", _minimal_scaffold_pack_decisions_only())
+
+            split_plan = _minimal_split_plan_pack()
+            split_plan["stories"].append(
+                {
+                    "story": "Story 2",
+                    "n": 2,
+                    "slug": "core-flow",  # duplicate on purpose
+                    "modules": ["M-01"],
+                    "goal": "More core flow",
+                    "prereq_stories": ["Story 1"],
+                }
+            )
+            _write_json(workspace / "docs" / "split-plan-pack.json", split_plan)
+
+            code, out, err = _run_textum(["split", "plan", "check", "--workspace", str(workspace)])
+            self.assertEqual(code, 1, msg=err)
+
+            last_fail_replan = workspace / "docs" / "split-plan-check-replan-pack.last-fail.json"
+            last_fail_diag = workspace / "docs" / "diagnostics" / "split-plan-check.last-fail.md"
+            self.assertTrue(last_fail_replan.exists(), msg="missing last-fail replan pack")
+            self.assertTrue(last_fail_diag.exists(), msg="missing last-fail diagnostics")
+
+            last_fail = json.loads(last_fail_replan.read_text(encoding="utf-8"))
+            self.assertEqual(last_fail.get("status"), "FAIL", msg=last_fail)
+
+            # Fix slugs -> PASS, but last-fail files should remain as FAIL snapshot.
+            split_plan["stories"][1]["slug"] = "core-flow-s2"
+            _write_json(workspace / "docs" / "split-plan-pack.json", split_plan)
+            code, out, err = _run_textum(["split", "plan", "check", "--workspace", str(workspace)])
+            self.assertEqual(code, 0, msg=err)
+
+            current = json.loads((workspace / "docs" / "split-plan-check-replan-pack.json").read_text(encoding="utf-8"))
+            self.assertEqual(current.get("status"), "PASS", msg=current)
+            last_fail = json.loads(last_fail_replan.read_text(encoding="utf-8"))
+            self.assertEqual(last_fail.get("status"), "FAIL", msg=last_fail)
+
+    def test_split_check1_tbl_refs_warn_suggests_fp_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            _write_json(workspace / "docs" / "split-plan-pack.json", _minimal_split_plan_pack())
+
+            story = {
+                "schema_version": "story@v1",
+                "story": "Story 1",
+                "n": 1,
+                "slug": "core-flow",
+                "title": "Test story",
+                "goal": "Test story",
+                "modules": ["M-01"],
+                "prereq_stories": [],
+                "fp_ids": ["FP-001", "FP-002", "FP-003"],
+                "refs": {
+                    "prd_api": [],
+                    "prd_tbl": ["TBL-001", "TBL-002", "TBL-003", "TBL-004", "TBL-005", "TBL-006", "TBL-007"],
+                    "prd_br": [],
+                    "gc_br": [],
+                },
+                "artifacts": {"file": [], "cfg": [], "ext": []},
+                "details": {
+                    "feature_points": [
+                        {"id": "FP-001", "desc": "fp1", "landing": ["DB:t1", "DB:t2"]},
+                        {"id": "FP-002", "desc": "fp2", "landing": ["DB:t3", "DB:t4", "DB:t5"]},
+                        {"id": "FP-003", "desc": "fp3", "landing": ["DB:t6", "DB:t7"]},
+                    ],
+                    "api_endpoints": [],
+                    "tables_overview": [
+                        {"id": "TBL-001", "name": "t1", "purpose": "p", "fields_summary": None},
+                        {"id": "TBL-002", "name": "t2", "purpose": "p", "fields_summary": None},
+                        {"id": "TBL-003", "name": "t3", "purpose": "p", "fields_summary": None},
+                        {"id": "TBL-004", "name": "t4", "purpose": "p", "fields_summary": None},
+                        {"id": "TBL-005", "name": "t5", "purpose": "p", "fields_summary": None},
+                        {"id": "TBL-006", "name": "t6", "purpose": "p", "fields_summary": None},
+                        {"id": "TBL-007", "name": "t7", "purpose": "p", "fields_summary": None},
+                    ],
+                },
+            }
+            _write_json(workspace / "docs" / "stories" / "story-001-core-flow.json", story)
+
+            code, out, err = _run_textum(["split", "check1", "--workspace", str(workspace)])
+            self.assertEqual(code, 0, msg=err)
+            self.assertIn("tbl_refs=7 (7-10)", out)
+            self.assertIn("suggested: FP-002", out)

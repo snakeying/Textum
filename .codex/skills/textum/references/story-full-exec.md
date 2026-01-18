@@ -29,6 +29,7 @@ For each `n` in order:
 1) Execute the story using only its exec pack:
    - Do not read PRD/Scaffold/story sources outside the exec pack.
    - Do not invent new APIs/tables/fields not present in the exec pack.
+   - Write raw code into repo files; do not copy JSON-escaped strings into source (e.g., never leave `\\\"` in Python code).
    - If the exec pack is inconsistent/not executable: mark `Story <n>` as `FAIL` and continue.
 2) Run validation commands once each (no retries):
    - Run all runnable `gate:*` first, then `opt:*`.

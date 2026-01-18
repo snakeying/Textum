@@ -53,7 +53,7 @@ flowchart TB
 | **JSON as Single Source of Truth** | `docs/*.json` is the only source of truth; `docs/*.md` are generated views (do not manually edit after generation) |
 | **Gates/IDs Handled by Scripts** | Model only writes "confirmed facts"; `*.id` can be `null`, continuity/uniqueness/append-only enforced by scripts |
 | **Low-Noise Slicing** | Subsequent bundles only read slice index + files referenced by index, avoiding full file reads |
-| **Low-Noise Diagnostic Artifacts** | Each `* check` writes `docs/*-replan-pack.json` + `docs/diagnostics/*.md` (overwritten as latest snapshot); Plan loops prioritize reading these artifacts over long logs |
+| **Low-Noise Diagnostic Artifacts** | Each `* check` writes a current snapshot (`docs/*-replan-pack.json` + `docs/diagnostics/*.md`, overwritten on rerun). On `FAIL` it also writes a preserved snapshot: `docs/*-replan-pack.last-fail.json` + `docs/diagnostics/*.last-fail.md`. |
 
 **Execution Conventions**:
 - All commands run from project root
@@ -61,7 +61,7 @@ flowchart TB
 - Workflow triggered via `textum` skill routing; script stages run the corresponding `uv run ... textum ...` commands (you may also run them for debugging)
 - Default `--fix=true`: Some gate/render/slice commands may write back to `docs/*-pack.json` (only normalize/ID, populate `source/extracted` non-business fields); only outputs `wrote: ...` when actually writing
 - Script commands have low-noise stdout: prints `PASS|FAIL`, optional one-line `FAIL/WARN` items (`loc/problem/expected/impact/fix`), optional `wrote:`/`entry:`, then final line `next:`
-- `* check` commands also write `docs/*-replan-pack.json` + `docs/diagnostics/*.md` (snapshot for replan loops)
+- `* check` commands also write `docs/*-replan-pack.json` + `docs/diagnostics/*.md` (current snapshot; overwritten on rerun). On `FAIL` they also write `docs/*-replan-pack.last-fail.json` + `docs/diagnostics/*.last-fail.md` (preserved).
 - `DECISION` branches deprecated as user branches: default recorded as WARN (non-blocking); you can ignore WARN when the goal is to keep moving; use `--strict` to upgrade WARN to FAIL for strict gates (currently mainly for Split gate)
 - User interaction point: `prd-plan` only.
 - Plan phase: `prd-plan` may ask questions or write back; `scaffold-plan` and `split-plan` do not ask questions and instead write from confirmed artifacts (`docs/prd-pack.json.workflow_preferences`, `docs/prd-slices/*`) + deterministic heuristics, or emit blockers to return to `PRD Plan`.
@@ -140,7 +140,7 @@ Recommendation (reduce avoidable loops):
 | Scaffold | `docs/scaffold-pack.json` | `docs/GLOBAL-CONTEXT.md` |
 | Split | `docs/split-plan-pack.json`, `docs/stories/story-###-<slug>.json` | `docs/split-check-index-pack.json`, `docs/split-replan-pack.json`, `docs/story-mermaid.md` |
 | Story | — | `docs/story-exec/story-###-<slug>/index.json` |
-| Checks | — | `docs/*-replan-pack.json`, `docs/diagnostics/*.md` |
+| Checks | — | `docs/*-replan-pack.json`, `docs/diagnostics/*.md`, `docs/*-replan-pack.last-fail.json`, `docs/diagnostics/*.last-fail.md` |
 
 ---
 
