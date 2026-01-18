@@ -95,8 +95,9 @@ That's why Textum's philosophy is simple: **Less is more**
 **Simulation Test Reports**
 
 SKILL version test reports:
-- [1.0](./simulate-test-reports/e2e-run-20260116_EN.md)
-- [1.1](./simulate-test-reports/e2e-run-20260117_EN.md)
+- [1.0](./simulate-test-reports/e2e-run-1.0_EN.md)
+- [1.1](./simulate-test-reports/e2e-run-1.1_EN.md)
+- [1.3](./simulate-test-reports/e2e-run-1.3_EN.md)
 
 ⚠️ (Tests below are based on the old commands version using Claude Opus 4.5. Note: commands version is deprecated, for reference only)
 - [V2](./simulate-test-reports/v2simulate-test-report-opus_EN.md) | [V3](./simulate-test-reports/v3simulate-test-report-opus_EN.md) | [V4](./simulate-test-reports/v4simulate-test-report-opus_EN.md)

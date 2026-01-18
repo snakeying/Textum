@@ -91,8 +91,9 @@ AI 一次只实现一个 Story，不会被其他无关信息干扰。
 **模拟测试报告**
 
  SKILL 版本的测试报告
-- [1.0](./simulate-test-reports/e2e-run-20260116_CN.md)
-- [1.1](./simulate-test-reports/e2e-run-20260117_CN.md) 
+- [1.0](./simulate-test-reports/e2e-run-1.0_CN.md)
+- [1.1](./simulate-test-reports/e2e-run-1.1_CN.md) 
+- [1.3](./simulate-test-reports/e2e-run-1.3_CN.md) 
 
 ⚠️（以下测试基于旧 commands 版本，采用 Claude Opus 4.5。请注意：commands版本已经废弃，仅供参考）
 - [V2](./simulate-test-reports/v2simulate-test-report-opus_CN.md) | [V3](./simulate-test-reports/v3simulate-test-report-opus_CN.md) | [V4](./simulate-test-reports/v4simulate-test-report-opus_CN.md)

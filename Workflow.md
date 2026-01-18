@@ -167,20 +167,20 @@ See Appendix C for specific `<cmd>` options.
 
 | Skill | CLI Command | Main Implementation |
 |-------|-------------|---------------------|
-| `prd-plan` | `textum prd init` | `textum/prd_pack.py`, `textum/prd_pack_validate.py` |
-| `prd-check` | `textum prd check` | `textum/prd_pack_validate.py` |
-| `prd-render` | `textum prd render` | `textum/prd_render.py` |
-| `prd-slice` | `textum prd slice` | `textum/prd_slices.py`, `textum/prd_slices_generate.py` |
-| `scaffold-plan` | `textum scaffold init` | `textum/scaffold_pack.py` |
-| `scaffold-check` | `textum scaffold check` | `textum/scaffold_pack_validate.py` |
-| `scaffold` | `textum scaffold render` | `textum/scaffold_render.py` |
-| `split-plan` | `textum split plan init/check` | `textum/split_plan_pack.py`, `textum/split_plan_pack_validate.py` |
-| `split` | `textum split generate` | `textum/split_story_generate.py` |
-| `split-check1` | `textum split check1` | `textum/split_check_index_generate.py`, `textum/split_check_index_pack.py` |
-| `split-check2` | `textum split check2` | `textum/split_check_refs.py` |
-| `split-checkout` | `textum split checkout` | `textum/split_checkout.py` |
-| `story-check` | `textum story check --n <n>` | `textum/story_check.py`, `textum/story_check_utils.py`, `textum/story_check_validate_*.py` |
-| `story-pack` | `textum story pack --n <n>` | `textum/story_exec_pack.py`, `textum/story_exec_pack_validate.py` |
+| `prd-plan` | `textum prd init` | `textum/prd/prd_pack.py`, `textum/prd/prd_pack_validate.py` |
+| `prd-check` | `textum prd check` | `textum/prd/prd_pack_validate.py` |
+| `prd-render` | `textum prd render` | `textum/prd/prd_render.py` |
+| `prd-slice` | `textum prd slice` | `textum/prd/prd_slices.py`, `textum/prd/prd_slices_generate.py` |
+| `scaffold-plan` | `textum scaffold init` | `textum/scaffold/scaffold_pack.py` |
+| `scaffold-check` | `textum scaffold check` | `textum/scaffold/scaffold_pack_validate.py` |
+| `scaffold` | `textum scaffold render` | `textum/scaffold/scaffold_render.py` |
+| `split-plan` | `textum split plan init/check` | `textum/split/split_plan_pack.py`, `textum/split/split_plan_pack_validate.py` |
+| `split` | `textum split generate` | `textum/split/split_story_generate.py` |
+| `split-check1` | `textum split check1` | `textum/split/split_check_index_generate.py`, `textum/split/split_check_index_pack.py` |
+| `split-check2` | `textum split check2` | `textum/split/split_check_refs.py` |
+| `split-checkout` | `textum split checkout` | `textum/split/split_checkout.py` |
+| `story-check` | `textum story check --n <n>` | `textum/story/story_check.py`, `textum/story/story_check_utils.py`, `textum/story/story_check_validate_*.py` |
+| `story-pack` | `textum story pack --n <n>` | `textum/story/story_exec_pack.py`, `textum/story/story_exec_pack_validate.py` |
 | `story` / `story-full-exec` | — | prompt-only (no script) |
 
 Utility commands (non-skill; for atomic writes in Plan phase, avoiding full file reordering):
