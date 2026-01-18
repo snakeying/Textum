@@ -133,7 +133,7 @@ brew install uv  # macOS
 # 如果你用 Codex
 uv sync --project .codex/skills/textum/scripts
 
-# 如果你用 Claude Code（🚧 待实现）
+# 如果你用 Claude Code
 uv sync --project .claude/skills/textum/scripts
 ```
 

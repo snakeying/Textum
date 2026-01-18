@@ -138,7 +138,7 @@ In your project root:
 # For Codex users
 uv sync --project .codex/skills/textum/scripts
 
-# For Claude Code users (🚧 Coming soon)
+# For Claude Code users
 uv sync --project .claude/skills/textum/scripts
 ```
 
