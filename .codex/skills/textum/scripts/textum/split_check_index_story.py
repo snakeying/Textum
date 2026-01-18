@@ -6,6 +6,7 @@ from typing import Any
 from .prd_pack_types import API_ID_RE, Failure, FP_ID_RE, MODULE_ID_RE, TBL_ID_RE
 from .split_pack_types import STORY_NAME_RE, STORY_SCHEMA_VERSION
 from .split_story_paths import parse_story_filename, story_filename
+from .split_check_index_story_build import build_story_index_row_and_meta
 
 
 def collect_story_index_row(
@@ -163,39 +164,15 @@ def collect_story_index_row(
     api_set = {a for a in api_ids if isinstance(a, str) and API_ID_RE.match(a)}
     tbl_set = {t for t in tbl_ids if isinstance(t, str) and TBL_ID_RE.match(t)}
 
-    api_refs = len(api_set)
-    tbl_refs = len(tbl_set)
-    feature_points = len(fp_set)
-
-    index_row = {
-        "story": story_name,
-        "n": n,
-        "slug": slug,
-        "story_file": str(path.as_posix()),
-        "modules": sorted(modules_set),
-        "prereq_stories": sorted(prereq_set),
-        "metrics": {
-            "api_refs": api_refs,
-            "tbl_refs": tbl_refs,
-            "feature_points": feature_points,
-        },
-        "refs": {
-            "fp_ids": sorted(fp_set),
-            "prd_api_ids": sorted(api_set),
-            "prd_tbl_ids": sorted(tbl_set),
-            "prd_br_ids": [],
-            "gc_br_ids": [],
-        },
-    }
-    meta = {
-        "story_name": story_name,
-        "api_refs": api_refs,
-        "tbl_refs": tbl_refs,
-        "feature_points": feature_points,
-        "fp_set": fp_set,
-        "api_set": api_set,
-        "tbl_set": tbl_set,
-        "modules_set": modules_set,
-    }
-    return index_row, meta
+    return build_story_index_row_and_meta(
+        path=path,
+        story_name=story_name,
+        n=n,
+        slug=slug,
+        modules_set=modules_set,
+        prereq_set=prereq_set,
+        fp_set=fp_set,
+        api_set=api_set,
+        tbl_set=tbl_set,
+    )
 

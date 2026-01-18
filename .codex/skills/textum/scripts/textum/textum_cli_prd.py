@@ -1,144 +1,13 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 from typing import Any
 
-from .prd_pack import check_prd_pack, init_prd_pack, skill_asset_paths, workspace_paths
-from .prd_render import render_prd_markdown
-from .prd_slices import SliceBudget, generate_prd_slices
-from .textum_cli_artifacts import write_check_artifacts
-from .textum_cli_next import _next_stage_for_failures
+from .textum_cli_prd_check import _cmd_prd_check
+from .textum_cli_prd_init import _cmd_prd_init
+from .textum_cli_prd_render import _cmd_prd_render
+from .textum_cli_prd_slice import _cmd_prd_slice
 from .textum_cli_prd_patch import register_prd_patch_command
-from .textum_cli_support import _load_prd_pack_and_normalize, _print_check_items, _print_failures
-
-
-def _cmd_prd_init(args: argparse.Namespace) -> int:
-    workspace = Path(args.workspace).resolve()
-    paths = workspace_paths(workspace)
-    skill_paths = skill_asset_paths()
-    written, failures = init_prd_pack(skill_paths["prd_template"], paths["prd_pack"], force=args.force)
-    if failures:
-        _print_failures(failures)
-        print("next: PRD Plan")
-        return 1
-    print("PASS")
-    if written:
-        print(f"wrote: {paths['prd_pack'].relative_to(workspace).as_posix()}")
-    print("next: PRD Plan")
-    return 0
-
-
-def _cmd_prd_check(args: argparse.Namespace) -> int:
-    workspace = Path(args.workspace).resolve()
-    paths = workspace_paths(workspace)
-    prd_pack, updated, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
-    if failures:
-        next_stage = _next_stage_for_failures(failures, fallback="PRD Plan")
-        _, wrote = write_check_artifacts(
-            workspace_root=workspace,
-            stage_id="prd-check",
-            command=f"uv run --project .codex/skills/textum/scripts textum prd check --workspace {workspace.as_posix()}",
-            next_stage=next_stage,
-            failures=failures,
-        )
-        print("FAIL")
-        _print_check_items(failures, label="FAIL")
-        for rel in wrote:
-            print(f"wrote: {rel}")
-        print(f"next: {next_stage}")
-        return 1
-    assert prd_pack is not None
-
-    ready, check_failures = check_prd_pack(prd_pack)
-    if not ready:
-        next_stage = _next_stage_for_failures(check_failures, fallback="PRD Plan")
-        _, wrote = write_check_artifacts(
-            workspace_root=workspace,
-            stage_id="prd-check",
-            command=f"uv run --project .codex/skills/textum/scripts textum prd check --workspace {workspace.as_posix()}",
-            next_stage=next_stage,
-            failures=check_failures,
-        )
-        print("FAIL")
-        _print_check_items(check_failures, label="FAIL")
-        for rel in wrote:
-            print(f"wrote: {rel}")
-        print(f"next: {next_stage}")
-        return 1
-
-    print("PASS")
-    if updated and args.fix:
-        print(f"wrote: {paths['prd_pack'].relative_to(workspace).as_posix()}")
-    _, wrote = write_check_artifacts(
-        workspace_root=workspace,
-        stage_id="prd-check",
-        command=f"uv run --project .codex/skills/textum/scripts textum prd check --workspace {workspace.as_posix()}",
-        next_stage="PRD Render",
-        failures=[],
-    )
-    for rel in wrote:
-        print(f"wrote: {rel}")
-    print("next: PRD Render")
-    return 0
-
-
-def _cmd_prd_render(args: argparse.Namespace) -> int:
-    workspace = Path(args.workspace).resolve()
-    paths = workspace_paths(workspace)
-    prd_pack, _, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
-    if failures:
-        next_stage = _next_stage_for_failures(failures, fallback="PRD Plan")
-        _print_failures(failures)
-        print(f"next: {next_stage}")
-        return 1
-    assert prd_pack is not None
-
-    markdown = render_prd_markdown(prd_pack, lang=args.lang)
-    paths["docs_dir"].mkdir(parents=True, exist_ok=True)
-    paths["prd_render"].write_text(markdown, encoding="utf-8")
-    print("PASS")
-    print(f"wrote: {paths['prd_render'].relative_to(workspace).as_posix()}")
-    print("next: PRD Slice")
-    return 0
-
-
-def _cmd_prd_slice(args: argparse.Namespace) -> int:
-    workspace = Path(args.workspace).resolve()
-    paths = workspace_paths(workspace)
-    prd_pack, _, failures = _load_prd_pack_and_normalize(paths, fix=args.fix)
-    if failures:
-        next_stage = _next_stage_for_failures(failures, fallback="PRD Plan")
-        _print_failures(failures)
-        print(f"next: {next_stage}")
-        return 1
-    assert prd_pack is not None
-
-    ready, check_failures = check_prd_pack(prd_pack)
-    if not ready:
-        next_stage = _next_stage_for_failures(check_failures, fallback="PRD Plan")
-        _print_failures(check_failures)
-        print(f"next: {next_stage}")
-        return 1
-
-    budget = SliceBudget(max_lines=args.max_lines, max_chars=args.max_chars)
-    written, failures = generate_prd_slices(
-        prd_pack_path=paths["prd_pack"],
-        prd_pack=prd_pack,
-        out_dir=paths["prd_slices_dir"],
-        budget=budget,
-        clean=args.clean,
-    )
-    if failures:
-        next_stage = _next_stage_for_failures(failures, fallback="PRD Plan")
-        _print_failures(failures)
-        print(f"next: {next_stage}")
-        return 1
-
-    print("PASS")
-    print(f"wrote: {paths['prd_slices_dir'].relative_to(workspace).as_posix()}/")
-    print("next: Scaffold Plan")
-    return 0
 
 
 def register_prd_commands(subparsers: Any) -> None:
@@ -195,5 +64,4 @@ def register_prd_commands(subparsers: Any) -> None:
     prd_slice.set_defaults(func=_cmd_prd_slice)
 
     register_prd_patch_command(prd_subparsers)
-
 

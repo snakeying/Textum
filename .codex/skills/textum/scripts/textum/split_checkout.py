@@ -1,49 +1,12 @@
 from __future__ import annotations
-
-import json
 from pathlib import Path
 from typing import Any
 
 from .prd_pack_types import Failure
+from .split_checkout_io import read_story_json
+from .split_checkout_graph import validate_and_write_story_dependency_graph
 from .split_pack_types import STORY_NAME_RE, STORY_SCHEMA_VERSION
 from .split_story_paths import iter_story_files, parse_story_filename
-
-
-def _read_story_json(path: Path) -> tuple[dict[str, Any] | None, str | None, list[Failure]]:
-    if not path.exists():
-        return None, None, [
-            Failure(
-                loc=path.as_posix(),
-                problem="file not found",
-                expected="file exists",
-                impact="cannot build dependency graph",
-                fix="generate docs/stories/story-###-<slug>.json",
-            )
-        ]
-    text = path.read_text(encoding="utf-8")
-    try:
-        obj = json.loads(text)
-    except json.JSONDecodeError as error:
-        return None, None, [
-            Failure(
-                loc=path.as_posix(),
-                problem=f"invalid JSON: {error.msg} at line {error.lineno} col {error.colno}",
-                expected="valid JSON document",
-                impact="cannot build dependency graph",
-                fix=f"fix JSON syntax in {path.as_posix()}",
-            )
-        ]
-    if not isinstance(obj, dict):
-        return None, None, [
-            Failure(
-                loc=path.as_posix(),
-                problem=f"root must be object, got {type(obj).__name__}",
-                expected="JSON object at root",
-                impact="cannot build dependency graph",
-                fix=f"rewrite {path.as_posix()} root as an object",
-            )
-        ]
-    return obj, text, []
 
 
 def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list[Failure]:
@@ -68,7 +31,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
         if parsed is None:
             continue
         file_n, file_slug = parsed
-        story, _, read_failures = _read_story_json(path)
+        story, _, read_failures = read_story_json(path)
         if read_failures:
             failures += read_failures
             continue
@@ -196,52 +159,7 @@ def write_story_dependency_mermaid(*, stories_dir: Path, out_path: Path) -> list
         return failures
 
     all_numbers = sorted(story_by_n.keys())
-    all_set = set(all_numbers)
-
-    edges: list[tuple[int, int]] = []
-    for n in all_numbers:
-        prereqs = prereq_by_n.get(n, [])
-        for prereq_n in prereqs:
-            if prereq_n not in all_set:
-                failures.append(
-                    Failure(
-                        loc=f"docs/stories/story-{n:03d}-*.json:$.prereq_stories",
-                        problem=f"missing prereq story: Story {prereq_n}",
-                        expected="every prereq story exists as a story file",
-                        impact="dependency graph invalid",
-                        fix="regenerate docs/stories/",
-                    )
-                )
-                continue
-            if prereq_n >= n:
-                failures.append(
-                    Failure(
-                        loc=f"docs/stories/story-{n:03d}-*.json:$.prereq_stories",
-                        problem=f"prereq story must be < {n}, got Story {prereq_n}",
-                        expected="only earlier stories",
-                        impact="dependency graph invalid",
-                        fix="regenerate docs/stories/",
-                    )
-                )
-                continue
-            edges.append((prereq_n, n))
-
-    if failures:
-        return failures
-
-    edges.sort(key=lambda e: (e[0], e[1]))
-
-    lines: list[str] = []
-    lines.append("# Story 依赖图")
-    lines.append("")
-    lines.append("```mermaid")
-    lines.append("flowchart TD")
-    for n in all_numbers:
-        lines.append(f'Story_{n}["Story {n}"]')
-    for prereq_n, n in edges:
-        lines.append(f"Story_{prereq_n} --> Story_{n}")
-    lines.append("```")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return []
+    return validate_and_write_story_dependency_graph(
+        story_numbers=all_numbers, prereq_by_n=prereq_by_n, out_path=out_path
+    )
 

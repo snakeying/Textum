@@ -1,0 +1,14 @@
+{
+  "pythonVersion": "3.11",
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": ["."]
+    }
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/.venv",
+    "**/*.egg-info"
+  ]
+}

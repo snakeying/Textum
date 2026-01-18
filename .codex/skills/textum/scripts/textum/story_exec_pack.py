@@ -15,6 +15,7 @@ from .story_exec_pack_write import (
     write_story_exec_context_parts,
     write_story_exec_index,
 )
+from .story_exec_pack_snapshot import write_story_snapshot_and_check_budget
 from .story_exec_types import (
     STORY_EXEC_CONTEXT_BUSINESS_RULES_FILENAME,
     STORY_EXEC_CONTEXT_BUSINESS_RULES_SCHEMA_VERSION,
@@ -42,24 +43,14 @@ def write_story_exec_pack(
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    story_snapshot_path = out_dir / STORY_EXEC_STORY_SNAPSHOT_FILENAME
-    story_snapshot_path.write_text(story_text, encoding="utf-8")
-    story_lines = story_text.count("\n")
-    story_chars = len(story_text)
-    if story_lines > budget.max_lines or story_chars > budget.max_chars:
-        return (
-            None,
-            [],
-            [
-                Failure(
-                    loc=rel_posix(story_snapshot_path, workspace_root),
-                    problem=f"story snapshot exceeds budget: {story_lines} lines, {story_chars} chars",
-                    expected=f"<= {budget.max_lines} lines and <= {budget.max_chars} chars",
-                    impact="cannot produce low-noise story exec pack",
-                    fix="split this story into smaller stories in docs/split-plan-pack.json",
-                )
-            ],
-        )
+    story_snapshot_path, story_lines, story_chars, snapshot_failures = write_story_snapshot_and_check_budget(
+        workspace_root=workspace_root,
+        out_dir=out_dir,
+        story_text=story_text,
+        budget=budget,
+    )
+    if snapshot_failures:
+        return None, [], snapshot_failures
 
     tables, business_rules, context_failures = collect_story_prd_context(
         story=story, prd_pack=prd_pack, story_source_path=story_source_path, workspace_root=workspace_root

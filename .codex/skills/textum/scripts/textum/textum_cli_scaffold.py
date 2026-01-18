@@ -7,13 +7,12 @@ from typing import Any
 from .prd_pack import skill_asset_paths, workspace_paths
 from .scaffold_pack import init_scaffold_pack
 from .scaffold_render import render_global_context_markdown
-from .textum_cli_artifacts import write_check_artifacts
-from .textum_cli_next import _next_stage_for_failures
+from .textum_cli_emit import emit_stage_result
+from .textum_cli_result import StageResult
+from .textum_cli_runner import check_stage_result, simple_stage_result
 from .textum_cli_support import (
     _load_prd_pack_and_ensure_ready,
     _load_scaffold_pack_and_ensure_ready,
-    _print_check_items,
-    _print_failures,
 )
 
 
@@ -22,15 +21,17 @@ def _cmd_scaffold_init(args: argparse.Namespace) -> int:
     paths = workspace_paths(workspace)
     skill_paths = skill_asset_paths()
     written, failures = init_scaffold_pack(skill_paths["scaffold_template"], paths["scaffold_pack"], force=args.force)
-    if failures:
-        _print_failures(failures)
-        print("next: Scaffold Plan")
-        return 1
-    print("PASS")
-    if written:
-        print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
-    print("next: Scaffold Plan")
-    return 0
+    result = StageResult(
+        status="FAIL" if failures else "PASS",
+        failures=failures,
+        warnings=[],
+        wrote=[paths["scaffold_pack"].relative_to(workspace).as_posix()] if written else [],
+        entry=None,
+        next_stage="Scaffold Plan",
+        exit_code=1 if failures else 0,
+    )
+    emit_stage_result(result)
+    return result.exit_code
 
 
 def _cmd_scaffold_check(args: argparse.Namespace) -> int:
@@ -39,56 +40,49 @@ def _cmd_scaffold_check(args: argparse.Namespace) -> int:
 
     prd_pack, prd_failures = _load_prd_pack_and_ensure_ready(paths)
     if prd_failures:
-        next_stage = _next_stage_for_failures(prd_failures, fallback="Scaffold Plan")
-        _, wrote = write_check_artifacts(
+        result = check_stage_result(
             workspace_root=workspace,
             stage_id="scaffold-check",
             command=f"uv run --project .codex/skills/textum/scripts textum scaffold check --workspace {workspace.as_posix()}",
-            next_stage=next_stage,
             failures=prd_failures,
+            warnings=[],
+            next_on_pass="Scaffold Render",
+            fallback_on_fail="Scaffold Plan",
         )
-        print("FAIL")
-        _print_check_items(prd_failures, label="FAIL")
-        for rel in wrote:
-            print(f"wrote: {rel}")
-        print(f"next: {next_stage}")
-        return 1
+        emit_stage_result(result)
+        return result.exit_code
     assert prd_pack is not None
 
     scaffold_pack, updated, scaffold_failures = _load_scaffold_pack_and_ensure_ready(
         paths, prd_pack=prd_pack, fix=args.fix
     )
     if scaffold_failures:
-        next_stage = _next_stage_for_failures(scaffold_failures, fallback="Scaffold Plan")
-        _, wrote = write_check_artifacts(
+        result = check_stage_result(
             workspace_root=workspace,
             stage_id="scaffold-check",
             command=f"uv run --project .codex/skills/textum/scripts textum scaffold check --workspace {workspace.as_posix()}",
-            next_stage=next_stage,
             failures=scaffold_failures,
+            warnings=[],
+            next_on_pass="Scaffold Render",
+            fallback_on_fail="Scaffold Plan",
         )
-        print("FAIL")
-        _print_check_items(scaffold_failures, label="FAIL")
-        for rel in wrote:
-            print(f"wrote: {rel}")
-        print(f"next: {next_stage}")
-        return 1
+        emit_stage_result(result)
+        return result.exit_code
     assert scaffold_pack is not None
 
-    print("PASS")
-    if updated and args.fix:
-        print(f"wrote: {paths['scaffold_pack'].relative_to(workspace).as_posix()}")
-    _, wrote = write_check_artifacts(
+    wrote = [paths["scaffold_pack"].relative_to(workspace).as_posix()] if (updated and args.fix) else []
+    result = check_stage_result(
         workspace_root=workspace,
         stage_id="scaffold-check",
         command=f"uv run --project .codex/skills/textum/scripts textum scaffold check --workspace {workspace.as_posix()}",
-        next_stage="Scaffold Render",
         failures=[],
+        warnings=[],
+        next_on_pass="Scaffold Render",
+        fallback_on_fail="Scaffold Plan",
+        wrote=wrote,
     )
-    for rel in wrote:
-        print(f"wrote: {rel}")
-    print("next: Scaffold Render")
-    return 0
+    emit_stage_result(result)
+    return result.exit_code
 
 
 def _cmd_scaffold_render(args: argparse.Namespace) -> int:
@@ -97,29 +91,47 @@ def _cmd_scaffold_render(args: argparse.Namespace) -> int:
 
     prd_pack, prd_failures = _load_prd_pack_and_ensure_ready(paths)
     if prd_failures:
-        next_stage = _next_stage_for_failures(prd_failures, fallback="Scaffold Plan")
-        _print_failures(prd_failures)
-        print(f"next: {next_stage}")
-        return 1
+        result = simple_stage_result(
+            failures=prd_failures,
+            warnings=[],
+            wrote=[],
+            entry=None,
+            next_on_pass="Split Plan",
+            fallback_on_fail="Scaffold Plan",
+        )
+        emit_stage_result(result)
+        return result.exit_code
     assert prd_pack is not None
 
     scaffold_pack, _, scaffold_failures = _load_scaffold_pack_and_ensure_ready(
         paths, prd_pack=prd_pack, fix=args.fix
     )
     if scaffold_failures:
-        next_stage = _next_stage_for_failures(scaffold_failures, fallback="Scaffold Plan")
-        _print_failures(scaffold_failures)
-        print(f"next: {next_stage}")
-        return 1
+        result = simple_stage_result(
+            failures=scaffold_failures,
+            warnings=[],
+            wrote=[],
+            entry=None,
+            next_on_pass="Split Plan",
+            fallback_on_fail="Scaffold Plan",
+        )
+        emit_stage_result(result)
+        return result.exit_code
     assert scaffold_pack is not None
 
     markdown = render_global_context_markdown(scaffold_pack)
     paths["docs_dir"].mkdir(parents=True, exist_ok=True)
     paths["global_context"].write_text(markdown, encoding="utf-8")
-    print("PASS")
-    print(f"wrote: {paths['global_context'].relative_to(workspace).as_posix()}")
-    print("next: Split Plan")
-    return 0
+    result = simple_stage_result(
+        failures=[],
+        warnings=[],
+        wrote=[paths["global_context"].relative_to(workspace).as_posix()],
+        entry=None,
+        next_on_pass="Split Plan",
+        fallback_on_fail="Scaffold Plan",
+    )
+    emit_stage_result(result)
+    return result.exit_code
 
 
 def register_scaffold_commands(subparsers: Any) -> None:
