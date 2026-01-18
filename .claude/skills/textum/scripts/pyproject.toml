@@ -1,0 +1,17 @@
+[project]
+name = "textum"
+version = "1.5.0"
+description = "Textum workflow"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+textum = "textum.textum_cli:main"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["textum*"]

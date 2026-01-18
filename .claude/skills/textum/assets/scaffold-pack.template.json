@@ -1,0 +1,28 @@
+{
+  "schema_version": "scaffold-pack@v1",
+  "source": null,
+  "decisions": {
+    "tech_stack": {
+      "backend": "<<FILL>>",
+      "frontend": "<<FILL>>",
+      "database": "<<FILL>>",
+      "other": []
+    },
+    "repo_structure": [
+      {
+        "path": "<<FILL>>",
+        "purpose": "<<FILL>>"
+      }
+    ],
+    "validation_commands": [
+      {
+        "type": "N/A",
+        "command": "N/A",
+        "note": "N/A"
+      }
+    ],
+    "coding_conventions": null
+  },
+  "extracted": null
+}
+

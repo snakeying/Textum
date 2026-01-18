@@ -1,0 +1,55 @@
+{
+  "schema_version": "prd-pack@v1",
+  "project": {
+    "name": "<<FILL>>",
+    "one_liner": "<<FILL>>"
+  },
+  "goals": [],
+  "non_goals": [],
+  "scope": {
+    "in": [],
+    "out": []
+  },
+  "assumptions_constraints": [],
+  "roles": [],
+  "permission_matrix": {
+    "legend": "A=Allow, D=Deny, O=Own",
+    "operations": []
+  },
+  "modules": [],
+  "ui_routes": [],
+  "business_rules": [],
+  "states_enums": {
+    "enums": [],
+    "state_machines": [],
+    "naming_conventions": null
+  },
+  "data_model": {
+    "tables": [],
+    "relations": null
+  },
+  "api": {
+    "has_api": null,
+    "base_url": null,
+    "auth": null,
+    "pagination_sort_filter": null,
+    "response_wrapper": null,
+    "extra_error_codes": [],
+    "endpoints": []
+  },
+  "nfr": [],
+  "workflow_preferences": {
+    "schema_version": "workflow-preferences@v1",
+    "confirmed": false,
+    "scaffold_plan": {
+      "tech_stack": {
+        "backend": null,
+        "frontend": null,
+        "database": null,
+        "other": []
+      },
+      "repo_structure": [],
+      "validation_commands": []
+    }
+  }
+}

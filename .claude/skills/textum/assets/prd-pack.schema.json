@@ -1,0 +1,486 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Textum PRD Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project",
+    "goals",
+    "non_goals",
+    "scope",
+    "assumptions_constraints",
+    "roles",
+    "permission_matrix",
+    "modules",
+    "ui_routes",
+    "business_rules",
+    "states_enums",
+    "data_model",
+    "api",
+    "nfr"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "prd-pack@v1"
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "one_liner"],
+      "properties": {
+        "name": { "type": "string" },
+        "one_liner": { "type": "string" }
+      }
+    },
+    "goals": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "non_goals": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in", "out"],
+      "properties": {
+        "in": { "type": "array", "items": { "type": "string" } },
+        "out": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "assumptions_constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["assumption_or_constraint", "impact"],
+        "properties": {
+          "assumption_or_constraint": { "type": "string" },
+          "impact": { "type": "string" }
+        }
+      }
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "description", "typical_scenarios"],
+        "properties": {
+          "role": { "type": "string" },
+          "description": { "type": "string" },
+          "typical_scenarios": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "permission_matrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legend", "operations"],
+      "properties": {
+        "legend": { "type": "string" },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["op", "per_role", "note"],
+            "properties": {
+              "op": { "type": "string" },
+              "per_role": {
+                "type": "object",
+                "additionalProperties": { "enum": ["A", "D", "O"] }
+              },
+              "note": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "modules": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/module" }
+    },
+    "ui_routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["route", "description", "module_id"],
+        "properties": {
+          "route": { "type": "string" },
+          "description": { "type": "string" },
+          "module_id": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "business_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "desc", "scope", "exception_or_note"],
+        "properties": {
+          "id": { "type": ["string", "null"], "pattern": "^BR-\\d{3}$" },
+          "desc": { "type": "string" },
+          "scope": { "type": "string" },
+          "exception_or_note": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "states_enums": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enums", "state_machines", "naming_conventions"],
+      "properties": {
+        "enums": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["field", "values", "default", "note"],
+            "properties": {
+              "field": { "type": "string" },
+              "values": { "type": "array", "items": { "type": "string" } },
+              "default": { "type": ["string", "null"] },
+              "note": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "state_machines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["entity", "transitions"],
+            "properties": {
+              "entity": { "type": "string" },
+              "transitions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state",
+                    "event",
+                    "next_state",
+                    "permission_or_condition",
+                    "note"
+                  ],
+                  "properties": {
+                    "state": { "type": "string" },
+                    "event": { "type": "string" },
+                    "next_state": { "type": "string" },
+                    "permission_or_condition": { "type": ["string", "null"] },
+                    "note": { "type": ["string", "null"] }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "naming_conventions": { "type": ["string", "null"] }
+      }
+    },
+    "data_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tables", "relations"],
+      "properties": {
+        "tables": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/table" }
+        },
+        "relations": { "type": ["string", "null"] }
+      }
+    },
+    "api": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "has_api",
+        "base_url",
+        "auth",
+        "pagination_sort_filter",
+        "response_wrapper",
+        "extra_error_codes",
+        "endpoints"
+      ],
+      "properties": {
+        "has_api": { "type": ["boolean", "null"] },
+        "base_url": { "type": ["string", "null"] },
+        "auth": { "type": ["string", "null"] },
+        "pagination_sort_filter": { "type": ["string", "null"] },
+        "response_wrapper": { "type": ["string", "null"] },
+        "extra_error_codes": { "type": "array", "items": { "type": "string" } },
+        "endpoints": { "type": "array", "items": { "$ref": "#/$defs/apiEndpoint" } }
+      }
+    },
+    "nfr": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["category", "requirement", "acceptance"],
+        "properties": {
+          "category": { "type": "string" },
+          "requirement": { "type": "string" },
+          "acceptance": { "type": "string" }
+        }
+      }
+    },
+    "workflow_preferences": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["schema_version", "confirmed", "scaffold_plan"],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "workflow-preferences@v1"
+        },
+        "confirmed": { "type": "boolean" },
+        "scaffold_plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tech_stack", "repo_structure", "validation_commands"],
+          "properties": {
+            "tech_stack": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["backend", "frontend", "database", "other"],
+              "properties": {
+                "backend": { "type": ["string", "null"] },
+                "frontend": { "type": ["string", "null"] },
+                "database": { "type": ["string", "null"] },
+                "other": { "type": "array", "items": { "type": "string" } }
+              }
+            },
+            "repo_structure": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["path", "purpose"],
+                "properties": {
+                  "path": { "type": "string" },
+                  "purpose": { "type": "string" }
+                }
+              }
+            },
+            "validation_commands": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["type", "command", "note"],
+                "properties": {
+                  "type": { "type": "string" },
+                  "command": { "type": "string" },
+                  "note": { "type": ["string", "null"] }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "summary",
+        "priority",
+        "dependencies",
+        "feature_points",
+        "scenarios"
+      ],
+      "properties": {
+        "id": { "type": ["string", "null"], "pattern": "^M-\\d{2}$" },
+        "name": { "type": "string" },
+        "summary": { "type": "string" },
+        "priority": { "type": "string" },
+        "dependencies": { "type": "array", "items": { "type": "string" } },
+        "feature_points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "desc", "landing"],
+            "properties": {
+              "id": { "type": ["string", "null"], "pattern": "^FP-\\d{3}$" },
+              "desc": { "type": "string" },
+              "landing": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "actor",
+              "given",
+              "when",
+              "then",
+              "fail_or_edge",
+              "note"
+            ],
+            "properties": {
+              "id": { "type": ["string", "null"], "pattern": "^SC-\\d{2}$" },
+              "actor": { "type": "string" },
+              "given": { "type": "string" },
+              "when": { "type": "string" },
+              "then": { "type": "string" },
+              "fail_or_edge": { "type": ["string", "null"] },
+              "note": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "purpose",
+        "fields_summary",
+        "columns",
+        "constraints",
+        "indexes"
+      ],
+      "properties": {
+        "id": { "type": ["string", "null"], "pattern": "^TBL-\\d{3}$" },
+        "name": { "type": "string" },
+        "purpose": { "type": "string" },
+        "fields_summary": { "type": ["string", "null"] },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "type",
+              "nullable",
+              "default",
+              "constraints_or_indexes",
+              "note"
+            ],
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "nullable": { "type": "boolean" },
+              "default": { "type": ["string", "null"] },
+              "constraints_or_indexes": { "type": ["string", "null"] },
+              "note": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "constraint", "note"],
+            "properties": {
+              "id": { "type": ["string", "null"] },
+              "constraint": { "type": "string" },
+              "note": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "indexes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "index", "purpose"],
+            "properties": {
+              "id": { "type": ["string", "null"] },
+              "index": { "type": "string" },
+              "purpose": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "apiEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "method",
+        "path",
+        "module_id",
+        "permission",
+        "summary",
+        "request_fields",
+        "response_fields",
+        "failure_cases"
+      ],
+      "properties": {
+        "id": { "type": ["string", "null"], "pattern": "^API-\\d{3}$" },
+        "name": { "type": "string" },
+        "method": { "type": "string" },
+        "path": { "type": "string" },
+        "module_id": { "type": ["string", "null"] },
+        "permission": { "type": "string" },
+        "summary": { "type": ["string", "null"] },
+        "request_fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["location", "field", "type", "required", "constraints", "note"],
+            "properties": {
+              "location": { "type": "string" },
+              "field": { "type": "string" },
+              "type": { "type": "string" },
+              "required": { "type": "boolean" },
+              "constraints": { "type": ["string", "null"] },
+              "note": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "response_fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["field", "type", "note"],
+            "properties": {
+              "field": { "type": "string" },
+              "type": { "type": "string" },
+              "note": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "failure_cases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["status_code", "condition", "user_message"],
+            "properties": {
+              "status_code": { "type": "string" },
+              "condition": { "type": "string" },
+              "user_message": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}
