@@ -3,9 +3,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .prd_pack import read_prd_pack, workspace_paths
-from .scaffold_pack import read_scaffold_pack
-from .split_plan_pack import (
+from textum.prd.prd_pack import read_prd_pack, workspace_paths
+from textum.scaffold.scaffold_pack import read_scaffold_pack
+from textum.split.split_plan_pack import (
     check_split_plan_pack,
     normalize_split_plan_pack,
     read_split_plan_pack,
@@ -168,4 +168,3 @@ def _cmd_split_plan_check(args: argparse.Namespace) -> int:
     )
     emit_stage_result(result)
     return result.exit_code
-

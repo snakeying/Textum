@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
-from .prd_pack_types import Failure, PLACEHOLDER_SENTINEL
+from textum.prd.prd_pack_types import Failure, PLACEHOLDER_SENTINEL
 
 
 def iter_json_paths(value: Any, path: str = "$") -> Iterable[tuple[str, Any]]:

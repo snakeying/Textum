@@ -3,11 +3,11 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .split_check_index_pack import build_split_replan_pack, generate_split_check_index_pack
-from .split_plan_pack import read_split_plan_pack
+from textum.split.split_check_index_pack import build_split_replan_pack, generate_split_check_index_pack
+from textum.split.split_plan_pack import read_split_plan_pack
 from .textum_cli_emit import emit_stage_result
 from .textum_cli_runner import check_stage_result
-from .prd_pack import workspace_paths
+from textum.prd.prd_pack import workspace_paths
 
 
 def _cmd_split_check1(args: argparse.Namespace) -> int:
@@ -81,4 +81,3 @@ def _cmd_split_check1(args: argparse.Namespace) -> int:
     )
     emit_stage_result(result)
     return result.exit_code
-

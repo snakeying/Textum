@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure, MODULE_ID_RE
+from textum.prd.prd_pack_types import Failure, MODULE_ID_RE
 from .split_pack_types import KEBAB_SLUG_RE, STORY_NAME_RE
 from .split_plan_pack_validate_utils import get_dict, get_list, require_str
 
@@ -186,4 +186,3 @@ def validate_story_row(
                             fix=f"remove {loc}.prereq_stories[{pi}]",
                         )
                     )
-

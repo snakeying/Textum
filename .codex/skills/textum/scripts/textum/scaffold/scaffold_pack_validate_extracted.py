@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure, MODULE_ID_RE
+from textum.prd.prd_pack_types import Failure, MODULE_ID_RE
 
 
 def validate_extracted(scaffold_pack: dict[str, Any], failures: list[Failure]) -> None:

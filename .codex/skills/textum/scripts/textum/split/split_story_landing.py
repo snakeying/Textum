@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure, TBL_ID_RE
+from textum.prd.prd_pack_types import Failure, TBL_ID_RE
 
 
 def parse_landing_tokens(

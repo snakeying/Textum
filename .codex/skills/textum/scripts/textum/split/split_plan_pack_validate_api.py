@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import API_ID_RE, Failure
+from textum.prd.prd_pack_types import API_ID_RE, Failure
 from .split_plan_pack_validate_utils import get_dict, get_list, require_str
 
 

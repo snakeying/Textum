@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure, MODULE_ID_RE
+from textum.prd.prd_pack_types import Failure, MODULE_ID_RE
 from .split_pack_placeholders import collect_placeholders
 from .split_plan_pack_normalize import normalize_split_plan_pack
 from .split_plan_pack_validate_api import validate_api_assignments

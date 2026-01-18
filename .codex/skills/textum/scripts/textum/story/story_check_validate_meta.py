@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import FP_ID_RE, MODULE_ID_RE, Failure
-from .split_pack_types import KEBAB_SLUG_RE, STORY_NAME_RE, STORY_SCHEMA_VERSION
+from textum.prd.prd_pack_types import FP_ID_RE, MODULE_ID_RE, Failure
+from textum.split.split_pack_types import KEBAB_SLUG_RE, STORY_NAME_RE, STORY_SCHEMA_VERSION
 from .story_check_utils import check_id_list, require_list, require_non_empty_str
 
 

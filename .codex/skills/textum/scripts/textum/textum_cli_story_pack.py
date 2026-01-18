@@ -3,13 +3,13 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .prd_pack import read_prd_pack, workspace_paths
-from .prd_slices_types import SliceBudget
-from .scaffold_pack import check_scaffold_pack, read_scaffold_pack
-from .story_check import check_story_source
-from .story_exec_pack import write_story_exec_pack
-from .story_exec_pack_validate import check_story_exec_pack
-from .story_exec_paths import story_exec_dir
+from textum.prd.prd_pack import read_prd_pack, workspace_paths
+from textum.prd.prd_slices_types import SliceBudget
+from textum.scaffold.scaffold_pack import check_scaffold_pack, read_scaffold_pack
+from textum.story.story_check import check_story_source
+from textum.story.story_exec_pack import write_story_exec_pack
+from textum.story.story_exec_pack_validate import check_story_exec_pack
+from textum.story.story_exec_paths import story_exec_dir
 from .textum_cli_emit import emit_stage_result
 from .textum_cli_runner import check_stage_result
 from .textum_cli_story_load import load_story_source
@@ -189,4 +189,3 @@ def _cmd_story_pack(args: argparse.Namespace) -> int:
     )
     emit_stage_result(result)
     return result.exit_code
-

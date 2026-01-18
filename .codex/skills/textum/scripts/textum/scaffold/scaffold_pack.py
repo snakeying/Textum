@@ -4,7 +4,7 @@ import hashlib
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 from .scaffold_pack_extract import extract_from_prd_pack
 from .scaffold_pack_io import init_scaffold_pack, read_scaffold_pack, write_scaffold_pack
 from .scaffold_pack_types import SCAFFOLD_PACK_FILENAME

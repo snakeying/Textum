@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 from .split_checkout_io import read_story_json
 from .split_checkout_graph import validate_and_write_story_dependency_graph
 from .split_pack_types import STORY_NAME_RE, STORY_SCHEMA_VERSION

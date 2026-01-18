@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .prd_pack import Failure
+from textum.prd.prd_pack_types import Failure
 
 from .textum_cli_support import _print_failures
 

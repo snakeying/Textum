@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import BR_ID_RE
+from textum.prd.prd_pack_types import BR_ID_RE
 
 
 def extract_gc_br_ids(scaffold_pack: dict[str, Any]) -> set[str]:

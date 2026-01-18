@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_maps import build_prd_maps
-from .prd_pack_types import Failure
-from .prd_slices_utils import rel_posix
+from textum.prd.prd_pack_maps import build_prd_maps
+from textum.prd.prd_pack_types import Failure
+from textum.prd.prd_slices_utils import rel_posix
 
 
 def collect_story_prd_context(

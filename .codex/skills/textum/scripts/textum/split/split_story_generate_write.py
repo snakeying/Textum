@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import API_ID_RE, Failure, FP_ID_RE, MODULE_ID_RE
+from textum.prd.prd_pack_types import API_ID_RE, Failure, FP_ID_RE, MODULE_ID_RE
 from .split_pack_io import write_json
 from .split_pack_types import STORY_SCHEMA_VERSION
 from .split_story_landing import parse_landing_tokens
@@ -137,4 +137,3 @@ def write_story_files_for_stories(
         written.append(out_path)
 
     return written
-

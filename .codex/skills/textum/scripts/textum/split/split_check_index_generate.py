@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 from .split_check_index_io import count_lines_chars, read_story
 from .split_check_index_story import collect_story_index_row
 from .split_check_index_thresholds import evaluate_story_thresholds

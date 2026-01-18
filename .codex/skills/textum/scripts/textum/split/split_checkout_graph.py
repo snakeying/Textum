@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 
 
 def validate_and_write_story_dependency_graph(
@@ -57,4 +57,3 @@ def validate_and_write_story_dependency_graph(
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return []
-

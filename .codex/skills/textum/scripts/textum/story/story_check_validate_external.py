@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 from .story_check_utils import build_prd_maps, build_scaffold_module_ids
 
 

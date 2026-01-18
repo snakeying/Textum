@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 
 
 def require_str(value: Any, loc: str, failures: list[Failure], *, allow_na: bool = False) -> str | None:

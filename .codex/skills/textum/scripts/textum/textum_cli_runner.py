@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack import Failure
+from textum.prd.prd_pack_types import Failure
 from .textum_cli_artifacts import write_check_artifacts
 from .textum_cli_next import _next_stage_for_failures
 from .textum_cli_result import StageResult
@@ -99,4 +99,3 @@ def simple_stage_result(
         next_stage=next_on_pass,
         exit_code=0,
     )
-

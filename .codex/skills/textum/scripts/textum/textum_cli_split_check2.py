@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .prd_pack import read_prd_pack, workspace_paths
-from .scaffold_pack import read_scaffold_pack
-from .split_check_refs import validate_split_refs
-from .split_pack_io import read_json_object
+from textum.prd.prd_pack import read_prd_pack, workspace_paths
+from textum.scaffold.scaffold_pack import read_scaffold_pack
+from textum.split.split_check_refs import validate_split_refs
+from textum.split.split_pack_io import read_json_object
 from .textum_cli_emit import emit_stage_result
 from .textum_cli_runner import check_stage_result
 from .textum_cli_support import _ensure_prd_ready, _ensure_scaffold_ready
@@ -129,4 +129,3 @@ def _cmd_split_check2(args: argparse.Namespace) -> int:
     )
     emit_stage_result(result)
     return result.exit_code
-

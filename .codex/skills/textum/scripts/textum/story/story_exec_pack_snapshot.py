@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .prd_pack_types import Failure
-from .prd_slices_types import SliceBudget
-from .prd_slices_utils import rel_posix
+from textum.prd.prd_pack_types import Failure
+from textum.prd.prd_slices_types import SliceBudget
+from textum.prd.prd_slices_utils import rel_posix
 from .story_exec_types import STORY_EXEC_STORY_SNAPSHOT_FILENAME
 
 
@@ -36,4 +36,3 @@ def write_story_snapshot_and_check_budget(
             )
         ],
     )
-

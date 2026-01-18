@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 
 
 def get_list(value: Any, loc: str, failures: list[Failure]) -> list[Any] | None:

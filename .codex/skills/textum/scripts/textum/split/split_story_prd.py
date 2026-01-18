@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import API_ID_RE, FP_ID_RE, MODULE_ID_RE, TBL_ID_RE
+from textum.prd.prd_pack_types import API_ID_RE, FP_ID_RE, MODULE_ID_RE, TBL_ID_RE
 
 
 def build_table_indices(prd_pack: dict[str, Any]) -> tuple[dict[str, str], dict[str, dict[str, Any]]]:

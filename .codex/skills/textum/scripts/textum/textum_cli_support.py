@@ -3,8 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack import Failure, check_prd_pack, normalize_prd_pack, read_prd_pack, write_prd_pack
-from .scaffold_pack import (
+from textum.prd.prd_pack import check_prd_pack, normalize_prd_pack, read_prd_pack, write_prd_pack
+from textum.prd.prd_pack_types import Failure
+from textum.scaffold.scaffold_pack import (
     check_scaffold_pack,
     normalize_scaffold_pack,
     read_scaffold_pack,

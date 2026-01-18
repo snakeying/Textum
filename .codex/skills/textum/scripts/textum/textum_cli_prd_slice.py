@@ -3,8 +3,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .prd_pack import check_prd_pack, workspace_paths
-from .prd_slices import SliceBudget, generate_prd_slices
+from textum.prd.prd_pack import check_prd_pack, workspace_paths
+from textum.prd.prd_slices import SliceBudget, generate_prd_slices
 from .textum_cli_emit import emit_stage_result
 from .textum_cli_runner import simple_stage_result
 from .textum_cli_support import _load_prd_pack_and_normalize
@@ -71,4 +71,3 @@ def _cmd_prd_slice(args: argparse.Namespace) -> int:
     )
     emit_stage_result(result)
     return result.exit_code
-

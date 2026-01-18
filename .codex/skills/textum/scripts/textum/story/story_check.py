@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 from .story_check_utils import scan_story_placeholders, scan_story_text
 from .story_check_validate_external import validate_story_against_prd, validate_story_against_scaffold
 from .story_check_validate_internal import validate_story_internal

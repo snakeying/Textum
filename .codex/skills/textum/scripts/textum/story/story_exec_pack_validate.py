@@ -3,10 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import PLACEHOLDER_SENTINEL, Failure
-from .prd_slices_types import SliceBudget
-from .prd_slices_utils import rel_posix
-from .split_pack_io import read_json_object
+from textum.prd.prd_pack_types import PLACEHOLDER_SENTINEL, Failure
+from textum.prd.prd_slices_types import SliceBudget
+from textum.prd.prd_slices_utils import rel_posix
+from textum.split.split_pack_io import read_json_object
 from .story_exec_types import STORY_EXEC_INDEX_FILENAME, STORY_EXEC_INDEX_SCHEMA_VERSION
 
 

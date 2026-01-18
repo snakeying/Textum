@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import API_ID_RE, BR_ID_RE, Failure, FP_ID_RE, MODULE_ID_RE, TBL_ID_RE
+from textum.prd.prd_pack_types import API_ID_RE, BR_ID_RE, Failure, FP_ID_RE, MODULE_ID_RE, TBL_ID_RE
 from .split_check_refs_prd import extract_prd_ref_sets
 from .split_check_refs_scaffold import extract_gc_br_ids
 
@@ -152,4 +152,3 @@ def validate_refs_against_packs(
             )
 
     return failures
-

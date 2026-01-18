@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import API_ID_RE, Failure, FP_ID_RE, MODULE_ID_RE, TBL_ID_RE
+from textum.prd.prd_pack_types import API_ID_RE, Failure, FP_ID_RE, MODULE_ID_RE, TBL_ID_RE
 from .split_pack_types import STORY_NAME_RE, STORY_SCHEMA_VERSION
 from .split_story_paths import parse_story_filename, story_filename
 from .split_check_index_story_build import build_story_index_row_and_meta

@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
-from .prd_slices_types import SliceBudget
-from .prd_slices_utils import rel_posix, write_json
+from textum.prd.prd_pack_types import Failure
+from textum.prd.prd_slices_types import SliceBudget
+from textum.prd.prd_slices_utils import rel_posix, write_json
 from .story_exec_types import STORY_EXEC_INDEX_FILENAME, STORY_EXEC_INDEX_SCHEMA_VERSION
 
 
@@ -55,4 +55,3 @@ def write_story_exec_index(
             )
         ],
     )
-

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 
 
 def ensure_dir(path: Path) -> None:

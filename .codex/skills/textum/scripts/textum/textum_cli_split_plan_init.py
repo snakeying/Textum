@@ -3,8 +3,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .prd_pack import skill_asset_paths, workspace_paths
-from .split_plan_pack import init_split_plan_pack
+from textum.prd.prd_pack import skill_asset_paths, workspace_paths
+from textum.split.split_plan_pack import init_split_plan_pack
 from .textum_cli_emit import emit_stage_result
 from .textum_cli_runner import check_stage_result
 from .textum_cli_result import StageResult
@@ -42,4 +42,3 @@ def _cmd_split_plan_init(args: argparse.Namespace) -> int:
     )
     emit_stage_result(result)
     return result.exit_code
-

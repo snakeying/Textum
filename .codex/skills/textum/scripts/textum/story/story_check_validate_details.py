@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import API_ID_RE, FP_ID_RE, LANDING_PREFIXES, TBL_ID_RE, Failure
+from textum.prd.prd_pack_types import API_ID_RE, FP_ID_RE, LANDING_PREFIXES, TBL_ID_RE, Failure
 from .story_check_utils import require_dict, require_list, require_non_empty_str
 
 

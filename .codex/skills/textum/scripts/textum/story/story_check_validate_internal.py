@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 from .story_check_validate_details import validate_story_details
 from .story_check_validate_meta import validate_story_meta
 from .story_check_validate_refs import validate_story_refs

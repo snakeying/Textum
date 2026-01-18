@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
-from .prd_slices_types import SliceBudget
-from .prd_slices_utils import measure_json, rel_posix, sha256_file, write_json
+from textum.prd.prd_pack_types import Failure
+from textum.prd.prd_slices_types import SliceBudget
+from textum.prd.prd_slices_utils import measure_json, rel_posix, sha256_file, write_json
 from .story_exec_types import (
     STORY_EXEC_CONTEXT_BASE_FILENAME,
     STORY_EXEC_CONTEXT_BASE_SCHEMA_VERSION,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_render_utils import _as_lines, _as_text, _md_table
+from textum.prd.prd_render_utils import _as_lines, _as_text, _md_table
 
 
 def _as_list_of_str(value: Any) -> list[str]:
@@ -166,4 +166,3 @@ def extract_global_context_parts(scaffold_pack: dict[str, Any]) -> dict[str, Any
         "has_api": has_api,
         "nfr_rows": nfr_rows,
     }
-

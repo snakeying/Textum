@@ -4,9 +4,9 @@ import argparse
 from pathlib import Path
 from typing import Any
 
-from .prd_pack import skill_asset_paths, workspace_paths
-from .scaffold_pack import init_scaffold_pack
-from .scaffold_render import render_global_context_markdown
+from textum.prd.prd_pack import skill_asset_paths, workspace_paths
+from textum.scaffold.scaffold_pack import init_scaffold_pack
+from textum.scaffold.scaffold_render import render_global_context_markdown
 from .textum_cli_emit import emit_stage_result
 from .textum_cli_result import StageResult
 from .textum_cli_runner import check_stage_result, simple_stage_result

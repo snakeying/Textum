@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 from .split_pack_io import read_json_object, write_json
 from .split_plan_pack_validate import check_split_plan_pack, normalize_split_plan_pack
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Literal
 
-from .prd_pack import Failure
+from textum.prd.prd_pack_types import Failure
 
 StageStatus = Literal["PASS", "FAIL"]
 
@@ -17,4 +17,3 @@ class StageResult:
     warnings: list[Failure] = field(default_factory=list)
     wrote: list[str] = field(default_factory=list)
     entry: str | None = None
-

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 
 
 def read_story_json(path: Path) -> tuple[dict[str, Any] | None, str | None, list[Failure]]:
@@ -42,4 +42,3 @@ def read_story_json(path: Path) -> tuple[dict[str, Any] | None, str | None, list
             )
         ]
     return obj, text, []
-

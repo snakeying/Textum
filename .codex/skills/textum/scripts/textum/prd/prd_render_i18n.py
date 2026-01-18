@@ -3,8 +3,8 @@ from __future__ import annotations
 import copy
 from typing import Any
 
-from textum.prd_render_i18n_labels_en import LABELS_EN
-from textum.prd_render_i18n_labels_zh import LABELS_ZH
+from .prd_render_i18n_labels_en import LABELS_EN
+from .prd_render_i18n_labels_zh import LABELS_ZH
 
 
 SUPPORTED_LANGS = ("zh", "en")

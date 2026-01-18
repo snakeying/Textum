@@ -3,9 +3,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .prd_pack import read_prd_pack, workspace_paths
-from .scaffold_pack import check_scaffold_pack, read_scaffold_pack
-from .story_check import check_story_source
+from textum.prd.prd_pack import read_prd_pack, workspace_paths
+from textum.scaffold.scaffold_pack import check_scaffold_pack, read_scaffold_pack
+from textum.story.story_check import check_story_source
 from .textum_cli_emit import emit_stage_result
 from .textum_cli_runner import check_stage_result
 from .textum_cli_story_load import load_story_source
@@ -127,4 +127,3 @@ def _cmd_story_check(args: argparse.Namespace) -> int:
     )
     emit_stage_result(result)
     return result.exit_code
-

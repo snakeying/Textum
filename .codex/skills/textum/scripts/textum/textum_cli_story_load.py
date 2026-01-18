@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .prd_pack import Failure
-from .story_exec_paths import find_story_source
+from textum.prd.prd_pack_types import Failure
+from textum.story.story_exec_paths import find_story_source
 
 
 def load_story_source(*, stories_dir: Path, n: int) -> tuple[Path | None, str | None, dict | None, list[Failure]]:
@@ -47,4 +47,3 @@ def load_story_source(*, stories_dir: Path, n: int) -> tuple[Path | None, str | 
         )
 
     return story_path, story_text, story, []
-

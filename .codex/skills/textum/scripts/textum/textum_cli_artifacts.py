@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .prd_pack import Failure
+from textum.prd.prd_pack_types import Failure
 
 REPLAN_SCHEMA_VERSION = "textum-replan-pack@v1"
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 from .split_pack_io import ensure_dir
 from .split_story_prd import build_table_indices, extract_api_endpoints_by_id, extract_modules_by_id
 from .split_story_generate_plan import build_api_by_story, distribute_feature_points, validate_feature_point_assignment

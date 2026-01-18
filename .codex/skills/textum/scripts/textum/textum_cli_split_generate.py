@@ -3,15 +3,15 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .prd_pack import read_prd_pack, workspace_paths
-from .scaffold_pack import read_scaffold_pack
-from .split_plan_pack import (
+from textum.prd.prd_pack import read_prd_pack, workspace_paths
+from textum.scaffold.scaffold_pack import read_scaffold_pack
+from textum.split.split_plan_pack import (
     check_split_plan_pack,
     normalize_split_plan_pack,
     read_split_plan_pack,
     write_split_plan_pack,
 )
-from .split_story_generate import generate_story_files
+from textum.split.split_story_generate import generate_story_files
 from .textum_cli_next import _print_failures_with_next
 from .textum_cli_support import _ensure_prd_ready, _ensure_scaffold_ready
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_render_utils import _as_lines, _as_text, _md_table
+from textum.prd.prd_render_utils import _as_lines, _as_text, _md_table
 
 
 def render_global_context_markdown_from_parts(parts: dict[str, Any]) -> str:
@@ -99,4 +99,3 @@ def render_global_context_markdown_from_parts(parts: dict[str, Any]) -> str:
     lines.append("")
 
     return "\n".join(lines)
-

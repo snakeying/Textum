@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .prd_pack_types import Failure
+from textum.prd.prd_pack_types import Failure
 from .scaffold_pack_placeholders import collect_placeholders
 from .scaffold_pack_validate_decisions import validate_decisions
 from .scaffold_pack_validate_extracted import validate_extracted

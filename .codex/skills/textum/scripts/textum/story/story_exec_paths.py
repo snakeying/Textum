@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .prd_pack_types import Failure
-from .split_story_paths import iter_story_files, parse_story_filename
+from textum.prd.prd_pack_types import Failure
+from textum.split.split_story_paths import iter_story_files, parse_story_filename
 from .story_exec_types import STORY_EXEC_DIRNAME
 
 

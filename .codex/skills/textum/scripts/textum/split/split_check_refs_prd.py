@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .prd_pack_types import API_ID_RE, BR_ID_RE, FP_ID_RE, MODULE_ID_RE, TBL_ID_RE
+from textum.prd.prd_pack_types import API_ID_RE, BR_ID_RE, FP_ID_RE, MODULE_ID_RE, TBL_ID_RE
 
 
 @dataclass

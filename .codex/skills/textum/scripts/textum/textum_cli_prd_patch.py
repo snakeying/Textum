@@ -4,7 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
-from .prd_pack import Failure, normalize_prd_pack, read_prd_pack, workspace_paths, write_prd_pack
+from textum.prd.prd_pack import normalize_prd_pack, read_prd_pack, workspace_paths, write_prd_pack
+from textum.prd.prd_pack_types import Failure
 from .textum_cli_support import _print_failures
 from .textum_json_path import append_value, delete_value, set_value
 

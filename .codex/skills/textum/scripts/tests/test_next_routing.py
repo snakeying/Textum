@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from textum.prd_pack import Failure
+from textum.prd.prd_pack_types import Failure
 from textum.textum_cli_next import _next_stage_for_failures
 
 
@@ -32,4 +32,3 @@ class TestNextStageRouting(unittest.TestCase):
     def test_routes_story_exec_failures_to_story_pack(self) -> None:
         failures = [_f(loc="docs/story-exec/story-001-*/index.json", fix="rebuild exec pack")]
         self.assertEqual(_next_stage_for_failures(failures, fallback="Split Generate"), "Story Pack")
-

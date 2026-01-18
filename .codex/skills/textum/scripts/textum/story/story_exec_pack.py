@@ -4,9 +4,9 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from .prd_pack_types import Failure
-from .prd_slices_types import SliceBudget
-from .prd_slices_utils import chunk_list, rel_posix
+from textum.prd.prd_pack_types import Failure
+from textum.prd.prd_slices_types import SliceBudget
+from textum.prd.prd_slices_utils import chunk_list, rel_posix
 from .story_exec_pack_context import collect_story_prd_context
 from .story_exec_pack_utils import scaffold_module_rows
 from .story_exec_pack_write import (
